@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube SRT Subtitle Cleaner — Practitioner Suite</title>
+  <meta name="description" content="Strip timestamps, cue numbers, and tags from YouTube SRT/VTT subtitles into clean readable text.">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .glow-emerald {
+      box-shadow: 0 0 45px -10px rgba(16, 185, 129, 0.16);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
+
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+  <div class="fixed top-1/3 right-10 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+  <div class="fixed bottom-10 left-1/3 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <a href="index.html" class="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-indigo-300 transition">
+          <span aria-hidden="true">&larr;</span>
+          Practitioner Suite
+        </a>
+        <div class="hidden sm:block w-px h-8 bg-slate-800"></div>
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0 text-xl">
+            ✂️
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h1 class="text-lg sm:text-2xl font-extrabold text-white tracking-tight">SRT Subtitle Cleaner</h1>
+              <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Client-Side</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-400 hidden sm:block font-medium truncate">Paste YouTube SRT/VTT and get clean paragraph text instantly</p>
+          </div>
+        </div>
+      </div>
+      <span class="hidden md:inline-flex text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full shrink-0">v1.0 Pro</span>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-slate-400 max-w-2xl">
+        Sequence numbers, timestamps, HTML/VTT tags, and extra whitespace are stripped automatically as you paste.
+      </p>
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400">
+          Input <span id="statInputLines" class="text-indigo-400 font-semibold">0</span> lines
+        </span>
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400">
+          Output <span id="statOutputChars" class="text-emerald-400 font-semibold">0</span> chars
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col min-h-[28rem]">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <label for="srtInput" class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Original SRT / VTT
+          </label>
+          <button type="button" id="btnClear" class="text-xs text-slate-500 hover:text-rose-400 transition font-medium">
+            Clear
+          </button>
+        </div>
+        <textarea
+          id="srtInput"
+          spellcheck="false"
+          placeholder="1&#10;00:00:00,160 --> 00:00:03,240&#10;Welcome to this video.&#10;&#10;2&#10;00:00:03,240 --> 00:00:06,880&#10;Let's clean these captions."
+          class="flex-1 min-h-72 w-full resize-y rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm text-slate-200 font-mono leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+        ></textarea>
+        <p class="mt-3 text-[11px] text-slate-500 leading-relaxed">
+          Supports YouTube <span class="text-slate-400 font-medium">.srt</span> and <span class="text-slate-400 font-medium">.vtt</span> dumps, including cue settings and nested formatting tags.
+        </p>
+      </section>
+
+      <section class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 sm:p-6 shadow-xl glow-emerald flex flex-col min-h-[28rem]">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Live Preview
+          </div>
+          <span id="emptyHint" class="text-[11px] text-slate-500">Paste captions to see cleaned text</span>
+        </div>
+        <div
+          id="preview"
+          class="flex-1 min-h-72 w-full overflow-auto rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed whitespace-pre-wrap"
+        ></div>
+        <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">
+          <button
+            type="button"
+            id="btnCopy"
+            class="flex-1 min-w-[10rem] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold text-slate-200 transition flex items-center justify-center gap-2 border border-slate-700/60 shadow-sm active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <span id="copyLabel">Copy to Clipboard</span>
+          </button>
+          <button
+            type="button"
+            id="btnDownload"
+            class="flex-1 min-w-[10rem] px-4 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-sm font-semibold text-emerald-300 border border-emerald-500/30 transition flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <span id="downloadLabel">Download as .txt</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+    &copy; 2026 Practitioner Suite. All client-side powered.
+  </footer>
+
+  <div id="toast" class="fixed bottom-6 right-6 z-50 translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-300 shadow-2xl text-xs font-semibold">
+    <span id="toastMsg">Action completed successfully.</span>
+  </div>
+
+  <script>
+    const TIMESTAMP_LINE = /^(?:\d{1,2}:)?\d{1,2}:\d{2}[.,]\d{1,3}\s*-->\s*(?:\d{1,2}:)?\d{1,2}:\d{2}[.,]\d{1,3}.*$/;
+    const TIMESTAMP_INLINE = /(?:\d{1,2}:)?\d{1,2}:\d{2}[.,]\d{1,3}\s*-->\s*(?:\d{1,2}:)?\d{1,2}:\d{2}[.,]\d{1,3}(?:\s+\S+)*/g;
+    const SEQUENCE_LINE = /^\d+$/;
+    const CUE_META = /^(align|position|line|size|vertical):/i;
+
+    function decodeEntities(value) {
+      return value
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&apos;/g, "'");
+    }
+
+    function stripMarkup(value) {
+      return value
+        .replace(/<[^>]+>/g, '')
+        .replace(/\{[^}]+\}/g, '')
+        .replace(TIMESTAMP_INLINE, '');
+    }
+
+    function cleanSubtitle(raw) {
+      if (!raw) return '';
+
+      const lines = raw
+        .replace(/^\uFEFF/, '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .split('\n');
+
+      const kept = [];
+      let skipBlock = false;
+
+      for (const original of lines) {
+        let line = original.trim();
+
+        if (/^(NOTE|STYLE|REGION)\b/i.test(line)) {
+          skipBlock = true;
+          continue;
+        }
+        if (skipBlock) {
+          if (line === '') skipBlock = false;
+          continue;
+        }
+
+        if (!line) continue;
+        if (/^WEBVTT/i.test(line)) continue;
+        if (/^(KIND|LANGUAGE):/i.test(line)) continue;
+        if (SEQUENCE_LINE.test(line)) continue;
+        if (TIMESTAMP_LINE.test(line)) continue;
+        if (CUE_META.test(line)) continue;
+
+        line = decodeEntities(stripMarkup(line)).replace(/\s+/g, ' ').trim();
+        if (!line) continue;
+        if (kept.length && kept[kept.length - 1] === line) continue;
+        kept.push(line);
+      }
+
+      return kept.join(' ').replace(/\s+/g, ' ').trim();
+    }
+
+    const inputEl = document.getElementById('srtInput');
+    const previewEl = document.getElementById('preview');
+    const emptyHint = document.getElementById('emptyHint');
+    const btnCopy = document.getElementById('btnCopy');
+    const btnDownload = document.getElementById('btnDownload');
+    const btnClear = document.getElementById('btnClear');
+    const copyLabel = document.getElementById('copyLabel');
+    const downloadLabel = document.getElementById('downloadLabel');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const statInputLines = document.getElementById('statInputLines');
+    const statOutputChars = document.getElementById('statOutputChars');
+
+    let cleaned = '';
+    let toastTimer = null;
+    let copyTimer = null;
+    let downloadTimer = null;
+
+    function showToast(message) {
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    function renderPreview() {
+      const raw = inputEl.value;
+      cleaned = cleanSubtitle(raw);
+      const lineCount = raw ? raw.split(/\r\n|\r|\n/).length : 0;
+
+      statInputLines.textContent = String(lineCount);
+      statOutputChars.textContent = String(cleaned.length);
+
+      const hasOutput = cleaned.length > 0;
+      btnCopy.disabled = !hasOutput;
+      btnDownload.disabled = !hasOutput;
+      emptyHint.classList.toggle('hidden', hasOutput);
+
+      if (!hasOutput) {
+        previewEl.innerHTML = '<span class="text-slate-600">Cleaned transcript will appear here in real time.</span>';
+        return;
+      }
+
+      previewEl.textContent = cleaned;
+    }
+
+    function markCopySuccess() {
+      copyLabel.textContent = 'Copied!';
+      btnCopy.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+      if (copyTimer) clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => {
+        copyLabel.textContent = 'Copy to Clipboard';
+        btnCopy.classList.remove('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+      }, 2000);
+      showToast('Cleaned transcript copied to clipboard.');
+    }
+
+    async function copyToClipboard() {
+      if (!cleaned) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(cleaned);
+          markCopySuccess();
+          return;
+        }
+        throw new Error('Clipboard API unavailable');
+      } catch {
+        const helper = document.createElement('textarea');
+        helper.value = cleaned;
+        helper.setAttribute('readonly', '');
+        helper.style.position = 'fixed';
+        helper.style.left = '-9999px';
+        document.body.appendChild(helper);
+        helper.select();
+        helper.setSelectionRange(0, helper.value.length);
+        let copied = false;
+        try {
+          copied = document.execCommand('copy');
+        } catch {
+          copied = false;
+        }
+        helper.remove();
+        if (copied) {
+          markCopySuccess();
+          return;
+        }
+        showToast('Could not copy. Select the preview and copy manually.');
+      }
+    }
+
+    function downloadTxt() {
+      if (!cleaned) return;
+      const blob = new Blob([cleaned], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cleaned-subtitles.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      downloadLabel.textContent = 'Downloaded!';
+      btnDownload.classList.add('bg-emerald-500/25', 'text-emerald-200');
+      if (downloadTimer) clearTimeout(downloadTimer);
+      downloadTimer = setTimeout(() => {
+        downloadLabel.textContent = 'Download as .txt';
+        btnDownload.classList.remove('bg-emerald-500/25', 'text-emerald-200');
+      }, 2000);
+      showToast('Downloaded cleaned-subtitles.txt');
+    }
+
+    inputEl.addEventListener('input', renderPreview);
+    btnClear.addEventListener('click', () => {
+      inputEl.value = '';
+      renderPreview();
+      inputEl.focus();
+    });
+    btnCopy.addEventListener('click', copyToClipboard);
+    btnDownload.addEventListener('click', downloadTxt);
+
+    renderPreview();
+  </script>
+</body>
+</html>
