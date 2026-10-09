@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Converter - UtilinOne Developer Suite</title>
+  <meta name="description" content="Commercial-grade, 100% client-side text and code case converter. Convert instantly between camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, Title Case, and more.">
+  
+  <!-- Tailwind CSS v4 Browser Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(248, 250, 252, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .output-card:hover .copy-btn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-sky-500/20 selection:text-sky-900 antialiased relative overflow-x-hidden">
+
+  <!-- Ambient Background Glows -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-sky-500/10 via-violet-500/5 to-transparent blur-[120px] rounded-full"></div>
+    <div class="absolute top-[35%] -left-32 w-80 h-80 bg-sky-500/5 blur-[100px] rounded-full"></div>
+    <div class="absolute top-[60%] -right-32 w-80 h-80 bg-violet-500/5 blur-[100px] rounded-full"></div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3 px-4 py-3 rounded-xl bg-white/95 border border-sky-500/30 shadow-lg shadow-slate-200/50 text-sm font-medium text-slate-900 backdrop-blur-md">
+    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <!-- Header / Navigation Bar (Top Bar Contract: 3 zones) -->
+  <header class="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Zone 1: Brand Wordmark -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-900 hover:opacity-90 transition-opacity">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <svg class="w-4 h-4 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          <span>Utilin<span class="text-sky-700">One</span></span>
+        </a>
+        <span class="text-slate-500 text-xs font-mono hidden sm:inline-block">/</span>
+        <span class="text-xs text-slate-600 font-medium hidden sm:inline-block">Case Converter</span>
+      </div>
+
+      <!-- Zone 2: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
+        <a href="case.html" class="text-sky-700 transition-colors">Case Converter</a>
+        <a href="json.html" class="hover:text-slate-900 transition-colors">JSON Formatter</a>
+        <a href="diff.html" class="hover:text-slate-900 transition-colors">Diff Checker</a>
+        <a href="hash.html" class="hover:text-slate-900 transition-colors">Hash Generator</a>
+        <a href="regex.html" class="hover:text-slate-900 transition-colors">Regex Tester</a>
+      </nav>
+
+      <!-- Zone 3: Security Badge & Primary Action -->
+      <div class="flex items-center gap-3">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm" title="Zero network requests. Processed in local browser memory.">
+          <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span class="whitespace-nowrap">100% Client-Side</span>
+        </div>
+        <button id="copy-all-btn" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-900 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 transition-all shadow-md shadow-indigo-600/20 whitespace-nowrap cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+          <span>Copy All Formats</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 z-10">
+
+    <!-- Hero Title Block -->
+    <div class="space-y-2">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+            <span>Case Converter</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-700 border border-sky-500/20 font-mono font-medium">v2.4 Pro</span>
+          </h1>
+          <p class="text-sm text-slate-600 mt-1">Transform strings, code identifiers, and copy across programming standards in real-time.</p>
+        </div>
+
+        <!-- Quick Presets Dropdown / Sample Loader -->
+        <div class="flex items-center gap-2">
+          <button id="sample-text-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-sky-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+            Load Sample Text
+          </button>
+          <button id="paste-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-sky-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Paste Clipboard
+          </button>
+          <button id="clear-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 hover:border-rose-300 transition-all cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Input Workspace Card -->
+    <div class="glass-panel rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all focus-within:border-sky-500/50 focus-within:ring-1 focus-within:ring-sky-500/20">
+      
+      <!-- Input Action & Options Toolbar -->
+      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        
+        <!-- Processing Mode & Cleaners -->
+        <div class="flex flex-wrap items-center gap-4 text-slate-700">
+          <span class="font-medium text-slate-600">Options:</span>
+          
+          <label class="flex items-center gap-2 cursor-pointer select-none hover:text-slate-900 transition-colors">
+            <input type="checkbox" id="opt-trim" class="rounded border-slate-200 bg-slate-50 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer w-3.5 h-3.5" checked>
+            <span>Trim Whitespace</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer select-none hover:text-slate-900 transition-colors">
+            <input type="checkbox" id="opt-collapse" class="rounded border-slate-200 bg-slate-50 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer w-3.5 h-3.5" checked>
+            <span>Remove Extra Spaces</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer select-none hover:text-slate-900 transition-colors" title="Process each line independently (ideal for column names and enum keys)">
+            <input type="checkbox" id="opt-line-by-line" class="rounded border-slate-200 bg-slate-50 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer w-3.5 h-3.5">
+            <span>Line-by-Line Mode</span>
+          </label>
+        </div>
+
+        <!-- Live Metrics Bar -->
+        <div class="flex items-center gap-3 text-slate-600 font-mono text-[11px] tabular-nums">
+          <div class="flex items-center gap-1">
+            <span class="text-slate-500">Chars:</span>
+            <span id="metric-chars" class="font-semibold text-slate-800">0</span>
+          </div>
+          <span class="text-gray-700">·</span>
+          <div class="flex items-center gap-1">
+            <span class="text-slate-500">Words:</span>
+            <span id="metric-words" class="font-semibold text-slate-800">0</span>
+          </div>
+          <span class="text-gray-700">·</span>
+          <div class="flex items-center gap-1">
+            <span class="text-slate-500">Lines:</span>
+            <span id="metric-lines" class="font-semibold text-slate-800">0</span>
+          </div>
+          <span class="text-gray-700">·</span>
+          <div class="flex items-center gap-1 hidden sm:flex">
+            <span class="text-slate-500">No-space:</span>
+            <span id="metric-nonspace" class="font-semibold text-slate-800">0</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Input Textarea -->
+      <div class="p-4 sm:p-5">
+        <textarea 
+          id="main-input" 
+          rows="4" 
+          placeholder="Type, paste code identifiers, or drop text here (e.g., 'user_account_id', 'fetchUserProfilePayload', 'API response error v2')..."
+          class="w-full bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none resize-y text-base sm:text-lg leading-relaxed font-sans min-h-[110px]"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Shortcut Hint Footer inside input box -->
+      <div class="px-4 py-2 bg-slate-50/80 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+          <span>Zero-latency real-time parsing</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-3">
+          <span><kbd class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono">Ctrl</kbd> + <kbd class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono">V</kbd> to paste</span>
+          <span><kbd class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono">Esc</kbd> to clear</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Simultaneous Conversion Output Grid Header -->
+    <div class="flex items-center justify-between pt-2">
+      <div class="flex items-center gap-2">
+        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Simultaneous Output Formats</h2>
+        <span class="text-xs text-slate-500 font-mono tabular-nums">(10 Standards)</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="copy-all-bottom-btn" class="sm:hidden px-3 py-1.5 rounded-lg text-xs font-medium text-slate-900 bg-sky-500 hover:bg-sky-400 transition-all flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+          Copy All
+        </button>
+      </div>
+    </div>
+
+    <!-- Multi-Format Simultaneous Output Grid -->
+    <div id="output-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- 1. camelCase -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">camelCase</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">JS/TS variables & properties</span>
+          </div>
+          <button data-format="camelCase" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy camelCase">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-camelCase" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">helloWorld</div>
+        </div>
+      </div>
+
+      <!-- 2. PascalCase -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">PascalCase</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">React components, Classes & Types</span>
+          </div>
+          <button data-format="PascalCase" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy PascalCase">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-PascalCase" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">HelloWorld</div>
+        </div>
+      </div>
+
+      <!-- 3. snake_case -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">snake_case</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Python, SQL columns & Ruby</span>
+          </div>
+          <button data-format="snake_case" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy snake_case">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-snake_case" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">hello_world</div>
+        </div>
+      </div>
+
+      <!-- 4. kebab-case -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">kebab-case</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">CSS classes, URLs & NPM packages</span>
+          </div>
+          <button data-format="kebab-case" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy kebab-case">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-kebab-case" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">hello-world</div>
+        </div>
+      </div>
+
+      <!-- 5. CONSTANT_CASE / SCREAMING_SNAKE -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">CONSTANT_CASE</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Env vars & Enums (SCREAMING_SNAKE)</span>
+          </div>
+          <button data-format="CONSTANT_CASE" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy CONSTANT_CASE">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-CONSTANT_CASE" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">HELLO_WORLD</div>
+        </div>
+      </div>
+
+      <!-- 6. Title Case -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">Title Case</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Headings, Document Titles & Menus</span>
+          </div>
+          <button data-format="Title Case" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy Title Case">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-Title Case" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">Hello World</div>
+        </div>
+      </div>
+
+      <!-- 7. Sentence case -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">Sentence case</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Standard prose & UI messages</span>
+          </div>
+          <button data-format="Sentence case" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy Sentence case">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-Sentence case" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">Hello world</div>
+        </div>
+      </div>
+
+      <!-- 8. Lowercase -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">lowercase</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Normalized text & Search indexes</span>
+          </div>
+          <button data-format="Lowercase" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy Lowercase">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-Lowercase" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">hello world</div>
+        </div>
+      </div>
+
+      <!-- 9. Uppercase -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">UPPERCASE</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">SQL keywords & Accents</span>
+          </div>
+          <button data-format="Uppercase" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy Uppercase">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-Uppercase" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">HELLO WORLD</div>
+        </div>
+      </div>
+
+      <!-- 10. Inverse Case -->
+      <div class="output-card group rounded-xl p-4 bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all duration-200 flex flex-col justify-between gap-3 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-sky-700">iNVERSE cASE</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Accidental Caps Lock reversal</span>
+          </div>
+          <button data-format="Inverse Case" class="copy-btn px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-sky-500 text-slate-800 hover:text-slate-900 border border-slate-200 hover:border-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 shrink-0" title="Copy Inverse Case">
+            <svg class="w-3.5 h-3.5 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+          <div id="out-Inverse Case" class="font-mono text-sm text-slate-800 break-all select-all whitespace-pre-wrap min-h-[1.5rem]">hELLO wORLD</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Supplementary Case Quick Bar (dot.case, header-case, mock-case) -->
+    <div class="glass-panel rounded-xl p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Extended Formats:</span>
+        <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+          <button data-quick="dot.case" class="quick-copy-pill px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 hover:border-indigo-500 text-slate-700 hover:text-slate-900 transition-all cursor-pointer flex items-center gap-1.5">
+            <span class="text-slate-500">dot:</span>
+            <span id="quick-dot" class="text-sky-700">hello.world</span>
+          </button>
+          <button data-quick="Train-Case" class="quick-copy-pill px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 hover:border-indigo-500 text-slate-700 hover:text-slate-900 transition-all cursor-pointer flex items-center gap-1.5">
+            <span class="text-slate-500">Train:</span>
+            <span id="quick-train" class="text-sky-700">Hello-World</span>
+          </button>
+          <button data-quick="aLtErNaTiNg" class="quick-copy-pill px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 hover:border-indigo-500 text-slate-700 hover:text-slate-900 transition-all cursor-pointer flex items-center gap-1.5">
+            <span class="text-slate-500">aLt:</span>
+            <span id="quick-alt" class="text-sky-700">hElLo WoRlD</span>
+          </button>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500">
+        Click any output to copy immediately
+      </div>
+    </div>
+
+    <!-- Architectural Documentation: Casing Conventions Guide -->
+    <section class="mt-12 space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">When to Use Each Casing Convention</h2>
+        <p class="text-xs text-slate-600 mt-1">Industry standard naming patterns across modern programming stacks, databases, and copywriting.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+        
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">camelCase</span>
+            <span class="text-slate-500">helloWorld</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Standard convention for variables, functions, methods, and JSON attributes in JavaScript, TypeScript, Java, and Go.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">PascalCase</span>
+            <span class="text-slate-500">HelloWorld</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Used for React/Vue components, TypeScript interfaces, type definitions, C# classes, and Python class names.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">snake_case</span>
+            <span class="text-slate-500">hello_world</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Predominant convention in Python scripts, PostgreSQL and MySQL column names, Ruby methods, and Rust variables.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">kebab-case</span>
+            <span class="text-slate-500">hello-world</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Universally applied in CSS class selectors, HTML custom attributes, REST URL paths, and npm package identifiers.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">CONSTANT_CASE</span>
+            <span class="text-slate-500">HELLO_WORLD</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Mandatory for environment variables (.env), immutable constants, and enum keys across nearly all languages.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-900/40 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between font-mono">
+            <span class="font-bold text-sky-700">Title Case</span>
+            <span class="text-slate-500">Hello World</span>
+          </div>
+          <p class="text-slate-600 leading-relaxed">Essential for UI navigation items, modal dialog headings, documentation chapters, and article headlines.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQ & Privacy Assurance Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+      
+      <!-- FAQ -->
+      <div class="p-5 rounded-2xl bg-white/80 border border-slate-200 space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+          <svg class="w-4 h-4 text-sky-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Frequently Asked Questions
+        </h3>
+
+        <div class="space-y-3 text-xs text-slate-600">
+          <div>
+            <span class="font-semibold text-slate-800 block mb-1">How does the parser handle mixed alphanumeric words and abbreviations?</span>
+            <p class="leading-relaxed">The regex engine recognizes boundary transitions between lowercase and uppercase letters (e.g. <code class="text-slate-700">getHTTPResponse</code> becomes words <code class="text-slate-700">get</code>, <code class="text-slate-700">HTTP</code>, and <code class="text-slate-700">Response</code>), along with underscores, hyphens, and whitespace.</p>
+          </div>
+
+          <div>
+            <span class="font-semibold text-slate-800 block mb-1">Can I batch convert lists of database columns or enum keys?</span>
+            <p class="leading-relaxed">Yes! Simply enable <span class="text-sky-700 font-medium">"Line-by-Line Mode"</span> in the options toolbar above. Each line will be parsed and formatted as an independent entity while preserving order.</p>
+          </div>
+
+          <div>
+            <span class="font-semibold text-slate-800 block mb-1">What does "Inverse Case" do?</span>
+            <p class="leading-relaxed">It reverses each individual character's casing (uppercase becomes lowercase and vice versa). This is a lifesaver when text was accidentally entered while Caps Lock was active.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy & Architecture Assurance -->
+      <div class="p-5 rounded-2xl bg-white/80 border border-slate-200 space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          Client-Side Privacy Guarantee
+        </h3>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <p>
+            <strong class="text-slate-800">Zero Network Telemetry:</strong> All parsing algorithms execute strictly inside your browser's V8 or JavaScript runtime environment. Your tokens, proprietary API keys, database column names, and sensitive strings never touch any remote server or third-party analytical service.
+          </p>
+          <p>
+            <strong class="text-slate-800">High-Performance Offline Capability:</strong> Because UtilinOne is completely stateless and client-side, this tool functions seamlessly offline or within restricted corporate networks and intranet air-gapped environments.
+          </p>
+          <div class="pt-2 flex items-center gap-2 text-emerald-600 font-mono text-[11px]">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Verified safe for proprietary internal codebases.</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Related Tools Footer Section -->
+  <footer class="border-t border-slate-200 bg-slate-50 mt-16 py-10 z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      <!-- Related Tools Grid -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Other Tools in the UtilinOne Suite</span>
+          <a href="index.html" class="text-xs text-sky-700 hover:text-sky-600 transition-colors">View All Tools &rarr;</a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <a href="json.html" class="p-3 rounded-lg bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all group">
+            <span class="font-semibold text-slate-800 group-hover:text-sky-700 block mb-0.5">JSON Formatter</span>
+            <span class="text-[11px] text-slate-500">Validator, minifier & tree view</span>
+          </a>
+          <a href="diff.html" class="p-3 rounded-lg bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all group">
+            <span class="font-semibold text-slate-800 group-hover:text-sky-700 block mb-0.5">Diff Checker</span>
+            <span class="text-[11px] text-slate-500">Side-by-side text & code diffs</span>
+          </a>
+          <a href="hash.html" class="p-3 rounded-lg bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all group">
+            <span class="font-semibold text-slate-800 group-hover:text-sky-700 block mb-0.5">Hash Generator</span>
+            <span class="text-[11px] text-slate-500">MD5, SHA-256, SHA-512 & HMAC</span>
+          </a>
+          <a href="regex.html" class="p-3 rounded-lg bg-white border border-slate-200 hover:border-sky-500/40 hover:bg-slate-50 transition-all group">
+            <span class="font-semibold text-slate-800 group-hover:text-sky-700 block mb-0.5">Regex Tester</span>
+            <span class="text-[11px] text-slate-500">Live expression pattern matcher</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Copyright & Brand Bottom Line -->
+      <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div class="flex items-center gap-2">
+          <span>&copy; 2026 UtilinOne Developer Suite</span>
+          <span>·</span>
+          <span>Open Standards & Client-Side Privacy</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="hover:text-slate-700 transition-colors">Home</a>
+          <a href="#top" class="hover:text-slate-700 transition-colors">Back to top &uarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Vanilla JavaScript Reactive Case Engine -->
+  <script>
+    (function () {
+      'use strict';
+
+      // DOM Elements
+      const mainInput = document.getElementById('main-input');
+      const optTrim = document.getElementById('opt-trim');
+      const optCollapse = document.getElementById('opt-collapse');
+      const optLineByLine = document.getElementById('opt-line-by-line');
+
+      const metricChars = document.getElementById('metric-chars');
+      const metricWords = document.getElementById('metric-words');
+      const metricLines = document.getElementById('metric-lines');
+      const metricNonspace = document.getElementById('metric-nonspace');
+
+      const clearBtn = document.getElementById('clear-btn');
+      const pasteBtn = document.getElementById('paste-btn');
+      const sampleTextBtn = document.getElementById('sample-text-btn');
+      const copyAllBtn = document.getElementById('copy-all-btn');
+      const copyAllBottomBtn = document.getElementById('copy-all-bottom-btn');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+
+      // Sample Data Collection
+      const SAMPLE_STRINGS = [
+        "getUserProfile_byAuthToken API response v2",
+        "calculate_shipping_rates_for_customer_order",
+        "REACT_APPLICATION_STATE_MUTATION_HANDLER",
+        "The quick brown fox jumps over the lazy dog",
+        "product-catalog-microservice-endpoint-404"
+      ];
+      let sampleIndex = 0;
+
+      // Toast Feedback Controller
+      let toastTimeout = null;
+      function showToast(message) {
+        if (!toast) return;
+        toastMessage.textContent = message;
+        toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+        }, 2200);
+      }
+
+      // Robust Word Extraction Parser
+      // Handles: camelCase, PascalCase, snake_case, kebab-case, acronyms (XMLHttpRequest -> XML, Http, Request), numbers, punctuation
+      function extractWords(str) {
+        if (!str) return [];
+
+        // 1. Split on uppercase followed by lowercase when preceded by uppercase (e.g. 'XMLHttp' -> 'XML', 'Http')
+        let s = str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+        // 2. Split on lowercase followed by uppercase (e.g. 'userId' -> 'user Id')
+        s = s.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+        // 3. Split on letters followed by digits and vice-versa (optional boundaries)
+        s = s.replace(/([a-zA-Z])([0-9]+)/g, '$1 $2');
+        s = s.replace(/([0-9]+)([a-zA-Z])/g, '$1 $2');
+        // 4. Replace non-alphanumeric punctuation (except letters/digits) with spaces
+        s = s.replace(/[^a-zA-Z0-9]+/g, ' ');
+
+        return s.trim().split(/\s+/).filter(Boolean);
+      }
+
+      // Case Formatter Algorithms
+      const formatters = {
+        camelCase: (words) => {
+          if (!words.length) return '';
+          return words.map((w, i) => {
+            const lower = w.toLowerCase();
+            return i === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
+          }).join('');
+        },
+
+        PascalCase: (words) => {
+          if (!words.length) return '';
+          return words.map(w => {
+            const lower = w.toLowerCase();
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+          }).join('');
+        },
+
+        snake_case: (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toLowerCase()).join('_');
+        },
+
+        'kebab-case': (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toLowerCase()).join('-');
+        },
+
+        CONSTANT_CASE: (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toUpperCase()).join('_');
+        },
+
+        'Title Case': (words) => {
+          if (!words.length) return '';
+          const minorWords = new Set(['and', 'or', 'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
+          return words.map((w, idx) => {
+            const lower = w.toLowerCase();
+            if (idx > 0 && idx < words.length - 1 && minorWords.has(lower)) {
+              return lower;
+            }
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+          }).join(' ');
+        },
+
+        'Sentence case': (words, rawText) => {
+          if (!words.length) return '';
+          // Natural sentence case preserving sentence flow
+          const joined = words.map(w => w.toLowerCase()).join(' ');
+          return joined.charAt(0).toUpperCase() + joined.slice(1);
+        },
+
+        Lowercase: (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toLowerCase()).join(' ');
+        },
+
+        Uppercase: (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toUpperCase()).join(' ');
+        },
+
+        'Inverse Case': (words, rawText) => {
+          if (!rawText) return '';
+          return rawText.split('').map(char => {
+            if (char === char.toUpperCase() && char !== char.toLowerCase()) {
+              return char.toLowerCase();
+            } else if (char === char.toLowerCase() && char !== char.toUpperCase()) {
+              return char.toUpperCase();
+            }
+            return char;
+          }).join('');
+        },
+
+        // Extended Formats
+        'dot.case': (words) => {
+          if (!words.length) return '';
+          return words.map(w => w.toLowerCase()).join('.');
+        },
+
+        'Train-Case': (words) => {
+          if (!words.length) return '';
+          return words.map(w => {
+            const lower = w.toLowerCase();
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+          }).join('-');
+        },
+
+        'aLtErNaTiNg': (words, rawText) => {
+          if (!rawText) return '';
+          let toggle = false;
+          return rawText.split('').map(char => {
+            if (/[a-zA-Z]/.test(char)) {
+              toggle = !toggle;
+              return toggle ? char.toLowerCase() : char.toUpperCase();
+            }
+            return char;
+          }).join('');
+        }
+      };
+
+      // Process single string according to selected options
+      function cleanText(str) {
+        let res = str;
+        if (optTrim.checked) {
+          res = res.trim();
+        }
+        if (optCollapse.checked) {
+          res = res.replace(/[ \t]+/g, ' ');
+        }
+        return res;
+      }
+
+      // Convert a single line or whole block to a given format
+      function convertText(text, formatKey) {
+        if (!text) return '';
+
+        const formatter = formatters[formatKey];
+        if (!formatter) return '';
+
+        if (optLineByLine.checked && text.includes('\n')) {
+          const lines = text.split('\n');
+          return lines.map(line => {
+            const cleaned = cleanText(line);
+            if (!cleaned) return '';
+            const words = extractWords(cleaned);
+            return formatter(words, cleaned);
+          }).join('\n');
+        } else {
+          const cleaned = cleanText(text);
+          if (!cleaned) return '';
+          const words = extractWords(cleaned);
+          return formatter(words, cleaned);
+        }
+      }
+
+      // Live metrics calculation
+      function updateMetrics(raw) {
+        metricChars.textContent = raw.length.toLocaleString();
+        
+        const trimmed = raw.trim();
+        const wordCount = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
+        metricWords.textContent = wordCount.toLocaleString();
+
+        const lineCount = raw ? raw.split('\n').length : 0;
+        metricLines.textContent = lineCount.toLocaleString();
+
+        const nonSpaceCount = raw.replace(/\s/g, '').length;
+        metricNonspace.textContent = nonSpaceCount.toLocaleString();
+      }
+
+      // Master Recompute Function
+      function runConversion() {
+        const raw = mainInput.value;
+        updateMetrics(raw);
+
+        // Core 10 formats
+        const coreFormats = [
+          'camelCase',
+          'PascalCase',
+          'snake_case',
+          'kebab-case',
+          'CONSTANT_CASE',
+          'Title Case',
+          'Sentence case',
+          'Lowercase',
+          'Uppercase',
+          'Inverse Case'
+        ];
+
+        coreFormats.forEach(fmt => {
+          const el = document.getElementById('out-' + fmt);
+          if (el) {
+            const converted = convertText(raw, fmt);
+            el.textContent = converted || (raw ? '' : getPlaceholderExample(fmt));
+          }
+        });
+
+        // Quick pill formats
+        const quickDot = document.getElementById('quick-dot');
+        if (quickDot) {
+          quickDot.textContent = convertText(raw, 'dot.case') || 'hello.world';
+        }
+
+        const quickTrain = document.getElementById('quick-train');
+        if (quickTrain) {
+          quickTrain.textContent = convertText(raw, 'Train-Case') || 'Hello-World';
+        }
+
+        const quickAlt = document.getElementById('quick-alt');
+        if (quickAlt) {
+          quickAlt.textContent = convertText(raw, 'aLtErNaTiNg') || 'hElLo WoRlD';
+        }
+      }
+
+      function getPlaceholderExample(format) {
+        switch (format) {
+          case 'camelCase': return 'helloWorld';
+          case 'PascalCase': return 'HelloWorld';
+          case 'snake_case': return 'hello_world';
+          case 'kebab-case': return 'hello-world';
+          case 'CONSTANT_CASE': return 'HELLO_WORLD';
+          case 'Title Case': return 'Hello World';
+          case 'Sentence case': return 'Hello world';
+          case 'Lowercase': return 'hello world';
+          case 'Uppercase': return 'HELLO WORLD';
+          case 'Inverse Case': return 'hELLO wORLD';
+          default: return '';
+        }
+      }
+
+      // Safe Clipboard Copy Helper
+      async function copyStringToClipboard(text, successMessage = 'Copied to clipboard!') {
+        if (!text) {
+          showToast('Nothing to copy');
+          return;
+        }
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            // Fallback for non-https or older frames
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            document.execCommand('copy');
+            textArea.remove();
+          }
+          showToast(successMessage);
+        } catch (err) {
+          showToast('Failed to copy to clipboard');
+        }
+      }
+
+      // Event Listeners for Output Cards Copy Buttons
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const format = btn.getAttribute('data-format');
+          const outputEl = document.getElementById('out-' + format);
+          if (!outputEl) return;
+
+          const text = outputEl.textContent;
+          copyStringToClipboard(text, `${format} copied!`);
+
+          // Visual feedback on the button
+          const originalText = btn.querySelector('.copy-text');
+          const originalIcon = btn.querySelector('.copy-icon');
+          if (originalText) originalText.textContent = 'Copied!';
+          btn.classList.add('bg-emerald-600', 'text-slate-900', 'border-emerald-500');
+
+          setTimeout(() => {
+            if (originalText) originalText.textContent = 'Copy';
+            btn.classList.remove('bg-emerald-600', 'text-slate-900', 'border-emerald-500');
+          }, 1500);
+        });
+      });
+
+      // Click card body to copy
+      document.querySelectorAll('.output-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('button')) return; // Ignore if clicked copy button directly
+          const btn = card.querySelector('.copy-btn');
+          if (btn) btn.click();
+        });
+      });
+
+      // Quick Pills Copy
+      document.querySelectorAll('.quick-copy-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const format = pill.getAttribute('data-quick');
+          const valEl = pill.querySelector('span:last-child');
+          if (valEl) {
+            copyStringToClipboard(valEl.textContent, `${format} copied!`);
+          }
+        });
+      });
+
+      // "Copy All Formats" Global Action
+      function copyAllFormats() {
+        const raw = mainInput.value.trim() || 'hello world';
+        const lines = [
+          `# Case Conversion Summary for: "${raw}"`,
+          `camelCase:     ${convertText(raw, 'camelCase') || 'helloWorld'}`,
+          `PascalCase:    ${convertText(raw, 'PascalCase') || 'HelloWorld'}`,
+          `snake_case:    ${convertText(raw, 'snake_case') || 'hello_world'}`,
+          `kebab-case:    ${convertText(raw, 'kebab-case') || 'hello-world'}`,
+          `CONSTANT_CASE: ${convertText(raw, 'CONSTANT_CASE') || 'HELLO_WORLD'}`,
+          `Title Case:    ${convertText(raw, 'Title Case') || 'Hello World'}`,
+          `Sentence case: ${convertText(raw, 'Sentence case') || 'Hello world'}`,
+          `lowercase:     ${convertText(raw, 'Lowercase') || 'hello world'}`,
+          `UPPERCASE:     ${convertText(raw, 'Uppercase') || 'HELLO WORLD'}`,
+          `Inverse Case:  ${convertText(raw, 'Inverse Case') || 'hELLO wORLD'}`
+        ].join('\n');
+
+        copyStringToClipboard(lines, 'All 10 formats copied!');
+      }
+
+      if (copyAllBtn) copyAllBtn.addEventListener('click', copyAllFormats);
+      if (copyAllBottomBtn) copyAllBottomBtn.addEventListener('click', copyAllFormats);
+
+      // Clear Action
+      clearBtn.addEventListener('click', () => {
+        mainInput.value = '';
+        mainInput.focus();
+        runConversion();
+        showToast('Cleared input');
+      });
+
+      // Paste Action
+      pasteBtn.addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const clipText = await navigator.clipboard.readText();
+            if (clipText) {
+              mainInput.value = clipText;
+              runConversion();
+              showToast('Pasted from clipboard');
+              return;
+            }
+          }
+          mainInput.focus();
+          showToast('Press Ctrl+V / Cmd+V to paste');
+        } catch (err) {
+          mainInput.focus();
+          showToast('Press Ctrl+V / Cmd+V to paste');
+        }
+      });
+
+      // Load Sample Text Action
+      sampleTextBtn.addEventListener('click', () => {
+        mainInput.value = SAMPLE_STRINGS[sampleIndex % SAMPLE_STRINGS.length];
+        sampleIndex++;
+        runConversion();
+        showToast('Sample text loaded');
+      });
+
+      // Options toggles change listener
+      [optTrim, optCollapse, optLineByLine].forEach(opt => {
+        opt.addEventListener('change', runConversion);
+      });
+
+      // Realtime typing input listener
+      mainInput.addEventListener('input', runConversion);
+
+      // Keyboard shortcuts: Esc to clear
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.activeElement === mainInput) {
+          mainInput.value = '';
+          runConversion();
+          showToast('Cleared input');
+        }
+      });
+
+      // Initial conversion run on page load
+      runConversion();
+
+    })();
+  </script>
+</body>
+</html>

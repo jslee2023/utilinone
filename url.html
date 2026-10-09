@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Encoder / Decoder - 100% Client-Side | UtilinOne</title>
+  <meta name="description" content="Encode and decode URLs, query strings, and Unicode characters entirely in your browser. Fast, secure, and 100% client-side." />
+  <meta property="og:title" content="URL Encoder / Decoder - UtilinOne" />
+  <meta property="og:description" content="Free, secure, 100% client-side URL encoder and decoder with Unicode support." />
+  <meta property="og:type" content="website" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    code, pre, textarea, .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-800">
+
+  <!-- Header -->
+  <header class="border-b border-gray-200 bg-white/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/30 group-hover:bg-indigo-500 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-bold text-lg text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors">UtilinOne</span>
+            <span class="text-[10px] text-gray-500 font-mono tracking-wider uppercase -mt-1">Client-Side Suite</span>
+          </div>
+        </a>
+        <span class="text-gray-300">/</span>
+        <span class="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          URL Encoder & Decoder
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Security Badge -->
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm" title="All processing occurs strictly inside your web browser. Zero server transmission.">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="hidden sm:inline">🔒 100% Client-Side Security</span>
+          <span class="sm:hidden">🔒 Client-Side</span>
+        </div>
+
+        <a href="index.html" class="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 bg-gray-50 hover:bg-gray-100 transition">
+          ← Hub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+    <!-- Page Title & Overview -->
+    <div class="mb-8">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2.5">
+            <span>URL Encoder / Decoder</span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">RFC 3986</span>
+          </h1>
+          <p class="mt-2 text-sm sm:text-base text-gray-600 max-w-3xl">
+            Convert URLs and query parameters to and from percent-encoded format. Fully supports Unicode (Korean, Japanese, emojis, multilingual text) with instant browser-based execution.
+          </p>
+        </div>
+
+        <!-- Sample Loaders -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-500 font-medium">Load sample:</span>
+          <button type="button" id="sampleQueryBtn" class="text-xs bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm transition">
+            Query String
+          </button>
+          <button type="button" id="sampleUnicodeBtn" class="text-xs bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm transition">
+            Unicode URL 🇰🇷
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Banner (Hidden by default) -->
+    <div id="errorBanner" class="hidden mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
+      <svg class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <div class="flex-1">
+        <div class="font-semibold text-rose-900" id="errorTitle">Decoding Error</div>
+        <div class="text-xs sm:text-sm text-rose-700 mt-0.5" id="errorMessage">Invalid percent-encoding sequence detected.</div>
+      </div>
+      <button type="button" id="dismissErrorBtn" class="text-rose-600 hover:text-rose-900 p-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Controls & Config Bar -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- Encoding Mode -->
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Mode:</span>
+          <div class="inline-flex rounded-xl bg-gray-100 p-1 border border-gray-200 text-xs font-medium">
+            <button type="button" id="modeComponentBtn" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold shadow-sm transition">
+              URL Component (encodeURIComponent)
+            </button>
+            <button type="button" id="modeFullBtn" class="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition">
+              Full URL (encodeURI)
+            </button>
+          </div>
+        </div>
+
+        <!-- Options: Space format & Auto-process -->
+        <div class="flex flex-wrap items-center gap-4 text-xs">
+          <div class="flex items-center space-x-2">
+            <label for="spaceEncodingSelect" class="text-gray-600 font-medium">Spaces:</label>
+            <select id="spaceEncodingSelect" class="bg-white border border-gray-300 text-gray-800 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+              <option value="percent">%20 (Standard RFC 3986)</option>
+              <option value="plus">+ (application/x-www-form-urlencoded)</option>
+            </select>
+          </div>
+
+          <label class="flex items-center gap-2 cursor-pointer select-none text-gray-700">
+            <input type="checkbox" id="liveConvertCheck" checked class="rounded border-gray-300 bg-white text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+            <span>Live Conversion</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace: Dual Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      
+      <!-- Input Panel -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm text-gray-900 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+              Input
+            </span>
+            <span id="inputCharCount" class="text-xs text-gray-500 font-mono">0 chars · 0 bytes</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="pasteInputBtn" class="text-xs text-gray-600 hover:text-gray-900 px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 transition flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Paste
+            </button>
+            <button type="button" id="clearBtn" class="text-xs text-gray-600 hover:text-rose-600 px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 transition flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          id="inputText"
+          rows="9"
+          class="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl p-3.5 text-sm text-gray-900 placeholder-gray-400 font-mono resize-y leading-relaxed outline-none transition"
+          placeholder="Paste or type text, query parameters, or URL here...&#10;Example: https://example.com/search?q=개발자&tag=🔥#results"
+        ></textarea>
+
+        <!-- Primary Action Triggers -->
+        <div class="mt-4 flex flex-wrap items-center gap-2.5">
+          <button type="button" id="encodeBtn" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 active:scale-[0.99] transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            Encode URL
+          </button>
+
+          <button type="button" id="decodeBtn" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-sm border border-gray-300 active:scale-[0.99] transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Decode URL
+          </button>
+
+          <button type="button" id="swapBtn" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 border border-gray-300 transition" title="Swap Input and Output">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Output Panel -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm text-gray-900 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Result Output
+            </span>
+            <span id="outputCharCount" class="text-xs text-gray-500 font-mono">0 chars · 0 bytes</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="copyBtn"
+              class="text-xs text-white bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95"
+            >
+              <svg id="copyIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span id="copyBtnText">Copy Result</span>
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          id="outputText"
+          rows="9"
+          readonly
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-sm text-gray-900 placeholder-gray-400 font-mono resize-y leading-relaxed outline-none focus:border-indigo-500/50"
+          placeholder="Processed result will appear here..."
+        ></textarea>
+
+        <!-- Quick Output Tools -->
+        <div class="mt-4 flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-gray-500">Status:</span>
+            <span id="statusBadge" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700">
+              Ready
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="useAsInputBtn" class="text-indigo-600 hover:text-indigo-700 font-medium transition">
+              Use as new input →
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live URL Structure Inspector (Appears when input or output contains a valid URL) -->
+    <div id="urlInspectorSection" class="mt-8 bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          URL Structure Breakdown
+        </h2>
+        <span class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-mono">Valid Web URL Detected</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs mb-4">
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div class="text-gray-500 font-medium uppercase tracking-wider mb-1">Protocol</div>
+          <div id="inspProtocol" class="font-mono text-indigo-600 font-semibold truncate">-</div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div class="text-gray-500 font-medium uppercase tracking-wider mb-1">Host / Domain</div>
+          <div id="inspHost" class="font-mono text-gray-800 font-semibold truncate">-</div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div class="text-gray-500 font-medium uppercase tracking-wider mb-1">Path</div>
+          <div id="inspPath" class="font-mono text-gray-800 truncate">-</div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div class="text-gray-500 font-medium uppercase tracking-wider mb-1">Hash / Fragment</div>
+          <div id="inspHash" class="font-mono text-indigo-600 truncate">-</div>
+        </div>
+      </div>
+
+      <!-- Query Parameters Table -->
+      <div id="queryParamContainer">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Query Parameters (<span id="paramCount">0</span>)</div>
+        <div class="overflow-x-auto rounded-xl border border-gray-200 bg-gray-50/50">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-100 text-gray-600 font-mono border-b border-gray-200">
+              <tr>
+                <th class="py-2.5 px-4 font-semibold w-1/3">Key (Param)</th>
+                <th class="py-2.5 px-4 font-semibold">Decoded Value</th>
+              </tr>
+            </thead>
+            <tbody id="queryParamsBody" class="divide-y divide-gray-200 font-mono text-gray-700">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational & Technical Reference Section -->
+    <section class="mt-12 pt-10 border-t border-gray-200">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Understanding URL & Percent-Encoding</h2>
+          <p class="text-sm text-gray-600 mt-2">Essential developer reference for RFC 3986, query strings, and Unicode serialization.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          
+          <!-- Card: What is Percent-Encoding? -->
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <span class="text-indigo-600 font-mono text-lg">%</span>
+              What is Percent-Encoding?
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3">
+              Standard URLs may only be sent over the Internet using the standard 128 ASCII character-set. Since URLs frequently contain characters outside ASCII (such as Korean, Japanese, Cyrillic, or emojis) as well as reserved structural delimiters like <code class="text-indigo-700 bg-gray-100 px-1 py-0.5 rounded">?</code>, <code class="text-indigo-700 bg-gray-100 px-1 py-0.5 rounded">&</code>, and <code class="text-indigo-700 bg-gray-100 px-1 py-0.5 rounded">#</code>, they must be converted into a valid format using percent-encoding.
+            </p>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              Percent-encoding replaces unsafe ASCII and multi-byte UTF-8 bytes with a <code class="text-indigo-700 bg-gray-100 px-1 py-0.5 rounded">%</code> followed by two hexadecimal digits representing the byte value.
+            </p>
+          </div>
+
+          <!-- Card: encodeURI vs encodeURIComponent -->
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <span class="text-emerald-600 font-mono text-lg">⇄</span>
+              Component vs Full URL Mode
+            </h3>
+            <div class="space-y-3 text-xs sm:text-sm text-gray-700">
+              <div>
+                <strong class="text-gray-900 block font-medium">1. encodeURIComponent (Recommended for Params):</strong>
+                <span class="text-gray-600 text-xs">Escapes all delimiters including <code class="text-indigo-700 bg-gray-100 px-1 rounded">&</code>, <code class="text-indigo-700 bg-gray-100 px-1 rounded">=</code>, <code class="text-indigo-700 bg-gray-100 px-1 rounded">/</code>, and <code class="text-indigo-700 bg-gray-100 px-1 rounded">?</code>. Essential for query parameter values so they don't break the URL syntax.</span>
+              </div>
+              <div>
+                <strong class="text-gray-900 block font-medium">2. encodeURI (For Complete Addresses):</strong>
+                <span class="text-gray-600 text-xs">Preserves protocol and separator tokens (<code class="text-indigo-700 bg-gray-100 px-1 rounded">://</code>, <code class="text-indigo-700 bg-gray-100 px-1 rounded">?</code>, <code class="text-indigo-700 bg-gray-100 px-1 rounded">&</code>, <code class="text-indigo-700 bg-gray-100 px-1 rounded">/</code>) while escaping illegal characters like spaces and Unicode glyphs.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Reference Table -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm">
+          <h3 class="text-base font-bold text-gray-900 mb-4">Common Character Escapes Reference</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-gray-100 text-gray-600 font-mono border-b border-gray-200">
+                <tr>
+                  <th class="py-2.5 px-4 font-semibold">Character</th>
+                  <th class="py-2.5 px-4 font-semibold">Encoded (%Hex)</th>
+                  <th class="py-2.5 px-4 font-semibold">Standard Role / Significance</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 font-mono text-gray-700">
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">Space (&nbsp;)</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%20 or +</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">%20 in RFC 3986 URIs; '+' in form submissions</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">&</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%26</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">Query parameter delimiter</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">=</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%3D</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">Key/value separator</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">?</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%3F</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">Query string prefix indicator</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">/</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%2F</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">Path hierarchical segment separator</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">#</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%23</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">Fragment / anchor identifier</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">한 (Korean)</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%ED%95%9C</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">3-byte UTF-8 sequence for Korean Hangul</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4 text-indigo-600 font-bold">🔥 (Emoji)</td>
+                  <td class="py-2.5 px-4 text-emerald-600">%F0%9F%94%A5</td>
+                  <td class="py-2.5 px-4 font-sans text-gray-600">4-byte UTF-8 sequence for Unicode emoji</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-base font-bold text-gray-900 mb-4">Frequently Asked Questions</h3>
+          <div class="space-y-4 text-xs sm:text-sm">
+            <div>
+              <h4 class="font-semibold text-gray-900">Why do some spaces encode as '+' and others as '%20'?</h4>
+              <p class="text-gray-600 mt-1 leading-relaxed">
+                Standard RFC 3986 specifies <code class="text-indigo-700 bg-gray-100 px-1 rounded">%20</code> for spaces in path and query components. However, HTML form submissions (<code class="text-indigo-700 bg-gray-100 px-1 rounded">application/x-www-form-urlencoded</code>) traditionally replace spaces with <code class="text-indigo-700 bg-gray-100 px-1 rounded">+</code>. UtilinOne supports both modes and automatically decodes <code class="text-indigo-700 bg-gray-100 px-1 rounded">+</code> into spaces.
+              </p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900">Is my sensitive data (tokens, passwords, API keys) safe here?</h4>
+              <p class="text-gray-600 mt-1 leading-relaxed">
+                Yes, 100%. UtilinOne is built with zero server-side components. All calculations and string manipulations take place in your browser's local JavaScript execution context. No network requests are made with your data.
+              </p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900">How does UtilinOne handle malformed URLs or invalid percent-encodings?</h4>
+              <p class="text-gray-600 mt-1 leading-relaxed">
+                If an invalid hexadecimal sequence like <code class="text-rose-600 bg-gray-100 px-1 rounded">%ZZ</code> or an incomplete percent sign at the end of a string is encountered, UtilinOne safely isolates the error, explains the cause, and avoids unhandled browser exceptions.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 bg-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div class="flex items-center space-x-3">
+        <span class="font-bold text-gray-800">UtilinOne</span>
+        <span>•</span>
+        <span>100% Client-Side Web Utilities</span>
+        <span>•</span>
+        <span class="text-emerald-600 font-medium">Zero Server Logging</span>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="hover:text-gray-900 transition">All Tools</a>
+        <a href="base64.html" class="hover:text-gray-900 transition">Base64</a>
+        <a href="srt.html" class="hover:text-gray-900 transition">SRT Cleaner</a>
+        <a href="calculator.html" class="hover:text-gray-900 transition">Fee Calculator</a>
+      </div>
+
+      <div>
+        © 2026 UtilinOne. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    (function() {
+      // Elements
+      const inputText = document.getElementById('inputText');
+      const outputText = document.getElementById('outputText');
+      const encodeBtn = document.getElementById('encodeBtn');
+      const decodeBtn = document.getElementById('decodeBtn');
+      const swapBtn = document.getElementById('swapBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const copyBtnText = document.getElementById('copyBtnText');
+      const copyIcon = document.getElementById('copyIcon');
+      const pasteInputBtn = document.getElementById('pasteInputBtn');
+      const useAsInputBtn = document.getElementById('useAsInputBtn');
+      const liveConvertCheck = document.getElementById('liveConvertCheck');
+      const spaceEncodingSelect = document.getElementById('spaceEncodingSelect');
+      const modeComponentBtn = document.getElementById('modeComponentBtn');
+      const modeFullBtn = document.getElementById('modeFullBtn');
+      const errorBanner = document.getElementById('errorBanner');
+      const errorMessage = document.getElementById('errorMessage');
+      const dismissErrorBtn = document.getElementById('dismissErrorBtn');
+      const inputCharCount = document.getElementById('inputCharCount');
+      const outputCharCount = document.getElementById('outputCharCount');
+      const statusBadge = document.getElementById('statusBadge');
+      const sampleQueryBtn = document.getElementById('sampleQueryBtn');
+      const sampleUnicodeBtn = document.getElementById('sampleUnicodeBtn');
+
+      // Inspector Elements
+      const urlInspectorSection = document.getElementById('urlInspectorSection');
+      const inspProtocol = document.getElementById('inspProtocol');
+      const inspHost = document.getElementById('inspHost');
+      const inspPath = document.getElementById('inspPath');
+      const inspHash = document.getElementById('inspHash');
+      const queryParamContainer = document.getElementById('queryParamContainer');
+      const queryParamsBody = document.getElementById('queryParamsBody');
+      const paramCount = document.getElementById('paramCount');
+
+      // State
+      let currentMode = 'component'; // 'component' or 'full'
+      let lastAction = 'encode'; // 'encode' or 'decode'
+
+      // Mode Switchers
+      function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'component') {
+          modeComponentBtn.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold shadow-sm transition";
+          modeFullBtn.className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+        } else {
+          modeFullBtn.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold shadow-sm transition";
+          modeComponentBtn.className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+        }
+        if (liveConvertCheck.checked && inputText.value.trim()) {
+          processTransformation(lastAction);
+        }
+      }
+
+      modeComponentBtn.addEventListener('click', () => setMode('component'));
+      modeFullBtn.addEventListener('click', () => setMode('full'));
+      spaceEncodingSelect.addEventListener('change', () => {
+        if (liveConvertCheck.checked && inputText.value.trim()) {
+          processTransformation(lastAction);
+        }
+      });
+
+      // Byte & Character Count helper
+      function getByteLength(str) {
+        try {
+          return new TextEncoder().encode(str).length;
+        } catch (e) {
+          return str.length;
+        }
+      }
+
+      function updateStats() {
+        const inStr = inputText.value;
+        const outStr = outputText.value;
+        inputCharCount.textContent = `${inStr.length} chars · ${getByteLength(inStr)} bytes`;
+        outputCharCount.textContent = `${outStr.length} chars · ${getByteLength(outStr)} bytes`;
+      }
+
+      // Hide / Show Error Banner
+      function showError(msg) {
+        errorMessage.textContent = msg;
+        errorBanner.classList.remove('hidden');
+        statusBadge.textContent = 'Error';
+        statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-100 text-rose-800 border border-rose-200';
+      }
+
+      function clearError() {
+        errorBanner.classList.add('hidden');
+        statusBadge.textContent = 'Ready';
+        statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700';
+      }
+
+      dismissErrorBtn.addEventListener('click', clearError);
+
+      // Core Encoding & Decoding Functions
+      function performEncode(text) {
+        clearError();
+        if (!text) return '';
+        let encoded = '';
+        if (currentMode === 'component') {
+          encoded = encodeURIComponent(text);
+        } else {
+          encoded = encodeURI(text);
+        }
+
+        if (spaceEncodingSelect.value === 'plus') {
+          // Replace standard %20 with '+'
+          encoded = encoded.replace(/%20/g, '+');
+        }
+        return encoded;
+      }
+
+      function performDecode(text) {
+        clearError();
+        if (!text) return '';
+        
+        // In query strings or form urlencoded, '+' represents space
+        let sanitized = text;
+        if (spaceEncodingSelect.value === 'plus' || /\+/.test(text)) {
+          sanitized = text.replace(/\+/g, ' ');
+        }
+
+        try {
+          if (currentMode === 'component') {
+            return decodeURIComponent(sanitized);
+          } else {
+            return decodeURI(sanitized);
+          }
+        } catch (err) {
+          // Identify malformed % sequences
+          const malformedMatch = sanitized.match(/%([^0-9A-Fa-f]{1,2}|.[^0-9A-Fa-f]|$)/);
+          let reason = err.message || 'URI malformed';
+          if (malformedMatch) {
+            reason = `Invalid percent sequence near "${malformedMatch[0]}" - expected 2 hexadecimal digits after '%'`;
+          } else {
+            reason = 'Malformed byte sequence in percent-encoded string. Verify valid UTF-8 sequences.';
+          }
+          showError(reason);
+          return '';
+        }
+      }
+
+      // Execute Action
+      function processTransformation(action) {
+        lastAction = action;
+        const val = inputText.value;
+        if (!val) {
+          outputText.value = '';
+          clearError();
+          updateStats();
+          inspectUrl('');
+          return;
+        }
+
+        let res = '';
+        if (action === 'encode') {
+          res = performEncode(val);
+          if (res) {
+            statusBadge.textContent = `Encoded (${currentMode})`;
+            statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200';
+          }
+        } else {
+          res = performDecode(val);
+          if (res) {
+            statusBadge.textContent = `Decoded (${currentMode})`;
+            statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+          }
+        }
+
+        outputText.value = res;
+        updateStats();
+
+        // Check if either input or output can be inspected as a URL
+        const checkStr = (action === 'encode' ? val : res) || val;
+        inspectUrl(checkStr);
+      }
+
+      // URL Breakdown Inspector
+      function inspectUrl(str) {
+        if (!str || !str.trim()) {
+          urlInspectorSection.classList.add('hidden');
+          return;
+        }
+
+        const candidate = str.trim();
+        let parsed = null;
+
+        // Try parsing directly or with http prefix if starting with domain
+        try {
+          parsed = new URL(candidate);
+        } catch (e) {
+          if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/.test(candidate)) {
+            try {
+              parsed = new URL('https://' + candidate);
+            } catch (ignore) {}
+          }
+        }
+
+        if (parsed && (parsed.protocol === 'http:' || parsed.protocol === 'https:' || parsed.protocol === 'ftp:')) {
+          urlInspectorSection.classList.remove('hidden');
+          inspProtocol.textContent = parsed.protocol;
+          inspHost.textContent = parsed.host;
+          inspPath.textContent = parsed.pathname || '/';
+          inspHash.textContent = parsed.hash || '(none)';
+
+          const params = Array.from(parsed.searchParams.entries());
+          paramCount.textContent = params.length;
+
+          if (params.length === 0) {
+            queryParamsBody.innerHTML = `
+              <tr>
+                <td colspan="2" class="py-3 px-4 text-center text-gray-400 italic">No query parameters found in URL</td>
+              </tr>
+            `;
+          } else {
+            queryParamsBody.innerHTML = params.map(([key, val]) => `
+              <tr class="hover:bg-gray-100/60">
+                <td class="py-2.5 px-4 text-indigo-600 font-semibold break-all">${escapeHtml(key)}</td>
+                <td class="py-2.5 px-4 text-gray-800 break-all">${escapeHtml(val)}</td>
+              </tr>
+            `).join('');
+          }
+        } else {
+          urlInspectorSection.classList.add('hidden');
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // Event Listeners
+      encodeBtn.addEventListener('click', () => processTransformation('encode'));
+      decodeBtn.addEventListener('click', () => processTransformation('decode'));
+
+      inputText.addEventListener('input', () => {
+        updateStats();
+        if (liveConvertCheck.checked) {
+          // Automatically guess if input is already percent encoded
+          if (/%[0-9A-Fa-f]{2}/.test(inputText.value)) {
+            processTransformation('decode');
+          } else {
+            processTransformation('encode');
+          }
+        }
+      });
+
+      // Clear
+      clearBtn.addEventListener('click', () => {
+        inputText.value = '';
+        outputText.value = '';
+        clearError();
+        updateStats();
+        inspectUrl('');
+        inputText.focus();
+      });
+
+      // Swap
+      swapBtn.addEventListener('click', () => {
+        const temp = inputText.value;
+        inputText.value = outputText.value;
+        outputText.value = temp;
+        // Flip lastAction
+        const newAction = lastAction === 'encode' ? 'decode' : 'encode';
+        processTransformation(newAction);
+      });
+
+      // Use As Input
+      useAsInputBtn.addEventListener('click', () => {
+        if (!outputText.value) return;
+        inputText.value = outputText.value;
+        outputText.value = '';
+        updateStats();
+        inputText.focus();
+      });
+
+      // Paste
+      pasteInputBtn.addEventListener('click', async () => {
+        try {
+          const clipText = await navigator.clipboard.readText();
+          if (clipText) {
+            inputText.value = clipText;
+            updateStats();
+            if (/%[0-9A-Fa-f]{2}/.test(clipText)) {
+              processTransformation('decode');
+            } else {
+              processTransformation('encode');
+            }
+          }
+        } catch (e) {
+          inputText.focus();
+        }
+      });
+
+      // Copy with Visual Feedback
+      copyBtn.addEventListener('click', async () => {
+        const text = outputText.value;
+        if (!text) return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (err) {
+          // Fallback
+          outputText.select();
+          document.execCommand('copy');
+        }
+
+        // Feedback state
+        const origText = copyBtnText.textContent;
+        copyBtnText.textContent = 'Copied!';
+        copyBtn.className = "text-xs text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95";
+        copyIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+
+        setTimeout(() => {
+          copyBtnText.textContent = origText;
+          copyBtn.className = "text-xs text-white bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95";
+          copyIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />`;
+        }, 2000);
+      });
+
+      // Sample Data Loaders
+      sampleQueryBtn.addEventListener('click', () => {
+        inputText.value = 'user=Jane Doe&role=Senior Admin&filter=tags=frontend,react&active=true';
+        setMode('component');
+        processTransformation('encode');
+      });
+
+      sampleUnicodeBtn.addEventListener('click', () => {
+        inputText.value = 'https://search.example.com/api?q=개발자 추천&category=인공지능&city=서울&tags=🔥,🚀#결과-섹션';
+        setMode('full');
+        processTransformation('encode');
+      });
+
+      // Initial stats
+      updateStats();
+    })();
+  </script>
+</body>
+</html>

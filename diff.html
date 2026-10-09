@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Diff Checker | UtilinOne Developer Suite</title>
+  <meta name="description" content="Professional client-side text and code diff comparison tool. Compare files side-by-side or unified with character-level accuracy. 100% private and secure.">
+  <meta property="og:title" content="Text Diff Checker - UtilinOne">
+  <meta property="og:description" content="Commercial-grade text, code, and JSON diff tool with split and unified views, instant statistics, and zero server latency.">
+  <meta property="og:type" content="website">
+
+  <!-- Tailwind CSS v4 via Browser CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Custom font styling and scrollbars */
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color-scheme: light;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(203, 213, 225, 1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 1);
+    }
+
+    /* Diff highlighting styles */
+    .diff-del {
+      background-color: rgba(225, 29, 72, 0.16);
+      color: #9f1239;
+    }
+    .diff-del-gutter {
+      background-color: rgba(225, 29, 72, 0.28);
+      color: #9f1239;
+      border-right: 2px solid #f43f5e;
+    }
+    .diff-del-char {
+      background-color: rgba(244, 63, 94, 0.45);
+      border-radius: 2px;
+      padding: 0 1px;
+      text-decoration: line-through;
+      font-weight: 600;
+    }
+
+    .diff-add {
+      background-color: rgba(16, 185, 129, 0.16);
+      color: #065f46;
+    }
+    .diff-add-gutter {
+      background-color: rgba(16, 185, 129, 0.28);
+      color: #047857;
+      border-right: 2px solid #10b981;
+    }
+    .diff-add-char {
+      background-color: rgba(16, 185, 129, 0.45);
+      border-radius: 2px;
+      padding: 0 1px;
+      font-weight: 600;
+    }
+
+    .diff-empty {
+      background-color: rgba(241, 245, 249, 0.65);
+      color: transparent;
+      user-select: none;
+    }
+    .diff-empty-gutter {
+      background-color: rgba(226, 232, 240, 0.8);
+      color: transparent;
+    }
+
+    .diff-equal {
+      background-color: transparent;
+      color: #475569;
+    }
+    .diff-equal-gutter {
+      background-color: rgba(226, 232, 240, 0.7);
+      color: #475569;
+    }
+
+    /* Drag over active state */
+    .drag-over {
+      border-color: #6366f1 !important;
+      background-color: rgba(99, 102, 241, 0.12) !important;
+    }
+
+    /* Line-numbers synced textarea gutter */
+    .textarea-gutter {
+      user-select: none;
+      scrollbar-width: none;
+    }
+    .textarea-gutter::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+
+  <!-- Ambient Decorative Background Glows -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/4 -right-40 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-gray-200 bg-white/90 backdrop-blur-xl sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Suite Identity -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-lg p-1">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+            <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400">
+              Utilin<span class="text-indigo-400">One</span>
+            </span>
+            <span class="text-[10px] uppercase tracking-wider font-semibold text-gray-500 -mt-1">Developer Suite</span>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center text-xs text-gray-500 space-x-2 pl-3 border-l border-gray-200">
+          <span>Tools</span>
+          <span>/</span>
+          <span class="text-indigo-400 font-medium">Text Diff Checker</span>
+        </div>
+      </div>
+
+      <!-- Center / Badge & Privacy -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 shadow-sm" title="Zero cloud storage. All computing is done locally inside browser memory.">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">100% Client-Side &amp; Private</span>
+          <span class="sm:hidden">100% Client-Side</span>
+        </div>
+
+        <div class="hidden lg:flex items-center text-xs text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-200">
+          <kbd class="font-mono text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded mr-1.5 border border-gray-300">Ctrl + Enter</kbd>
+          <span>Compare</span>
+        </div>
+
+        <a href="index.html" class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">All Suite Tools</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Hero / Title Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Text Diff Checker</h1>
+          <span class="px-2 py-0.5 text-[11px] font-bold tracking-wide uppercase rounded-md bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Pro Engine</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1 max-w-2xl">
+          Instantly inspect, align, and analyze differences between code, configuration, or plain text with character-level accuracy.
+        </p>
+      </div>
+
+      <!-- Quick Preset Actions -->
+      <div class="flex items-center flex-wrap gap-2">
+        <!-- Sample Presets Dropdown -->
+        <div class="relative inline-block text-left" id="sampleDropdownContainer">
+          <button id="sampleDropdownBtn" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300 hover:border-gray-300 transition shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Load Sample</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500"></i>
+          </button>
+          <div id="sampleDropdownMenu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-gray-100 border border-gray-200 shadow-2xl py-1.5 z-40">
+            <button onclick="loadSamplePreset('code')" class="w-full text-left px-3.5 py-2 text-xs text-gray-700 hover:bg-indigo-600/20 hover:text-gray-900 flex items-center gap-2.5 transition">
+              <i data-lucide="code" class="w-4 h-4 text-indigo-400"></i>
+              <div>
+                <div class="font-medium">JavaScript / TypeScript</div>
+                <div class="text-[10px] text-gray-500">Function refactoring diff</div>
+              </div>
+            </button>
+            <button onclick="loadSamplePreset('json')" class="w-full text-left px-3.5 py-2 text-xs text-gray-700 hover:bg-indigo-600/20 hover:text-gray-900 flex items-center gap-2.5 transition">
+              <i data-lucide="braces" class="w-4 h-4 text-emerald-400"></i>
+              <div>
+                <div class="font-medium">JSON Config / Payload</div>
+                <div class="text-[10px] text-gray-500">API payload schema changes</div>
+              </div>
+            </button>
+            <button onclick="loadSamplePreset('prose')" class="w-full text-left px-3.5 py-2 text-xs text-gray-700 hover:bg-indigo-600/20 hover:text-gray-900 flex items-center gap-2.5 transition">
+              <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i>
+              <div>
+                <div class="font-medium">Markdown / Prose</div>
+                <div class="text-[10px] text-gray-500">Draft contract &amp; article revisions</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Swap button -->
+        <button id="swapBtn" title="Swap Original and Modified texts" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300 hover:border-gray-300 transition shadow-sm">
+          <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span>Swap</span>
+        </button>
+
+        <!-- Clear button -->
+        <button id="clearAllBtn" title="Clear both input panes" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-rose-950/40 text-gray-700 hover:text-rose-300 border border-gray-300 hover:border-rose-800/80 transition shadow-sm">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Clear</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Diff Statistics Bar -->
+    <div id="statsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50 p-3.5 rounded-2xl border border-gray-200 backdrop-blur-md shadow-lg">
+      
+      <!-- Similarity Score -->
+      <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold shrink-0">
+          <i data-lucide="gauge" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Similarity Match</div>
+          <div class="flex items-baseline gap-2">
+            <span id="statSimilarity" class="text-lg font-bold text-white font-mono">100%</span>
+            <span id="statStatusPill" class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">Identical</span>
+          </div>
+          <div class="w-full bg-gray-200 h-1 rounded-full mt-1 overflow-hidden">
+            <div id="similarityProgressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additions -->
+      <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold shrink-0">
+          <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Additions</div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="statAdditions" class="text-lg font-bold text-emerald-400 font-mono">+0</span>
+            <span class="text-[11px] text-gray-500">lines</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deletions -->
+      <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 font-bold shrink-0">
+          <i data-lucide="minus-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Deletions</div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="statDeletions" class="text-lg font-bold text-rose-400 font-mono">-0</span>
+            <span class="text-[11px] text-gray-500">lines</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modifications -->
+      <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">
+          <i data-lucide="edit-3" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Modified Pairs</div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="statModifications" class="text-lg font-bold text-amber-400 font-mono">0</span>
+            <span class="text-[11px] text-gray-500">chunks</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Dual Input Panes Card -->
+    <section class="bg-gray-50 rounded-2xl border border-gray-200 backdrop-blur-md shadow-xl overflow-hidden">
+      <!-- Input Section Header / Toolbar -->
+      <div class="p-3.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-gray-50">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-800">
+            <i data-lucide="file-input" class="w-4 h-4 text-indigo-400"></i>
+            Source Texts
+          </span>
+          <span class="text-xs text-gray-500 hidden sm:inline">(Paste text or drag &amp; drop files)</span>
+        </div>
+
+        <!-- Options Controls -->
+        <div class="flex items-center flex-wrap gap-3 text-xs">
+          <!-- Ignore whitespace checkbox -->
+          <label class="flex items-center gap-1.5 cursor-pointer text-gray-500 hover:text-gray-800 select-none">
+            <input type="checkbox" id="optIgnoreWhitespace" class="w-3.5 h-3.5 rounded bg-gray-200 border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-white">
+            <span>Trim Whitespace</span>
+          </label>
+
+          <!-- Case sensitive checkbox -->
+          <label class="flex items-center gap-1.5 cursor-pointer text-gray-500 hover:text-gray-800 select-none">
+            <input type="checkbox" id="optCaseInsensitive" class="w-3.5 h-3.5 rounded bg-gray-200 border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-white">
+            <span>Ignore Case</span>
+          </label>
+
+          <!-- Real-time auto compare -->
+          <label class="flex items-center gap-1.5 cursor-pointer text-gray-700 font-medium select-none bg-gray-100 px-2 py-1 rounded-lg border border-gray-300">
+            <input type="checkbox" id="optAutoCompare" checked class="w-3.5 h-3.5 rounded bg-gray-200 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+            <span class="text-indigo-300">Live Diff</span>
+          </label>
+
+          <!-- Manual Compare trigger -->
+          <button id="compareBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition transform active:scale-95">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+            <span>Compare Now</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+        
+        <!-- Left Pane: Original -->
+        <div id="dropZoneOriginal" class="p-3.5 flex flex-col space-y-2.5 transition-colors relative">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span class="text-xs font-bold text-gray-800">Original Text</span>
+              <span id="origStatsBadge" class="text-[11px] text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded-md">0 lines • 0 chars</span>
+            </div>
+
+            <!-- Left Actions -->
+            <div class="flex items-center gap-1.5">
+              <input type="file" id="fileUploadOrig" class="hidden" accept=".txt,.js,.ts,.jsx,.tsx,.json,.md,.html,.css,.xml,.yml,.yaml,.py,.sh,.sql">
+              <button onclick="document.getElementById('fileUploadOrig').click()" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-gray-200 hover:bg-gray-300 text-gray-700 transition" title="Upload local file (.txt, .js, .json, .md, etc.)">
+                <i data-lucide="upload" class="w-3 h-3"></i>
+                <span>File</span>
+              </button>
+              <button id="pasteOrigBtn" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-gray-200 hover:bg-gray-300 text-gray-700 transition" title="Paste from clipboard">
+                <i data-lucide="clipboard" class="w-3 h-3"></i>
+                <span>Paste</span>
+              </button>
+              <button id="clearOrigBtn" class="p-1 rounded-md text-gray-500 hover:text-rose-400 hover:bg-gray-200 transition" title="Clear original text">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Editor box with line numbers gutter -->
+          <div class="relative flex rounded-xl bg-white border border-gray-200 focus-within:border-indigo-500/80 transition overflow-hidden">
+            <div id="origGutter" class="textarea-gutter w-10 py-2 text-right pr-2 text-xs font-mono-code text-gray-500 bg-gray-50 select-none overflow-hidden shrink-0 border-r border-gray-200">
+              1
+            </div>
+            <textarea id="origInput" spellcheck="false" placeholder="Paste or type original text here..." class="w-full h-56 p-2 text-xs font-mono-code text-gray-800 bg-transparent resize-y outline-none leading-relaxed whitespace-pre font-normal"></textarea>
+          </div>
+          <div class="text-[10px] text-gray-500 flex justify-between">
+            <span>Drop file here to upload</span>
+            <span class="text-rose-400/80 font-medium">Deletions source (-)</span>
+          </div>
+        </div>
+
+        <!-- Right Pane: Modified -->
+        <div id="dropZoneModified" class="p-3.5 flex flex-col space-y-2.5 transition-colors relative">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span class="text-xs font-bold text-gray-800">Modified Text</span>
+              <span id="modStatsBadge" class="text-[11px] text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded-md">0 lines • 0 chars</span>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-1.5">
+              <input type="file" id="fileUploadMod" class="hidden" accept=".txt,.js,.ts,.jsx,.tsx,.json,.md,.html,.css,.xml,.yml,.yaml,.py,.sh,.sql">
+              <button onclick="document.getElementById('fileUploadMod').click()" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-gray-200 hover:bg-gray-300 text-gray-700 transition" title="Upload local file (.txt, .js, .json, .md, etc.)">
+                <i data-lucide="upload" class="w-3 h-3"></i>
+                <span>File</span>
+              </button>
+              <button id="pasteModBtn" class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-gray-200 hover:bg-gray-300 text-gray-700 transition" title="Paste from clipboard">
+                <i data-lucide="clipboard" class="w-3 h-3"></i>
+                <span>Paste</span>
+              </button>
+              <button id="clearModBtn" class="p-1 rounded-md text-gray-500 hover:text-rose-400 hover:bg-gray-200 transition" title="Clear modified text">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Editor box with line numbers gutter -->
+          <div class="relative flex rounded-xl bg-white border border-gray-200 focus-within:border-indigo-500/80 transition overflow-hidden">
+            <div id="modGutter" class="textarea-gutter w-10 py-2 text-right pr-2 text-xs font-mono-code text-gray-500 bg-gray-50 select-none overflow-hidden shrink-0 border-r border-gray-200">
+              1
+            </div>
+            <textarea id="modInput" spellcheck="false" placeholder="Paste or type revised/modified text here..." class="w-full h-56 p-2 text-xs font-mono-code text-gray-800 bg-transparent resize-y outline-none leading-relaxed whitespace-pre font-normal"></textarea>
+          </div>
+          <div class="text-[10px] text-gray-500 flex justify-between">
+            <span>Drop file here to upload</span>
+            <span class="text-emerald-400/80 font-medium">Additions source (+)</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Comparison View Toolbar & Results Container -->
+    <section class="bg-white rounded-2xl border border-gray-200 backdrop-blur-md shadow-2xl overflow-hidden">
+      
+      <!-- View Controls Header -->
+      <div class="p-3.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-white/90">
+        
+        <!-- Left: View Mode Toggle -->
+        <div class="flex items-center gap-2">
+          <div class="inline-flex rounded-xl p-1 bg-gray-100 border border-gray-200 text-xs">
+            <button id="viewModeSplit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition bg-indigo-600 text-white shadow-sm">
+              <i data-lucide="columns-2" class="w-3.5 h-3.5"></i>
+              <span>Side-by-Side</span>
+            </button>
+            <button id="viewModeUnified" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition text-gray-500 hover:text-gray-900">
+              <i data-lucide="align-justify" class="w-3.5 h-3.5"></i>
+              <span>Inline (Unified)</span>
+            </button>
+          </div>
+
+          <!-- Sync Scrolling Toggle for Split View -->
+          <button id="syncScrollBtn" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-indigo-300 border border-gray-300" title="Synchronize scrolling between left and right diff columns">
+            <i data-lucide="link" class="w-3 h-3 text-indigo-400"></i>
+            <span>Sync Scroll: ON</span>
+          </button>
+        </div>
+
+        <!-- Right: Export & Copy Actions -->
+        <div class="flex items-center flex-wrap gap-2 text-xs">
+          <!-- Filter: Word Diff toggle -->
+          <label class="hidden md:flex items-center gap-1.5 text-gray-500 hover:text-gray-800 cursor-pointer select-none">
+            <input type="checkbox" id="optWordDiff" checked class="w-3.5 h-3.5 rounded bg-gray-200 border-gray-300 text-indigo-600">
+            <span>Word Highlights</span>
+          </label>
+
+          <!-- Copy Diff Report -->
+          <button id="copyReportBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300 transition active:scale-95 shadow-sm">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span>Copy Diff Report</span>
+          </button>
+
+          <!-- Download Patch -->
+          <button id="downloadPatchBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300 transition active:scale-95 shadow-sm">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Export Patch (.diff)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Diff Output Viewer Area -->
+      <div id="diffOutputContainer" class="relative min-h-[360px] bg-white font-mono-code text-xs overflow-hidden">
+        
+        <!-- Empty State Prompt -->
+        <div id="emptyDiffState" class="hidden flex-col items-center justify-center p-16 text-center text-gray-500 space-y-3">
+          <div class="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 shadow-inner">
+            <i data-lucide="file-diff" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-gray-800">No Diff to Display</h3>
+            <p class="text-xs text-gray-500 mt-1 max-w-sm">Enter text into both panes above or click "Load Sample" to generate comparison output.</p>
+          </div>
+          <button onclick="loadSamplePreset('code')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 transition">
+            Load Sample Code
+          </button>
+        </div>
+
+        <!-- Split View Render Container -->
+        <div id="splitViewContainer" class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 overflow-x-auto">
+          
+          <!-- Left Split Side (Original) -->
+          <div id="splitColLeft" class="overflow-y-auto max-h-[550px] scroll-smooth">
+            <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-3 py-1.5 border-b border-gray-200 text-[11px] font-semibold text-rose-300 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="minus" class="w-3 h-3 text-rose-400"></i>
+                Original Version
+              </span>
+              <span id="splitLeftLineCount" class="text-gray-500 font-normal">0 lines</span>
+            </div>
+            <table class="w-full border-collapse select-text">
+              <tbody id="splitLeftTableBody">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Right Split Side (Modified) -->
+          <div id="splitColRight" class="overflow-y-auto max-h-[550px] scroll-smooth">
+            <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-3 py-1.5 border-b border-gray-200 text-[11px] font-semibold text-emerald-300 flex items-center justify-between">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
+                Modified Version
+              </span>
+              <span id="splitRightLineCount" class="text-gray-500 font-normal">0 lines</span>
+            </div>
+            <table class="w-full border-collapse select-text">
+              <tbody id="splitRightTableBody">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Unified View Render Container (Hidden by default) -->
+        <div id="unifiedViewContainer" class="hidden overflow-x-auto overflow-y-auto max-h-[550px]">
+          <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-3 py-1.5 border-b border-gray-200 text-[11px] font-semibold text-gray-700 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <i data-lucide="git-commit" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Unified Diff Stream (Git Style)
+            </span>
+            <span id="unifiedLineCount" class="text-gray-500 font-normal">0 lines</span>
+          </div>
+          <table class="w-full border-collapse select-text">
+            <tbody id="unifiedTableBody">
+              <!-- Unified rows injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Diff View Footer Legend -->
+      <div class="p-3 border-t border-gray-200 bg-white/95 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="font-medium text-gray-700">Legend:</span>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-rose-500/20 border border-rose-500/40 inline-block"></span>
+            <span>Removed line</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-emerald-500/20 border border-emerald-500/40 inline-block"></span>
+            <span>Added line</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-rose-500/60 inline-block"></span>
+            <span class="w-3 h-3 rounded bg-emerald-500/60 inline-block -ml-1"></span>
+            <span>Word-level change</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-gray-200 inline-block"></span>
+            <span>Unchanged</span>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-gray-500 flex items-center gap-1">
+          <i data-lucide="cpu" class="w-3 h-3 text-indigo-400"></i>
+          <span>LCS Multi-stage Diff Engine</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Professional Guide & Knowledge Base -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+      
+      <!-- Guide Card: How to read text diffs -->
+      <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
+        <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+        </div>
+        <h3 class="text-sm font-bold text-gray-900">How to Read Text Diffs</h3>
+        <ul class="text-xs text-gray-500 space-y-2 leading-relaxed">
+          <li class="flex items-start gap-2">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span><strong class="text-gray-800">Side-by-Side:</strong> Best for wide monitors when auditing structural code changes or multi-line rewrites.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span><strong class="text-gray-800">Unified View:</strong> Mimics standard Git commit patches (`diff -u`), stacking deletions above additions.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span><strong class="text-gray-800">Word Highlights:</strong> Bright colored segments identify the specific tokens or words modified inside the line.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- FAQ Accordion Card -->
+      <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
+        <div class="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </div>
+        <h3 class="text-sm font-bold text-gray-900">Frequently Asked Questions</h3>
+        <div class="space-y-2 text-xs">
+          <details class="group bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+            <summary class="font-semibold text-gray-700 list-none flex items-center justify-between">
+              <span>Is my source code sent to a server?</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="text-gray-500 mt-2 leading-relaxed">
+              Never. Text Diff Checker runs 100% in your browser's V8 engine. No network packets are transmitted, making it safe for proprietary code, API tokens, and confidential contracts.
+            </p>
+          </details>
+          <details class="group bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+            <summary class="font-semibold text-gray-700 list-none flex items-center justify-between">
+              <span>What file types are supported?</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="text-gray-500 mt-2 leading-relaxed">
+              Any plain text file format: JavaScript (.js, .ts), JSON, Markdown, HTML, CSS, YAML, Python, SQL, plain logs (.log), and config files (.env, .ini).
+            </p>
+          </details>
+          <details class="group bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+            <summary class="font-semibold text-gray-700 list-none flex items-center justify-between">
+              <span>How is similarity calculated?</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="text-gray-500 mt-2 leading-relaxed">
+              We compute the Longest Common Subsequence (LCS) ratio between the character and token sets of both texts: <code class="text-indigo-300">(2 * LCS) / (Len1 + Len2) * 100%</code>.
+            </p>
+          </details>
+        </div>
+      </div>
+
+      <!-- Enterprise Privacy Guarantee -->
+      <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+        </div>
+        <h3 class="text-sm font-bold text-gray-900">Zero-Trust Privacy Guarantee</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">
+          Many online diff checkers transmit your snippets to third-party tracking analytics and cloud servers. UtilinOne guarantees:
+        </p>
+        <div class="space-y-1.5 text-xs text-gray-700">
+          <div class="flex items-center gap-2">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>No telemetry or session logging</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Fully functional offline</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="hard-drive" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Volatile browser memory only</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Related Tools in UtilinOne Developer Suite -->
+    <section class="pt-4 border-t border-gray-200">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-sm font-bold text-gray-800">Related Developer Utilities</h2>
+          <p class="text-xs text-gray-500">Explore other client-side developer tools in the UtilinOne suite</p>
+        </div>
+        <a href="index.html" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+          <span>View All Tools</span>
+          <i data-lucide="arrow-right" class="w-3 h-3"></i>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        
+        <a href="json.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="braces" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">JSON Formatter</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">Validate &amp; format</span>
+        </a>
+
+        <a href="regex.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">Regex Tester</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">Live regex matching</span>
+        </a>
+
+        <a href="uuid.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="hash" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">UUID Generator</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">v4, v7 batch UUIDs</span>
+        </a>
+
+        <a href="base64.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="binary" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">Base64 Tool</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">Encode &amp; decode</span>
+        </a>
+
+        <a href="jwt.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="key" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">JWT Debugger</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">Inspect tokens</span>
+        </a>
+
+        <a href="hash.html" class="p-3 rounded-xl bg-gray-50 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 transition flex flex-col items-center text-center group">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <i data-lucide="fingerprint" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-semibold text-gray-800">Hash Generator</span>
+          <span class="text-[10px] text-gray-500 mt-0.5">SHA-256, MD5</span>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Minimal Footer -->
+  <footer class="border-t border-gray-200 bg-white/95 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-700">UtilinOne</span>
+        <span>•</span>
+        <span>Professional Client-Side Developer Suite</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span>No cookies</span>
+        <span>•</span>
+        <span>Zero tracking</span>
+        <span>•</span>
+        <span>Local memory execution</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gray-100 border border-indigo-500/50 text-white shadow-2xl text-xs font-medium">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+    <span id="toastMsg">Action completed</span>
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    // --- SAMPLE PRESETS ---
+    const SAMPLE_PRESETS = {
+      code: {
+        orig: `function calculateInvoiceTotal(items, discountRate, taxRate) {
+  let subtotal = 0;
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    subtotal += item.price * item.quantity;
+  }
+
+  // Deprecated flat calculation
+  var discount = subtotal * discountRate;
+  var discountedTotal = subtotal - discount;
+  var tax = discountedTotal * taxRate;
+
+  return {
+    subtotal: subtotal,
+    discount: discount,
+    tax: tax,
+    grandTotal: discountedTotal + tax
+  };
+}`,
+        mod: `/**
+ * Calculate invoice total with customer tier discount and regional tax.
+ */
+export function calculateInvoiceTotal(items, discountRate = 0, taxRate = 0.08) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return { subtotal: 0, discount: 0, tax: 0, grandTotal: 0 };
+  }
+
+  const subtotal = items.reduce((acc, item) => {
+    return acc + (Number(item.price) || 0) * (Number(item.quantity) || 1);
+  }, 0);
+
+  // Modern tiered discount calculation
+  const discount = Math.min(subtotal * discountRate, subtotal);
+  const discountedTotal = Math.max(0, subtotal - discount);
+  const tax = Number((discountedTotal * taxRate).toFixed(2));
+  const grandTotal = Number((discountedTotal + tax).toFixed(2));
+
+  return {
+    subtotal,
+    discount,
+    tax,
+    grandTotal,
+    currency: 'USD'
+  };
+}`
+      },
+      json: {
+        orig: `{
+  "service": "authentication-api",
+  "version": "1.4.0",
+  "port": 8080,
+  "database": {
+    "host": "db.internal.local",
+    "port": 5432,
+    "ssl": false,
+    "poolSize": 10
+  },
+  "features": {
+    "oauthGoogle": true,
+    "oauthGithub": false,
+    "twoFactorAuth": false
+  },
+  "rateLimit": 100
+}`,
+        mod: `{
+  "service": "authentication-api",
+  "version": "2.0.0-rc1",
+  "port": 8443,
+  "database": {
+    "host": "pg-cluster.cloud.internal",
+    "port": 5432,
+    "ssl": true,
+    "poolSize": 25,
+    "idleTimeoutMillis": 30000
+  },
+  "features": {
+    "oauthGoogle": true,
+    "oauthGithub": true,
+    "twoFactorAuth": true,
+    "passkeysWebAuthn": true
+  },
+  "rateLimit": 500
+}`
+      },
+      prose: {
+        orig: `# Master Services Agreement
+Section 4: Confidentiality and Data Protection
+
+Each party agrees that it shall use confidential information of the other party solely for the purposes of performing its obligations under this Agreement. 
+The recipient will protect the disclosing party's confidential info using reasonable care, but no less than standard industry precautions.
+In the event of a security breach, the affected party shall notify the other party within 7 business days of discovering the breach.`,
+        mod: `# Master Services Agreement
+Section 4: Confidentiality, Security and Data Protection
+
+Each party explicitly agrees that it shall maintain strict confidentiality and utilize proprietary information of the other party solely for performing its contractual obligations under this Agreement.
+The receiving party will safeguard the disclosing party's confidential data using the highest degree of care, complying with ISO 27001 and SOC 2 Type II protocols.
+In the event of any confirmed or suspected security incident, the affected party shall notify the other party in writing within 24 hours of discovery.`
+      }
+    };
+
+    // --- DOM REFERENCES ---
+    const origInput = document.getElementById('origInput');
+    const modInput = document.getElementById('modInput');
+    const origGutter = document.getElementById('origGutter');
+    const modGutter = document.getElementById('modGutter');
+    const origStatsBadge = document.getElementById('origStatsBadge');
+    const modStatsBadge = document.getElementById('modStatsBadge');
+    
+    const optIgnoreWhitespace = document.getElementById('optIgnoreWhitespace');
+    const optCaseInsensitive = document.getElementById('optCaseInsensitive');
+    const optAutoCompare = document.getElementById('optAutoCompare');
+    const optWordDiff = document.getElementById('optWordDiff');
+    const compareBtn = document.getElementById('compareBtn');
+    const swapBtn = document.getElementById('swapBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    
+    const statSimilarity = document.getElementById('statSimilarity');
+    const statStatusPill = document.getElementById('statStatusPill');
+    const similarityProgressBar = document.getElementById('similarityProgressBar');
+    const statAdditions = document.getElementById('statAdditions');
+    const statDeletions = document.getElementById('statDeletions');
+    const statModifications = document.getElementById('statModifications');
+
+    const viewModeSplit = document.getElementById('viewModeSplit');
+    const viewModeUnified = document.getElementById('viewModeUnified');
+    const splitViewContainer = document.getElementById('splitViewContainer');
+    const unifiedViewContainer = document.getElementById('unifiedViewContainer');
+    const emptyDiffState = document.getElementById('emptyDiffState');
+
+    const splitColLeft = document.getElementById('splitColLeft');
+    const splitColRight = document.getElementById('splitColRight');
+    const splitLeftTableBody = document.getElementById('splitLeftTableBody');
+    const splitRightTableBody = document.getElementById('splitRightTableBody');
+    const unifiedTableBody = document.getElementById('unifiedTableBody');
+    
+    const splitLeftLineCount = document.getElementById('splitLeftLineCount');
+    const splitRightLineCount = document.getElementById('splitRightLineCount');
+    const unifiedLineCount = document.getElementById('unifiedLineCount');
+
+    const syncScrollBtn = document.getElementById('syncScrollBtn');
+    const copyReportBtn = document.getElementById('copyReportBtn');
+    const downloadPatchBtn = document.getElementById('downloadPatchBtn');
+
+    const dropZoneOriginal = document.getElementById('dropZoneOriginal');
+    const dropZoneModified = document.getElementById('dropZoneModified');
+    const fileUploadOrig = document.getElementById('fileUploadOrig');
+    const fileUploadMod = document.getElementById('fileUploadMod');
+
+    let currentViewMode = 'split'; // 'split' | 'unified'
+    let isSyncScrollEnabled = true;
+    let isSyncingLeft = false;
+    let isSyncingRight = false;
+    let lastDiffResult = null;
+
+    // --- TOAST NOTIFICATIONS ---
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2600);
+    }
+
+    // --- SAMPLE DROPDOWN HANDLER ---
+    const sampleDropdownBtn = document.getElementById('sampleDropdownBtn');
+    const sampleDropdownMenu = document.getElementById('sampleDropdownMenu');
+    sampleDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sampleDropdownMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => {
+      sampleDropdownMenu.classList.add('hidden');
+    });
+
+    window.loadSamplePreset = function(presetKey) {
+      const preset = SAMPLE_PRESETS[presetKey];
+      if (!preset) return;
+      origInput.value = preset.orig;
+      modInput.value = preset.mod;
+      sampleDropdownMenu.classList.add('hidden');
+      updateGutter(origInput, origGutter);
+      updateGutter(modInput, modGutter);
+      updateStatsBadges();
+      runDiff();
+      showToast(`Loaded ${presetKey.toUpperCase()} preset`);
+    };
+
+    // --- GUTTER & STATS BADGES ---
+    function updateGutter(textarea, gutter) {
+      const lines = textarea.value.split('\n').length;
+      let numbersHtml = '';
+      for (let i = 1; i <= lines; i++) {
+        numbersHtml += `<div>${i}</div>`;
+      }
+      gutter.innerHTML = numbersHtml;
+      gutter.scrollTop = textarea.scrollTop;
+    }
+
+    function updateStatsBadges() {
+      const origLines = origInput.value ? origInput.value.split('\n').length : 0;
+      const origChars = origInput.value.length;
+      origStatsBadge.textContent = `${origLines} lines • ${origChars.toLocaleString()} chars`;
+
+      const modLines = modInput.value ? modInput.value.split('\n').length : 0;
+      const modChars = modInput.value.length;
+      modStatsBadge.textContent = `${modLines} lines • ${modChars.toLocaleString()} chars`;
+    }
+
+    // Synchronize gutter scroll with textarea scroll
+    origInput.addEventListener('scroll', () => {
+      origGutter.scrollTop = origInput.scrollTop;
+    });
+    modInput.addEventListener('scroll', () => {
+      modGutter.scrollTop = modInput.scrollTop;
+    });
+
+    // --- DRAG & DROP AND FILE UPLOADS ---
+    function setupDragAndDrop(dropZone, targetTextarea, gutter) {
+      ['dragenter', 'dragover'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(name => {
+        dropZone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('drag-over');
+        });
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+          readFileIntoTextarea(files[0], targetTextarea, gutter);
+        }
+      });
+    }
+
+    function readFileIntoTextarea(file, textarea, gutter) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        textarea.value = event.target.result;
+        updateGutter(textarea, gutter);
+        updateStatsBadges();
+        if (optAutoCompare.checked) runDiff();
+        showToast(`Loaded "${file.name}" (${(file.size / 1024).toFixed(1)} KB)`);
+      };
+      reader.readAsText(file);
+    }
+
+    setupDragAndDrop(dropZoneOriginal, origInput, origGutter);
+    setupDragAndDrop(dropZoneModified, modInput, modGutter);
+
+    fileUploadOrig.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        readFileIntoTextarea(e.target.files[0], origInput, origGutter);
+        e.target.value = '';
+      }
+    });
+
+    fileUploadMod.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        readFileIntoTextarea(e.target.files[0], modInput, modGutter);
+        e.target.value = '';
+      }
+    });
+
+    // Paste buttons
+    document.getElementById('pasteOrigBtn').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        origInput.value = text;
+        updateGutter(origInput, origGutter);
+        updateStatsBadges();
+        if (optAutoCompare.checked) runDiff();
+        showToast('Pasted into Original');
+      } catch (err) {
+        showToast('Clipboard access denied. Press Ctrl+V.');
+      }
+    });
+
+    document.getElementById('pasteModBtn').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        modInput.value = text;
+        updateGutter(modInput, modGutter);
+        updateStatsBadges();
+        if (optAutoCompare.checked) runDiff();
+        showToast('Pasted into Modified');
+      } catch (err) {
+        showToast('Clipboard access denied. Press Ctrl+V.');
+      }
+    });
+
+    document.getElementById('clearOrigBtn').addEventListener('click', () => {
+      origInput.value = '';
+      updateGutter(origInput, origGutter);
+      updateStatsBadges();
+      if (optAutoCompare.checked) runDiff();
+    });
+
+    document.getElementById('clearModBtn').addEventListener('click', () => {
+      modInput.value = '';
+      updateGutter(modInput, modGutter);
+      updateStatsBadges();
+      if (optAutoCompare.checked) runDiff();
+    });
+
+    // Swap Inputs
+    swapBtn.addEventListener('click', () => {
+      const temp = origInput.value;
+      origInput.value = modInput.value;
+      modInput.value = temp;
+      updateGutter(origInput, origGutter);
+      updateGutter(modInput, modGutter);
+      updateStatsBadges();
+      runDiff();
+      showToast('Swapped Left and Right inputs');
+    });
+
+    // Clear All
+    clearAllBtn.addEventListener('click', () => {
+      origInput.value = '';
+      modInput.value = '';
+      updateGutter(origInput, origGutter);
+      updateGutter(modInput, modGutter);
+      updateStatsBadges();
+      runDiff();
+      showToast('Cleared all inputs');
+    });
+
+    // Input change listeners with debounce
+    let autoCompareDebounce = null;
+    function handleInputChange(textarea, gutter) {
+      updateGutter(textarea, gutter);
+      updateStatsBadges();
+      if (optAutoCompare.checked) {
+        if (autoCompareDebounce) clearTimeout(autoCompareDebounce);
+        autoCompareDebounce = setTimeout(runDiff, 220);
+      }
+    }
+
+    origInput.addEventListener('input', () => handleInputChange(origInput, origGutter));
+    modInput.addEventListener('input', () => handleInputChange(modInput, modGutter));
+
+    optIgnoreWhitespace.addEventListener('change', runDiff);
+    optCaseInsensitive.addEventListener('change', runDiff);
+    optWordDiff.addEventListener('change', runDiff);
+    compareBtn.addEventListener('click', runDiff);
+
+    // Keyboard shortcut Ctrl+Enter
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runDiff();
+        showToast('Diff recalculated');
+      }
+    });
+
+    // --- HIGH-PERFORMANCE DIFF ENGINE (LCS & Myers-based Algorithm) ---
+
+    function tokenizeWords(str) {
+      // Split into words, whitespace, and punctuation tokens while retaining all characters
+      return str.match(/[\w]+|[^\w\s]+|\s+/g) || [str];
+    }
+
+    function computeLCS(arr1, arr2, compareFn) {
+      const n = arr1.length;
+      const m = arr2.length;
+      // Memory efficient LCS matrix
+      const dp = Array(n + 1).fill(0).map(() => Array(m + 1).fill(0));
+
+      for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= m; j++) {
+          if (compareFn(arr1[i - 1], arr2[j - 1])) {
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+          } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          }
+        }
+      }
+
+      // Backtrack to find LCS sequence
+      const diff = [];
+      let i = n, j = m;
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && compareFn(arr1[i - 1], arr2[j - 1])) {
+          diff.unshift({ type: 'equal', oldVal: arr1[i - 1], newVal: arr2[j - 1], oldIndex: i - 1, newIndex: j - 1 });
+          i--;
+          j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+          diff.unshift({ type: 'add', newVal: arr2[j - 1], newIndex: j - 1 });
+          j--;
+        } else if (i > 0 && (j === 0 || dp[i][j - 1] < dp[i - 1][j])) {
+          diff.unshift({ type: 'del', oldVal: arr1[i - 1], oldIndex: i - 1 });
+          i--;
+        }
+      }
+      return diff;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Word-level LCS for paired changes
+    function computeWordLevelDiff(oldLine, newLine) {
+      const words1 = tokenizeWords(oldLine);
+      const words2 = tokenizeWords(newLine);
+
+      const wordLCS = computeLCS(words1, words2, (a, b) => a === b);
+
+      let oldHtml = '';
+      let newHtml = '';
+
+      for (const item of wordLCS) {
+        if (item.type === 'equal') {
+          const esc = escapeHtml(item.oldVal);
+          oldHtml += esc;
+          newHtml += esc;
+        } else if (item.type === 'del') {
+          oldHtml += `<span class="diff-del-char">${escapeHtml(item.oldVal)}</span>`;
+        } else if (item.type === 'add') {
+          newHtml += `<span class="diff-add-char">${escapeHtml(item.newVal)}</span>`;
+        }
+      }
+
+      return { oldHtml, newHtml };
+    }
+
+    // Calculate Text Similarity Percentage via Char-level Levenshtein/LCS metric
+    function calculateSimilarity(text1, text2) {
+      if (text1 === text2) return 100;
+      if (!text1.length && !text2.length) return 100;
+      if (!text1.length || !text2.length) return 0;
+
+      // Sample-based fast similarity for huge strings or token LCS
+      const maxLen = Math.max(text1.length, text2.length);
+      if (maxLen > 15000) {
+        // Line-based approximation for massive files
+        const l1 = text1.split('\n');
+        const l2 = text2.split('\n');
+        const set1 = new Set(l1);
+        let intersection = 0;
+        for (const line of l2) {
+          if (set1.has(line)) intersection++;
+        }
+        return Math.round((2.0 * intersection) / (l1.length + l2.length) * 1000) / 10;
+      }
+
+      // Fast character LCS
+      const n = Math.min(text1.length, 3000);
+      const m = Math.min(text2.length, 3000);
+      const s1 = text1.slice(0, n);
+      const s2 = text2.slice(0, m);
+
+      let prev = new Int32Array(m + 1);
+      let curr = new Int32Array(m + 1);
+
+      for (let i = 1; i <= n; i++) {
+        const c1 = s1.charCodeAt(i - 1);
+        for (let j = 1; j <= m; j++) {
+          if (c1 === s2.charCodeAt(j - 1)) {
+            curr[j] = prev[j - 1] + 1;
+          } else {
+            curr[j] = Math.max(prev[j], curr[j - 1]);
+          }
+        }
+        prev.set(curr);
+      }
+
+      const lcsCount = prev[m];
+      const sim = (2.0 * lcsCount) / (s1.length + s2.length) * 100;
+      return Math.min(100, Math.max(0, Math.round(sim * 10) / 10));
+    }
+
+    // Main Diff Controller
+    function runDiff() {
+      const origRaw = origInput.value;
+      const modRaw = modInput.value;
+
+      if (!origRaw && !modRaw) {
+        emptyDiffState.classList.remove('hidden');
+        splitViewContainer.classList.add('hidden');
+        unifiedViewContainer.classList.add('hidden');
+        updateStatsUI(100, 0, 0, 0, true);
+        return;
+      }
+
+      emptyDiffState.classList.add('hidden');
+      if (currentViewMode === 'split') {
+        splitViewContainer.classList.remove('hidden');
+        unifiedViewContainer.classList.add('hidden');
+      } else {
+        splitViewContainer.classList.add('hidden');
+        unifiedViewContainer.classList.remove('hidden');
+      }
+
+      const ignoreWhitespace = optIgnoreWhitespace.checked;
+      const caseInsensitive = optCaseInsensitive.checked;
+      const useWordDiff = optWordDiff.checked;
+
+      const origLines = origRaw.split('\n');
+      const modLines = modRaw.split('\n');
+
+      function normalizeLine(line) {
+        let l = line;
+        if (ignoreWhitespace) l = l.trim();
+        if (caseInsensitive) l = l.toLowerCase();
+        return l;
+      }
+
+      // Compute line-level LCS
+      const lineDiffs = computeLCS(origLines, modLines, (a, b) => normalizeLine(a) === normalizeLine(b));
+
+      // Group into paired chunks for Side-by-Side and Unified
+      const chunks = [];
+      let i = 0;
+
+      while (i < lineDiffs.length) {
+        const item = lineDiffs[i];
+
+        if (item.type === 'equal') {
+          chunks.push({
+            type: 'equal',
+            origLine: item.oldVal,
+            modLine: item.newVal
+          });
+          i++;
+        } else {
+          // Collect consecutive deletions and additions
+          const dels = [];
+          const adds = [];
+
+          while (i < lineDiffs.length && (lineDiffs[i].type === 'del' || lineDiffs[i].type === 'add')) {
+            if (lineDiffs[i].type === 'del') {
+              dels.push(lineDiffs[i].oldVal);
+            } else {
+              adds.push(lineDiffs[i].newVal);
+            }
+            i++;
+          }
+
+          // Pair as modifications where possible
+          const maxPairs = Math.max(dels.length, adds.length);
+          for (let p = 0; p < maxPairs; p++) {
+            const hasDel = p < dels.length;
+            const hasAdd = p < adds.length;
+
+            if (hasDel && hasAdd) {
+              chunks.push({
+                type: 'modify',
+                origLine: dels[p],
+                modLine: adds[p]
+              });
+            } else if (hasDel) {
+              chunks.push({
+                type: 'del',
+                origLine: dels[p],
+                modLine: null
+              });
+            } else {
+              chunks.push({
+                type: 'add',
+                origLine: null,
+                modLine: adds[p]
+              });
+            }
+          }
+        }
+      }
+
+      // Compute statistics
+      let additionsCount = 0;
+      let deletionsCount = 0;
+      let modificationsCount = 0;
+
+      for (const item of lineDiffs) {
+        if (item.type === 'add') additionsCount++;
+        if (item.type === 'del') deletionsCount++;
+      }
+
+      for (const chunk of chunks) {
+        if (chunk.type === 'modify') modificationsCount++;
+      }
+
+      const similarity = calculateSimilarity(origRaw, modRaw);
+      updateStatsUI(similarity, additionsCount, deletionsCount, modificationsCount, origRaw === modRaw);
+
+      // Render Views
+      renderSplitView(chunks, useWordDiff);
+      renderUnifiedView(lineDiffs, useWordDiff);
+
+      // Save report data
+      lastDiffResult = { origRaw, modRaw, chunks, lineDiffs, additionsCount, deletionsCount, similarity };
+    }
+
+    function updateStatsUI(similarity, adds, dels, mods, isIdentical) {
+      statSimilarity.textContent = `${similarity}%`;
+      similarityProgressBar.style.width = `${similarity}%`;
+
+      if (isIdentical) {
+        statStatusPill.textContent = 'Identical';
+        statStatusPill.className = 'text-[10px] font-semibold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300';
+      } else if (similarity > 80) {
+        statStatusPill.textContent = 'Minor Diffs';
+        statStatusPill.className = 'text-[10px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300';
+      } else {
+        statStatusPill.textContent = 'Modified';
+        statStatusPill.className = 'text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300';
+      }
+
+      statAdditions.textContent = `+${adds}`;
+      statDeletions.textContent = `-${dels}`;
+      statModifications.textContent = `${mods}`;
+    }
+
+    // --- RENDER SIDE-BY-SIDE (SPLIT) VIEW ---
+    function renderSplitView(chunks, useWordDiff) {
+      let leftHtml = '';
+      let rightHtml = '';
+      let leftLineNum = 1;
+      let rightLineNum = 1;
+
+      for (const chunk of chunks) {
+        if (chunk.type === 'equal') {
+          const escText = escapeHtml(chunk.origLine);
+          leftHtml += `
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="w-12 py-0.5 pr-2 text-right text-gray-500 select-none diff-equal-gutter font-mono-code">${leftLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code text-gray-700 leading-relaxed">${escText || ' '}</td>
+            </tr>`;
+          rightHtml += `
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="w-12 py-0.5 pr-2 text-right text-gray-500 select-none diff-equal-gutter font-mono-code">${rightLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code text-gray-700 leading-relaxed">${escText || ' '}</td>
+            </tr>`;
+          leftLineNum++;
+          rightLineNum++;
+        } else if (chunk.type === 'modify') {
+          let leftContent = escapeHtml(chunk.origLine);
+          let rightContent = escapeHtml(chunk.modLine);
+
+          if (useWordDiff) {
+            const wordDiff = computeWordLevelDiff(chunk.origLine, chunk.modLine);
+            leftContent = wordDiff.oldHtml;
+            rightContent = wordDiff.newHtml;
+          }
+
+          leftHtml += `
+            <tr class="diff-del">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-del-gutter font-mono-code">${leftLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${leftContent || ' '}</td>
+            </tr>`;
+          rightHtml += `
+            <tr class="diff-add">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-add-gutter font-mono-code">${rightLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${rightContent || ' '}</td>
+            </tr>`;
+          leftLineNum++;
+          rightLineNum++;
+        } else if (chunk.type === 'del') {
+          leftHtml += `
+            <tr class="diff-del">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-del-gutter font-mono-code">${leftLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${escapeHtml(chunk.origLine) || ' '}</td>
+            </tr>`;
+          rightHtml += `
+            <tr class="diff-empty">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-empty-gutter font-mono-code">&nbsp;</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">&nbsp;</td>
+            </tr>`;
+          leftLineNum++;
+        } else if (chunk.type === 'add') {
+          leftHtml += `
+            <tr class="diff-empty">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-empty-gutter font-mono-code">&nbsp;</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">&nbsp;</td>
+            </tr>`;
+          rightHtml += `
+            <tr class="diff-add">
+              <td class="w-12 py-0.5 pr-2 text-right select-none diff-add-gutter font-mono-code">${rightLineNum}</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${escapeHtml(chunk.modLine) || ' '}</td>
+            </tr>`;
+          rightLineNum++;
+        }
+      }
+
+      splitLeftTableBody.innerHTML = leftHtml;
+      splitRightTableBody.innerHTML = rightHtml;
+      splitLeftLineCount.textContent = `${leftLineNum - 1} lines`;
+      splitRightLineCount.textContent = `${rightLineNum - 1} lines`;
+    }
+
+    // --- RENDER UNIFIED (INLINE) VIEW ---
+    function renderUnifiedView(lineDiffs, useWordDiff) {
+      let unifiedHtml = '';
+      let oldLineNum = 1;
+      let newLineNum = 1;
+
+      for (let i = 0; i < lineDiffs.length; i++) {
+        const item = lineDiffs[i];
+
+        if (item.type === 'equal') {
+          const escText = escapeHtml(item.oldVal);
+          unifiedHtml += `
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="w-10 py-0.5 pr-1.5 text-right text-gray-500 select-none diff-equal-gutter font-mono-code">${oldLineNum}</td>
+              <td class="w-10 py-0.5 pr-1.5 text-right text-gray-500 select-none diff-equal-gutter font-mono-code border-r border-gray-200">${newLineNum}</td>
+              <td class="w-6 py-0.5 text-center text-gray-500 select-none font-mono-code">&nbsp;</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code text-gray-700 leading-relaxed">${escText || ' '}</td>
+            </tr>`;
+          oldLineNum++;
+          newLineNum++;
+        } else if (item.type === 'del') {
+          // Check if followed by an addition for sub-line word highlight
+          const nextItem = lineDiffs[i + 1];
+          let content = escapeHtml(item.oldVal);
+
+          if (useWordDiff && nextItem && nextItem.type === 'add') {
+            const wordDiff = computeWordLevelDiff(item.oldVal, nextItem.newVal);
+            content = wordDiff.oldHtml;
+          }
+
+          unifiedHtml += `
+            <tr class="diff-del">
+              <td class="w-10 py-0.5 pr-1.5 text-right select-none diff-del-gutter font-mono-code">${oldLineNum}</td>
+              <td class="w-10 py-0.5 pr-1.5 text-right select-none diff-del-gutter font-mono-code border-r border-gray-200">&nbsp;</td>
+              <td class="w-6 py-0.5 text-center text-rose-400 font-bold select-none font-mono-code">-</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${content || ' '}</td>
+            </tr>`;
+          oldLineNum++;
+        } else if (item.type === 'add') {
+          // Check if preceded by a deletion for sub-line word highlight
+          const prevItem = lineDiffs[i - 1];
+          let content = escapeHtml(item.newVal);
+
+          if (useWordDiff && prevItem && prevItem.type === 'del') {
+            const wordDiff = computeWordLevelDiff(prevItem.oldVal, item.newVal);
+            content = wordDiff.newHtml;
+          }
+
+          unifiedHtml += `
+            <tr class="diff-add">
+              <td class="w-10 py-0.5 pr-1.5 text-right select-none diff-add-gutter font-mono-code">&nbsp;</td>
+              <td class="w-10 py-0.5 pr-1.5 text-right select-none diff-add-gutter font-mono-code border-r border-gray-200">${newLineNum}</td>
+              <td class="w-6 py-0.5 text-center text-emerald-400 font-bold select-none font-mono-code">+</td>
+              <td class="px-2 py-0.5 whitespace-pre font-mono-code leading-relaxed">${content || ' '}</td>
+            </tr>`;
+          newLineNum++;
+        }
+      }
+
+      unifiedTableBody.innerHTML = unifiedHtml;
+      unifiedLineCount.textContent = `${lineDiffs.length} total entries`;
+    }
+
+    // --- SYNCHRONIZED SCROLLING (SPLIT VIEW) ---
+    splitColLeft.addEventListener('scroll', () => {
+      if (!isSyncScrollEnabled || isSyncingLeft) return;
+      isSyncingRight = true;
+      splitColRight.scrollTop = splitColLeft.scrollTop;
+      splitColRight.scrollLeft = splitColLeft.scrollLeft;
+      requestAnimationFrame(() => { isSyncingRight = false; });
+    });
+
+    splitColRight.addEventListener('scroll', () => {
+      if (!isSyncScrollEnabled || isSyncingRight) return;
+      isSyncingLeft = true;
+      splitColLeft.scrollTop = splitColRight.scrollTop;
+      splitColLeft.scrollLeft = splitColRight.scrollLeft;
+      requestAnimationFrame(() => { isSyncingLeft = false; });
+    });
+
+    syncScrollBtn.addEventListener('click', () => {
+      isSyncScrollEnabled = !isSyncScrollEnabled;
+      syncScrollBtn.innerHTML = isSyncScrollEnabled
+        ? `<i data-lucide="link" class="w-3 h-3 text-indigo-400"></i><span>Sync Scroll: ON</span>`
+        : `<i data-lucide="link-2-off" class="w-3 h-3 text-gray-500"></i><span>Sync Scroll: OFF</span>`;
+      lucide.createIcons();
+      showToast(isSyncScrollEnabled ? 'Synchronized scrolling enabled' : 'Synchronized scrolling disabled');
+    });
+
+    // --- VIEW MODE TOGGLE (SPLIT VS UNIFIED) ---
+    viewModeSplit.addEventListener('click', () => {
+      if (currentViewMode === 'split') return;
+      currentViewMode = 'split';
+      viewModeSplit.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition bg-indigo-600 text-white shadow-sm';
+      viewModeUnified.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition text-gray-500 hover:text-gray-900';
+      splitViewContainer.classList.remove('hidden');
+      unifiedViewContainer.classList.add('hidden');
+    });
+
+    viewModeUnified.addEventListener('click', () => {
+      if (currentViewMode === 'unified') return;
+      currentViewMode = 'unified';
+      viewModeUnified.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition bg-indigo-600 text-white shadow-sm';
+      viewModeSplit.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition text-gray-500 hover:text-gray-900';
+      splitViewContainer.classList.add('hidden');
+      unifiedViewContainer.classList.remove('hidden');
+    });
+
+    // --- COPY DIFF REPORT (STANDARD UNIFIED PATCH) ---
+    function generateUnifiedPatch() {
+      if (!lastDiffResult) return '';
+      const { origRaw, modRaw, lineDiffs } = lastDiffResult;
+      const timestamp = new Date().toISOString();
+      let patch = `--- a/original.txt\t${timestamp}\n+++ b/modified.txt\t${timestamp}\n@@ -1,${origRaw.split('\n').length} +1,${modRaw.split('\n').length} @@\n`;
+
+      for (const item of lineDiffs) {
+        if (item.type === 'equal') {
+          patch += ` ${item.oldVal}\n`;
+        } else if (item.type === 'del') {
+          patch += `-${item.oldVal}\n`;
+        } else if (item.type === 'add') {
+          patch += `+${item.newVal}\n`;
+        }
+      }
+      return patch;
+    }
+
+    copyReportBtn.addEventListener('click', async () => {
+      const patch = generateUnifiedPatch();
+      if (!patch) {
+        showToast('Nothing to copy. Compare texts first.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(patch);
+        showToast('Unified diff patch copied to clipboard');
+      } catch (e) {
+        showToast('Failed to copy. Please allow clipboard permissions.');
+      }
+    });
+
+    // --- DOWNLOAD PATCH FILE ---
+    downloadPatchBtn.addEventListener('click', () => {
+      const patch = generateUnifiedPatch();
+      if (!patch) {
+        showToast('Nothing to export. Compare texts first.');
+        return;
+      }
+      const blob = new Blob([patch], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `utilinone-diff-${Date.now()}.patch`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('Exported patch file');
+    });
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize Lucide icons
+      lucide.createIcons();
+      // Load initial code preset for immediate out-of-the-box demonstration
+      loadSamplePreset('code');
+    });
+  </script>
+</body>
+</html>

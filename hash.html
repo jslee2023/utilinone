@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hash Generator &amp; Checker | UtilinOne - 100% Client-Side Cryptographic Suite</title>
+  <meta name="description" content="Generate and verify MD5, SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes for text and files locally in your browser. Fast, private, and secure." />
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS v4 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  
+  <!-- SparkMD5 for Client-Side MD5 Generation (fast & chunk-capable) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f9fafb;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+    /* Subtle pulse animation for matching hash */
+    @keyframes pulse-success {
+      0%, 100% { border-color: rgba(34, 197, 94, 0.7); box-shadow: 0 0 15px rgba(34, 197, 94, 0.25); }
+      50% { border-color: rgba(34, 197, 94, 1); box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }
+    }
+    .match-highlight {
+      animation: pulse-success 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white antialiased">
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-gray-300 shadow-2xl text-sm font-medium text-gray-900 opacity-0 pointer-events-none transform translate-y-3 transition-all duration-300">
+    <span id="toastIcon" class="text-emerald-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    </span>
+    <span id="toastMsg">Copied to clipboard!</span>
+  </div>
+
+  <!-- Top Navigation / Header -->
+  <header class="border-b border-gray-200 bg-white backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Left: Logo & Product Brand -->
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-lg p-1">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-500 bg-clip-text text-transparent">UtilinOne</span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">Suite</span>
+            </div>
+            <p class="text-xs text-gray-600 hidden sm:block">Developer Utilities &amp; Cryptography</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Center / Right Status Badges -->
+      <div class="flex items-center gap-3">
+        <!-- Security Badge -->
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-medium shadow-sm">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="font-semibold">🔒 100% Client-Side &amp; Secure</span>
+        </div>
+
+        <!-- Back to Hub Link -->
+        <a href="index.html" class="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          All Tools
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="relative overflow-hidden pt-8 pb-6 border-b border-gray-200 bg-gradient-to-b from-indigo-950/20 via-white to-white">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(99,102,241,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center sm:text-left sm:flex sm:items-center sm:justify-between gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono mb-2">
+          <span>WebCrypto API &bull; Zero Server Uplink</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+          Hash Generator &amp; Checker
+        </h1>
+        <p class="mt-1 text-sm sm:text-base text-gray-600 max-w-2xl">
+          Instantly generate and verify cryptographic hashes (MD5, SHA-1, SHA-256, SHA-384, SHA-512) for text strings and files of any size right inside your browser.
+        </p>
+      </div>
+
+      <!-- Quick Action Summary -->
+      <div class="mt-4 sm:mt-0 flex items-center justify-center sm:justify-end gap-3 flex-wrap">
+        <button id="copyAllHashesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 border border-gray-300 text-xs font-medium transition-all shadow-sm active:scale-95">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          Copy All Hashes
+        </button>
+        <button id="exportReportBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all shadow-md shadow-indigo-600/20 active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Export Report
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Workspace -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+    
+    <!-- Top Grid: Input Panel & Verification Tool -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Input Controller (7 cols) -->
+      <section class="lg:col-span-7 bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-xl backdrop-blur-md relative overflow-hidden">
+        
+        <!-- Input Mode Switcher Header -->
+        <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-5 flex-wrap gap-3">
+          <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-xl border border-gray-200">
+            <button id="modeTextBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              Text Input
+            </button>
+            <button id="modeFileBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-800 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              File Input
+            </button>
+          </div>
+
+          <!-- Output Formatting Controls -->
+          <div class="flex items-center gap-3">
+            <!-- Format selector -->
+            <div class="flex items-center gap-1.5 text-xs text-gray-600">
+              <span class="font-medium">Format:</span>
+              <select id="hashFormatSelect" class="bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-800 font-mono focus:outline-none focus:border-indigo-500 cursor-pointer">
+                <option value="lower">hex (lowercase)</option>
+                <option value="upper">HEX (UPPERCASE)</option>
+                <option value="colon">Colon-separated</option>
+                <option value="base64">Base64</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. TEXT INPUT MODE -->
+        <div id="textModeContainer" class="space-y-4">
+          <!-- Text Presets & Actions Toolbar -->
+          <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-gray-600 font-medium mr-1">Presets:</span>
+              <button class="preset-btn px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors" data-preset="hello">"Hello World!"</button>
+              <button class="preset-btn px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors" data-preset="empty">Empty String</button>
+              <button class="preset-btn px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors" data-preset="token">API Secret Key</button>
+              <button class="preset-btn px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors" data-preset="json">JSON Object</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="pasteTextBtn" class="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors font-medium">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                Paste
+              </button>
+              <span class="text-gray-700">&bull;</span>
+              <button id="clearTextBtn" class="text-gray-600 hover:text-rose-400 transition-colors font-medium">Clear</button>
+            </div>
+          </div>
+
+          <!-- Textarea -->
+          <div class="relative">
+            <textarea
+              id="rawTextInput"
+              rows="7"
+              placeholder="Type, paste, or drag text here to calculate cryptographic hashes in real-time..."
+              class="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl p-4 text-sm font-mono text-gray-800 placeholder-gray-600 outline-none resize-y transition-all leading-relaxed"
+            >Hello, UtilinOne Cryptography!</textarea>
+          </div>
+
+          <!-- Text Statistics Footer -->
+          <div class="flex items-center justify-between text-xs text-gray-600 bg-gray-100 px-3.5 py-2 rounded-xl border border-gray-200 font-mono">
+            <div class="flex items-center gap-4 flex-wrap">
+              <span>Characters: <strong id="charCount" class="text-gray-800">29</strong></span>
+              <span>Bytes (UTF-8): <strong id="byteCount" class="text-gray-800">29 B</strong></span>
+              <span>Lines: <strong id="lineCount" class="text-gray-800">1</strong></span>
+              <span>Words: <strong id="wordCount" class="text-gray-800">3</strong></span>
+            </div>
+            <div class="text-gray-600 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>Live Reactive Hash</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. FILE INPUT MODE (Hidden initially) -->
+        <div id="fileModeContainer" class="hidden space-y-4">
+          <!-- Drop Zone -->
+          <div
+            id="fileDropZone"
+            class="border-2 border-dashed border-gray-200 hover:border-indigo-500/80 rounded-2xl p-8 sm:p-10 text-center bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer relative group flex flex-col items-center justify-center min-h-[220px]"
+          >
+            <input type="file" id="filePickerInput" class="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full" />
+            
+            <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <h4 class="text-base font-semibold text-gray-900">Drag &amp; drop any file here</h4>
+            <p class="text-xs text-gray-600 mt-1 max-w-sm">
+              Images, archives (.zip, .tar), ISOs, documents, executables. Hashing runs asynchronously inside your browser.
+            </p>
+            <div class="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors">
+              Browse Local File
+            </div>
+          </div>
+
+          <!-- Active File Info & Progress Card (Hidden when no file) -->
+          <div id="activeFileInfo" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <div class="p-2.5 rounded-lg bg-gray-100 text-indigo-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <div class="truncate">
+                  <div id="fileNameDisplay" class="font-semibold text-sm text-gray-900 truncate">sample-archive.zip</div>
+                  <div class="text-xs text-gray-600 font-mono flex items-center gap-3 mt-0.5">
+                    <span id="fileSizeDisplay">0 KB</span>
+                    <span>&bull;</span>
+                    <span id="fileTypeDisplay">application/octet-stream</span>
+                    <span>&bull;</span>
+                    <span id="fileTimeDisplay">0 ms</span>
+                  </div>
+                </div>
+              </div>
+              <button id="removeFileBtn" class="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 px-2.5 py-1.5 rounded-lg transition-colors font-medium">
+                Remove File
+              </button>
+            </div>
+
+            <!-- Progress Bar for File Hashing -->
+            <div id="fileProgressContainer" class="hidden space-y-1 pt-1">
+              <div class="flex items-center justify-between text-xs font-mono text-gray-600">
+                <span id="hashingStatusText" class="flex items-center gap-2">
+                  <svg class="animate-spin h-3.5 w-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Processing chunks...
+                </span>
+                <span id="fileProgressPercent">0%</span>
+              </div>
+              <div class="w-full bg-white rounded-full h-2 overflow-hidden border border-gray-200">
+                <div id="fileProgressBar" class="bg-gradient-to-r from-indigo-500 to-violet-500 h-2 rounded-full transition-all duration-150" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Checksum Verification / Matcher (5 cols) -->
+      <section class="lg:col-span-5 bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-xl backdrop-blur-md space-y-4">
+        <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-900">Checksum Verifier</h3>
+              <p class="text-xs text-gray-600">Match against publisher / official hash</p>
+            </div>
+          </div>
+          <button id="clearVerifyInputBtn" class="text-xs text-gray-600 hover:text-gray-800 transition-colors">Clear</button>
+        </div>
+
+        <div>
+          <label for="expectedHashInput" class="block text-xs font-semibold text-gray-700 mb-1.5">
+            Expected Hash to Verify:
+          </label>
+          <div class="relative">
+            <input
+              type="text"
+              id="expectedHashInput"
+              placeholder="Paste checksum string here (e.g. 5d41402abc...)"
+              class="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-900 placeholder-gray-600 outline-none transition-all pr-10"
+            />
+            <button id="pasteVerifyBtn" title="Paste from clipboard" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-400 p-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Verification Result Status Banner -->
+        <div id="verifyResultCard" class="p-4 rounded-xl border border-gray-200 bg-gray-100 transition-all space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-600">Comparison Status:</span>
+            <span id="verifyStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+              <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+              Awaiting verification input
+            </span>
+          </div>
+          <div id="verifyStatusDetail" class="text-xs text-gray-600 leading-relaxed font-mono">
+            Enter an expected checksum above. Case &amp; formatting are automatically normalized.
+          </div>
+        </div>
+
+        <!-- Quick Comparison Specs -->
+        <div class="text-xs text-gray-600 bg-gray-100 p-3 rounded-xl border border-gray-200 space-y-1.5">
+          <div class="font-medium text-gray-700 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Supported Auto-Detection:
+          </div>
+          <p class="text-gray-600 text-[11px] leading-relaxed">
+            Matches MD5 (32 hex), SHA-1 (40 hex), SHA-256 (64 hex), SHA-384 (96 hex), and SHA-512 (128 hex).
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Output Section: Multi-Algorithm Cards -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span>Cryptographic Digest Outputs</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">5 Algorithms</span>
+          </h2>
+          <p class="text-xs text-gray-600">Computed concurrently using modern hardware-accelerated WebCrypto &amp; SparkMD5</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="quickTestMatchBtn" class="text-xs text-indigo-400 hover:text-indigo-300 px-2.5 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 font-medium transition-colors">
+            Test SHA-256 Match
+          </button>
+        </div>
+      </div>
+
+      <!-- Hash Result Cards Grid -->
+      <div class="grid grid-cols-1 gap-4" id="hashCardsContainer">
+        
+        <!-- 1. MD5 CARD -->
+        <div class="hash-card bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-4 sm:p-5 shadow-lg transition-all" data-algo="MD5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base font-bold text-gray-900 font-mono">MD5</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono bg-gray-100 text-gray-700 border border-gray-300">128-bit</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">Non-cryptographic / Checksum only</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span class="hash-meta-len font-mono">32 hex chars</span>
+              <span class="hash-match-indicator hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">MATCH</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 font-mono text-xs sm:text-sm text-gray-800 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+              <span id="output-md5" class="hash-text text-indigo-300 font-medium">Computing...</span>
+            </div>
+            <button class="copy-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 border border-gray-300 text-xs font-semibold transition-all active:scale-95" data-target="output-md5" title="Copy MD5 hash">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. SHA-1 CARD -->
+        <div class="hash-card bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-4 sm:p-5 shadow-lg transition-all" data-algo="SHA-1">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base font-bold text-gray-900 font-mono">SHA-1</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono bg-gray-100 text-gray-700 border border-gray-300">160-bit</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">Legacy (Git / Legacy Checksums)</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span class="hash-meta-len font-mono">40 hex chars</span>
+              <span class="hash-match-indicator hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">MATCH</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 font-mono text-xs sm:text-sm text-gray-800 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+              <span id="output-sha1" class="hash-text text-indigo-300 font-medium">Computing...</span>
+            </div>
+            <button class="copy-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 border border-gray-300 text-xs font-semibold transition-all active:scale-95" data-target="output-sha1" title="Copy SHA-1 hash">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. SHA-256 CARD (Recommended Default) -->
+        <div class="hash-card bg-white border border-indigo-500/40 hover:border-indigo-500/70 rounded-2xl p-4 sm:p-5 shadow-lg shadow-indigo-950/20 transition-all ring-1 ring-indigo-500/10" data-algo="SHA-256">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base font-bold text-gray-900 font-mono">SHA-256</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono bg-indigo-900/40 text-indigo-300 border border-indigo-500/30">256-bit</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Standard Recommended</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span class="hash-meta-len font-mono">64 hex chars</span>
+              <span class="hash-match-indicator hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">MATCH</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 font-mono text-xs sm:text-sm text-gray-800 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+              <span id="output-sha256" class="hash-text text-indigo-300 font-medium">Computing...</span>
+            </div>
+            <button class="copy-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500 text-xs font-semibold transition-all active:scale-95 shadow-sm shadow-indigo-600/30" data-target="output-sha256" title="Copy SHA-256 hash">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. SHA-384 CARD -->
+        <div class="hash-card bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-4 sm:p-5 shadow-lg transition-all" data-algo="SHA-384">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base font-bold text-gray-900 font-mono">SHA-384</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono bg-gray-100 text-gray-700 border border-gray-300">384-bit</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-violet-500/10 text-violet-400 border border-violet-500/20">High Security (TLS / Subresource Integrity)</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span class="hash-meta-len font-mono">96 hex chars</span>
+              <span class="hash-match-indicator hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">MATCH</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 font-mono text-xs sm:text-sm text-gray-800 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+              <span id="output-sha384" class="hash-text text-indigo-300 font-medium">Computing...</span>
+            </div>
+            <button class="copy-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 border border-gray-300 text-xs font-semibold transition-all active:scale-95" data-target="output-sha384" title="Copy SHA-384 hash">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. SHA-512 CARD -->
+        <div class="hash-card bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-4 sm:p-5 shadow-lg transition-all" data-algo="SHA-512">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base font-bold text-gray-900 font-mono">SHA-512</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono bg-gray-100 text-gray-700 border border-gray-300">512-bit</span>
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">Maximum Bit Strength (NIST / Defense)</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span class="hash-meta-len font-mono">128 hex chars</span>
+              <span class="hash-match-indicator hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">MATCH</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 font-mono text-xs sm:text-sm text-gray-800 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+              <span id="output-sha512" class="hash-text text-indigo-300 font-medium">Computing...</span>
+            </div>
+            <button class="copy-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 border border-gray-300 text-xs font-semibold transition-all active:scale-95" data-target="output-sha512" title="Copy SHA-512 hash">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Technical Guide & Algorithm Matrix Section -->
+    <section class="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="max-w-3xl">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>What is a Cryptographic Hash Function?</span>
+        </h3>
+        <p class="mt-2 text-sm text-gray-600 leading-relaxed">
+          A cryptographic hash function is a mathematical algorithm that maps an arbitrary amount of data (text, images, binaries) to a fixed-size bit string known as a <span class="text-gray-800 font-semibold">digest</span>. Cryptographic hashes are designed to be deterministic, one-way (irreversible), highly resistant to collisions, and exhibit the <span class="text-indigo-400 font-semibold">avalanche effect</span> (changing a single character drastically alters the entire output hash).
+        </p>
+      </div>
+
+      <!-- Comparison Matrix Table -->
+      <div class="overflow-x-auto border border-gray-200 rounded-xl bg-gray-100">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-white text-gray-700 font-semibold border-b border-gray-200 uppercase tracking-wider">
+            <tr>
+              <th class="px-4 py-3">Algorithm</th>
+              <th class="px-4 py-3">Output Bits</th>
+              <th class="px-4 py-3">Hex Length</th>
+              <th class="px-4 py-3">Collision Resistance</th>
+              <th class="px-4 py-3">Best Use Cases</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800 font-mono text-gray-700">
+            <tr class="hover:bg-gray-200">
+              <td class="px-4 py-3 font-bold text-gray-900">MD5</td>
+              <td class="px-4 py-3">128 bits</td>
+              <td class="px-4 py-3 text-indigo-400">32 chars</td>
+              <td class="px-4 py-3 text-rose-400">Broken (Vulnerable)</td>
+              <td class="px-4 py-3 font-sans text-gray-600">Non-critical checksums, legacy deduplication</td>
+            </tr>
+            <tr class="hover:bg-gray-200">
+              <td class="px-4 py-3 font-bold text-gray-900">SHA-1</td>
+              <td class="px-4 py-3">160 bits</td>
+              <td class="px-4 py-3 text-indigo-400">40 chars</td>
+              <td class="px-4 py-3 text-amber-400">Weak (Shattered 2017)</td>
+              <td class="px-4 py-3 font-sans text-gray-600">Git commit trees, legacy file verification</td>
+            </tr>
+            <tr class="hover:bg-gray-200 bg-indigo-950/10">
+              <td class="px-4 py-3 font-bold text-indigo-300">SHA-256</td>
+              <td class="px-4 py-3">256 bits</td>
+              <td class="px-4 py-3 text-indigo-400">64 chars</td>
+              <td class="px-4 py-3 text-emerald-400">High (Industry Standard)</td>
+              <td class="px-4 py-3 font-sans text-gray-700">Software releases, Bitcoin, TLS, file integrity</td>
+            </tr>
+            <tr class="hover:bg-gray-200">
+              <td class="px-4 py-3 font-bold text-gray-900">SHA-384</td>
+              <td class="px-4 py-3">384 bits</td>
+              <td class="px-4 py-3 text-indigo-400">96 chars</td>
+              <td class="px-4 py-3 text-emerald-400">Very High</td>
+              <td class="px-4 py-3 font-sans text-gray-600">Subresource Integrity (SRI), Top Secret defense</td>
+            </tr>
+            <tr class="hover:bg-gray-200">
+              <td class="px-4 py-3 font-bold text-gray-900">SHA-512</td>
+              <td class="px-4 py-3">512 bits</td>
+              <td class="px-4 py-3 text-indigo-400">128 chars</td>
+              <td class="px-4 py-3 text-emerald-400">Maximum Practical</td>
+              <td class="px-4 py-3 font-sans text-gray-600">Financial auditing, long-term cryptographic archiving</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Comprehensive FAQ & Privacy Assurance -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Privacy Assurance -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 space-y-3">
+        <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <h3>Zero-Knowledge Local Execution</h3>
+        </div>
+        <p class="text-xs text-gray-600 leading-relaxed">
+          Your input strings and uploaded files are processed <strong class="text-gray-800">100% locally inside your browser memory</strong> via your device's native Web Cryptography API (<code class="text-indigo-400">window.crypto.subtle</code>) and Web Workers.
+        </p>
+        <p class="text-xs text-gray-600 leading-relaxed">
+          No data bytes, telemetry, or file contents are ever sent over network sockets to any server or remote endpoint. You can disconnect your internet connection and verify that this tool functions completely offline.
+        </p>
+      </div>
+
+      <!-- Why Checksums Matter -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 space-y-3">
+        <div class="flex items-center gap-2.5 text-indigo-400 font-bold text-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          <h3>Why Checksum Verification is Critical</h3>
+        </div>
+        <p class="text-xs text-gray-600 leading-relaxed">
+          When downloading installation packages, operating system images, or developer SDKs, malicious actors can perform Man-In-The-Middle (MITM) attacks or mirrors can serve corrupted files.
+        </p>
+        <p class="text-xs text-gray-600 leading-relaxed">
+          Comparing the publisher's published SHA-256 or MD5 checksum against the output calculated by this tool guarantees that the downloaded file is bit-for-bit identical to the author's release.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Related Developer Tools in Suite -->
+    <section class="border-t border-gray-200 pt-8 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">More Tools in UtilinOne Suite</h3>
+        <a href="index.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Explore all suite tools &rarr;</a>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <a href="diff.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">⚖️</div>
+          <div class="text-xs font-semibold text-gray-800">Text Diff</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Compare strings</div>
+        </a>
+        <a href="json.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">{ }</div>
+          <div class="text-xs font-semibold text-gray-800">JSON Tools</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Format &amp; validate</div>
+        </a>
+        <a href="regex.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">.*</div>
+          <div class="text-xs font-semibold text-gray-800">Regex Tester</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Live pattern tester</div>
+        </a>
+        <a href="base64.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">🔤</div>
+          <div class="text-xs font-semibold text-gray-800">Base64</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Encode &amp; decode</div>
+        </a>
+        <a href="uuid.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">🆔</div>
+          <div class="text-xs font-semibold text-gray-800">UUID / ULID</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Batch generation</div>
+        </a>
+        <a href="jwt.html" class="p-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-200 transition-all text-center group">
+          <div class="text-indigo-400 text-lg mb-1 group-hover:scale-110 transition-transform">🎫</div>
+          <div class="text-xs font-semibold text-gray-800">JWT Debugger</div>
+          <div class="text-[10px] text-gray-600 mt-0.5">Claims inspector</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="border-t border-gray-200 bg-gray-50 py-6 text-center text-xs text-gray-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-700">UtilinOne Suite</span>
+        <span>&bull;</span>
+        <span>Private Developer Cryptography Tool</span>
+      </div>
+      <div>
+        <span>Powered by WebCrypto Subtle &amp; SparkMD5 &bull; Zero Server Analytics</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    (function() {
+      'use strict';
+
+      // --- STATE MANAGEMENT ---
+      const state = {
+        mode: 'text', // 'text' | 'file'
+        format: 'lower', // 'lower' | 'upper' | 'colon' | 'base64'
+        rawText: 'Hello, UtilinOne Cryptography!',
+        file: null,
+        isHashingFile: false,
+        computedRawHex: {
+          'MD5': '',
+          'SHA-1': '',
+          'SHA-256': '',
+          'SHA-384': '',
+          'SHA-512': ''
+        },
+        expectedHash: '',
+        debounceTimer: null
+      };
+
+      // --- DOM ELEMENT REFERENCES ---
+      const dom = {
+        // Mode switch
+        modeTextBtn: document.getElementById('modeTextBtn'),
+        modeFileBtn: document.getElementById('modeFileBtn'),
+        textModeContainer: document.getElementById('textModeContainer'),
+        fileModeContainer: document.getElementById('fileModeContainer'),
+        hashFormatSelect: document.getElementById('hashFormatSelect'),
+
+        // Text inputs
+        rawTextInput: document.getElementById('rawTextInput'),
+        clearTextBtn: document.getElementById('clearTextBtn'),
+        pasteTextBtn: document.getElementById('pasteTextBtn'),
+        charCount: document.getElementById('charCount'),
+        byteCount: document.getElementById('byteCount'),
+        lineCount: document.getElementById('lineCount'),
+        wordCount: document.getElementById('wordCount'),
+
+        // File inputs
+        fileDropZone: document.getElementById('fileDropZone'),
+        filePickerInput: document.getElementById('filePickerInput'),
+        activeFileInfo: document.getElementById('activeFileInfo'),
+        fileNameDisplay: document.getElementById('fileNameDisplay'),
+        fileSizeDisplay: document.getElementById('fileSizeDisplay'),
+        fileTypeDisplay: document.getElementById('fileTypeDisplay'),
+        fileTimeDisplay: document.getElementById('fileTimeDisplay'),
+        removeFileBtn: document.getElementById('removeFileBtn'),
+        fileProgressContainer: document.getElementById('fileProgressContainer'),
+        fileProgressBar: document.getElementById('fileProgressBar'),
+        fileProgressPercent: document.getElementById('fileProgressPercent'),
+        hashingStatusText: document.getElementById('hashingStatusText'),
+
+        // Verification
+        expectedHashInput: document.getElementById('expectedHashInput'),
+        clearVerifyInputBtn: document.getElementById('clearVerifyInputBtn'),
+        pasteVerifyBtn: document.getElementById('pasteVerifyBtn'),
+        verifyResultCard: document.getElementById('verifyResultCard'),
+        verifyStatusBadge: document.getElementById('verifyStatusBadge'),
+        verifyStatusDetail: document.getElementById('verifyStatusDetail'),
+        quickTestMatchBtn: document.getElementById('quickTestMatchBtn'),
+
+        // Outputs
+        outMd5: document.getElementById('output-md5'),
+        outSha1: document.getElementById('output-sha1'),
+        outSha256: document.getElementById('output-sha256'),
+        outSha384: document.getElementById('output-sha384'),
+        outSha512: document.getElementById('output-sha512'),
+        hashCards: document.querySelectorAll('.hash-card'),
+        copyButtons: document.querySelectorAll('.copy-btn'),
+        copyAllHashesBtn: document.getElementById('copyAllHashesBtn'),
+        exportReportBtn: document.getElementById('exportReportBtn'),
+
+        // Toast
+        toast: document.getElementById('toast'),
+        toastMsg: document.getElementById('toastMsg')
+      };
+
+      // --- UTILITIES ---
+
+      // Toast notification
+      let toastTimeout = null;
+      function showToast(message, isSuccess = true) {
+        if (toastTimeout) clearTimeout(toastTimeout);
+        dom.toastMsg.textContent = message;
+        dom.toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+        dom.toast.classList.add('opacity-100', 'translate-y-0');
+        
+        toastTimeout = setTimeout(() => {
+          dom.toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+          dom.toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2200);
+      }
+
+      // Convert ArrayBuffer to Hex String
+      function bufferToHex(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let hex = '';
+        for (let i = 0; i < bytes.length; i++) {
+          hex += bytes[i].toString(16).padStart(2, '0');
+        }
+        return hex;
+      }
+
+      // Format Hex String according to active state.format
+      function formatHash(hexString, format) {
+        if (!hexString) return '';
+        const cleanHex = hexString.toLowerCase().replace(/[^0-9a-f]/g, '');
+        
+        switch (format) {
+          case 'upper':
+            return cleanHex.toUpperCase();
+          case 'colon': {
+            const matches = cleanHex.match(/.{1,2}/g);
+            return matches ? matches.join(':').toUpperCase() : cleanHex.toUpperCase();
+          }
+          case 'base64': {
+            // Convert hex to bytes then to base64
+            try {
+              const bytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+              let binary = '';
+              for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+              }
+              return btoa(binary);
+            } catch (e) {
+              return cleanHex;
+            }
+          }
+          case 'lower':
+          default:
+            return cleanHex;
+        }
+      }
+
+      // Format file size
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Update text metrics
+      function updateTextMetrics(text) {
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(text).length;
+        dom.charCount.textContent = text.length.toLocaleString();
+        dom.byteCount.textContent = formatBytes(bytes);
+        dom.lineCount.textContent = text.length === 0 ? 0 : text.split('\n').length.toLocaleString();
+        dom.wordCount.textContent = text.trim() === '' ? 0 : (text.trim().match(/\S+/g) || []).length.toLocaleString();
+      }
+
+      // --- CRYPTOGRAPHY ENGINE ---
+
+      // Compute MD5 via SparkMD5
+      function computeMD5(uint8Data) {
+        if (window.SparkMD5 && window.SparkMD5.ArrayBuffer) {
+          const spark = new SparkMD5.ArrayBuffer();
+          spark.append(uint8Data.buffer);
+          return spark.end();
+        }
+        return '';
+      }
+
+      // Compute SHA-1, SHA-256, SHA-384, SHA-512 via WebCrypto API
+      async function computeSubtleHash(algoName, uint8Data) {
+        try {
+          const hashBuffer = await crypto.subtle.digest(algoName, uint8Data);
+          return bufferToHex(hashBuffer);
+        } catch (err) {
+          console.error(`Error hashing with ${algoName}:`, err);
+          return 'Unsupported in this browser';
+        }
+      }
+
+      // Compute all hashes for a Uint8Array
+      async function computeAllHashes(uint8Data) {
+        const [md5, sha1, sha256, sha384, sha512] = await Promise.all([
+          Promise.resolve(computeMD5(uint8Data)),
+          computeSubtleHash('SHA-1', uint8Data),
+          computeSubtleHash('SHA-256', uint8Data),
+          computeSubtleHash('SHA-384', uint8Data),
+          computeSubtleHash('SHA-512', uint8Data)
+        ]);
+
+        state.computedRawHex = {
+          'MD5': md5,
+          'SHA-1': sha1,
+          'SHA-256': sha256,
+          'SHA-384': sha384,
+          'SHA-512': sha512
+        };
+
+        renderHashes();
+        runVerificationCheck();
+      }
+
+      // Render hashes into cards
+      function renderHashes() {
+        const fmt = state.format;
+        
+        dom.outMd5.textContent = formatHash(state.computedRawHex['MD5'], fmt) || 'Ready';
+        dom.outSha1.textContent = formatHash(state.computedRawHex['SHA-1'], fmt) || 'Ready';
+        dom.outSha256.textContent = formatHash(state.computedRawHex['SHA-256'], fmt) || 'Ready';
+        dom.outSha384.textContent = formatHash(state.computedRawHex['SHA-384'], fmt) || 'Ready';
+        dom.outSha512.textContent = formatHash(state.computedRawHex['SHA-512'], fmt) || 'Ready';
+
+        // Update card character length displays
+        dom.hashCards.forEach(card => {
+          const algo = card.dataset.algo;
+          const lenSpan = card.querySelector('.hash-meta-len');
+          const currentVal = formatHash(state.computedRawHex[algo], fmt);
+          if (lenSpan && currentVal) {
+            lenSpan.textContent = `${currentVal.length} chars (${fmt})`;
+          }
+        });
+      }
+
+      // Process Text input with debounce
+      function handleTextChange() {
+        state.rawText = dom.rawTextInput.value;
+        updateTextMetrics(state.rawText);
+
+        if (state.debounceTimer) clearTimeout(state.debounceTimer);
+        state.debounceTimer = setTimeout(async () => {
+          const encoder = new TextEncoder();
+          const uint8Data = encoder.encode(state.rawText);
+          await computeAllHashes(uint8Data);
+        }, 40);
+      }
+
+      // Process Large File input asynchronously with chunking & progress
+      async function processFile(file) {
+        if (!file) return;
+        state.file = file;
+        state.isHashingFile = true;
+
+        // UI Updates
+        dom.activeFileInfo.classList.remove('hidden');
+        dom.fileNameDisplay.textContent = file.name;
+        dom.fileSizeDisplay.textContent = formatBytes(file.size);
+        dom.fileTypeDisplay.textContent = file.type || 'application/octet-stream';
+        dom.fileProgressContainer.classList.remove('hidden');
+        dom.fileProgressBar.style.width = '0%';
+        dom.fileProgressPercent.textContent = '0%';
+        dom.hashingStatusText.innerHTML = `
+          <svg class="animate-spin h-3.5 w-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Hashing ${file.name}...
+        `;
+
+        const startTime = performance.now();
+
+        try {
+          // If file is smaller than 120MB, read into ArrayBuffer directly for WebCrypto speed
+          if (file.size <= 120 * 1024 * 1024) {
+            const buffer = await file.arrayBuffer();
+            const uint8Data = new Uint8Array(buffer);
+            
+            dom.fileProgressBar.style.width = '75%';
+            dom.fileProgressPercent.textContent = '75%';
+
+            await computeAllHashes(uint8Data);
+            
+            dom.fileProgressBar.style.width = '100%';
+            dom.fileProgressPercent.textContent = '100%';
+          } else {
+            // For very large files (>120MB), compute MD5 in chunks and warn for WebCrypto full buffer
+            const chunkSize = 4 * 1024 * 1024; // 4MB chunks
+            const chunks = Math.ceil(file.size / chunkSize);
+            let currentChunk = 0;
+            const spark = new SparkMD5.ArrayBuffer();
+
+            const readNextChunk = (start, end) => {
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                const blob = file.slice(start, end);
+                reader.readAsArrayBuffer(blob);
+              });
+            };
+
+            for (let i = 0; i < chunks; i++) {
+              const start = i * chunkSize;
+              const end = Math.min(start + chunkSize, file.size);
+              const chunkBuffer = await readNextChunk(start, end);
+              spark.append(chunkBuffer);
+              currentChunk++;
+              
+              const progress = Math.round((currentChunk / chunks) * 80);
+              dom.fileProgressBar.style.width = `${progress}%`;
+              dom.fileProgressPercent.textContent = `${progress}%`;
+            }
+
+            const md5 = spark.end();
+
+            // Also compute WebCrypto on file ArrayBuffer
+            dom.hashingStatusText.textContent = 'Finalizing SHA family digests...';
+            const fullBuffer = await file.arrayBuffer();
+            const uint8Data = new Uint8Array(fullBuffer);
+            
+            const [sha1, sha256, sha384, sha512] = await Promise.all([
+              computeSubtleHash('SHA-1', uint8Data),
+              computeSubtleHash('SHA-256', uint8Data),
+              computeSubtleHash('SHA-384', uint8Data),
+              computeSubtleHash('SHA-512', uint8Data)
+            ]);
+
+            state.computedRawHex = {
+              'MD5': md5,
+              'SHA-1': sha1,
+              'SHA-256': sha256,
+              'SHA-384': sha384,
+              'SHA-512': sha512
+            };
+
+            dom.fileProgressBar.style.width = '100%';
+            dom.fileProgressPercent.textContent = '100%';
+            renderHashes();
+            runVerificationCheck();
+          }
+
+          const elapsed = Math.round(performance.now() - startTime);
+          dom.fileTimeDisplay.textContent = `${elapsed.toLocaleString()} ms`;
+          dom.hashingStatusText.innerHTML = `
+            <span class="text-emerald-400 font-semibold flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Calculation complete
+            </span>
+          `;
+          showToast(`Calculated hashes for "${file.name}" in ${elapsed}ms`);
+        } catch (err) {
+          console.error('File hashing error:', err);
+          dom.hashingStatusText.innerHTML = `<span class="text-rose-400 font-semibold">Error reading file: ${err.message}</span>`;
+          showToast('Failed to read file', false);
+        } finally {
+          state.isHashingFile = false;
+        }
+      }
+
+      // --- HASH VERIFICATION / COMPARISON CHECKER ---
+
+      function runVerificationCheck() {
+        const inputVal = (dom.expectedHashInput.value || '').trim();
+        state.expectedHash = inputVal;
+
+        // Reset all card highlights
+        dom.hashCards.forEach(card => {
+          card.classList.remove('match-highlight', 'border-emerald-500');
+          const indicator = card.querySelector('.hash-match-indicator');
+          if (indicator) indicator.classList.add('hidden');
+        });
+
+        if (!inputVal) {
+          dom.verifyStatusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-300';
+          dom.verifyStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-500"></span> Awaiting verification input';
+          dom.verifyStatusDetail.textContent = 'Enter an expected checksum above. Case & formatting are automatically normalized.';
+          dom.verifyResultCard.classList.remove('border-emerald-500/60', 'bg-emerald-950/20', 'border-rose-500/60', 'bg-rose-950/20');
+          return;
+        }
+
+        // Clean user input: strip colons, spaces, dashes
+        const cleanInput = inputVal.toLowerCase().replace(/[^0-9a-f]/g, '');
+        
+        let matchedAlgo = null;
+        for (const [algo, hexVal] of Object.entries(state.computedRawHex)) {
+          if (hexVal && hexVal.toLowerCase() === cleanInput) {
+            matchedAlgo = algo;
+            break;
+          }
+        }
+
+        // Check also if user pasted Base64 hash
+        if (!matchedAlgo) {
+          for (const [algo, hexVal] of Object.entries(state.computedRawHex)) {
+            const b64 = formatHash(hexVal, 'base64');
+            if (b64 && b64 === inputVal) {
+              matchedAlgo = algo;
+              break;
+            }
+          }
+        }
+
+        if (matchedAlgo) {
+          // Success match
+          dom.verifyResultCard.classList.remove('border-rose-500/60', 'bg-rose-950/20');
+          dom.verifyResultCard.classList.add('border-emerald-500/60', 'bg-emerald-950/20');
+          
+          dom.verifyStatusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50';
+          dom.verifyStatusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ✅ PERFECT MATCH: ${matchedAlgo}`;
+          
+          dom.verifyStatusDetail.innerHTML = `
+            <span class="text-emerald-300 font-semibold">Integrity Verified:</span> The provided checksum matches the calculated <strong class="text-gray-900">${matchedAlgo}</strong> digest bit-for-bit.
+          `;
+
+          // Highlight the specific card
+          const targetCard = Array.from(dom.hashCards).find(c => c.dataset.algo === matchedAlgo);
+          if (targetCard) {
+            targetCard.classList.add('match-highlight', 'border-emerald-500');
+            const ind = targetCard.querySelector('.hash-match-indicator');
+            if (ind) ind.classList.remove('hidden');
+          }
+        } else {
+          // Mismatch
+          dom.verifyResultCard.classList.remove('border-emerald-500/60', 'bg-emerald-950/20');
+          dom.verifyResultCard.classList.add('border-rose-500/60', 'bg-rose-950/20');
+
+          dom.verifyStatusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/50';
+          dom.verifyStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> ❌ MISMATCH / NO MATCH';
+
+          // Detect likely algorithm based on length
+          let probableAlgo = '';
+          if (cleanInput.length === 32) probableAlgo = 'Looks like an MD5 (32 chars)';
+          else if (cleanInput.length === 40) probableAlgo = 'Looks like a SHA-1 (40 chars)';
+          else if (cleanInput.length === 64) probableAlgo = 'Looks like a SHA-256 (64 chars)';
+          else if (cleanInput.length === 96) probableAlgo = 'Looks like a SHA-384 (96 chars)';
+          else if (cleanInput.length === 128) probableAlgo = 'Looks like a SHA-512 (128 chars)';
+          else probableAlgo = `Length: ${cleanInput.length} chars`;
+
+          dom.verifyStatusDetail.innerHTML = `
+            <span class="text-rose-300 font-semibold">Warning:</span> Checksum does not match any current output. (${probableAlgo}). Ensure you selected the correct source file or exact text.
+          `;
+        }
+      }
+
+      // --- EVENT HANDLERS ---
+
+      // Mode Switch: Text vs File
+      dom.modeTextBtn.addEventListener('click', () => {
+        state.mode = 'text';
+        dom.modeTextBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm';
+        dom.modeFileBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-800 transition-all';
+        dom.textModeContainer.classList.remove('hidden');
+        dom.fileModeContainer.classList.add('hidden');
+        handleTextChange();
+      });
+
+      dom.modeFileBtn.addEventListener('click', () => {
+        state.mode = 'file';
+        dom.modeFileBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm';
+        dom.modeTextBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-800 transition-all';
+        dom.fileModeContainer.classList.remove('hidden');
+        dom.textModeContainer.classList.add('hidden');
+        if (state.file) {
+          processFile(state.file);
+        } else {
+          // Clear current computed until file chosen
+          state.computedRawHex = { 'MD5': '', 'SHA-1': '', 'SHA-256': '', 'SHA-384': '', 'SHA-512': '' };
+          renderHashes();
+          runVerificationCheck();
+        }
+      });
+
+      // Format Selector change
+      dom.hashFormatSelect.addEventListener('change', (e) => {
+        state.format = e.target.value;
+        renderHashes();
+        showToast(`Format updated to ${e.target.value.toUpperCase()}`);
+      });
+
+      // Text Input live typing
+      dom.rawTextInput.addEventListener('input', handleTextChange);
+
+      // Presets
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.dataset.preset;
+          switch (preset) {
+            case 'hello':
+              dom.rawTextInput.value = 'Hello World!';
+              break;
+            case 'empty':
+              dom.rawTextInput.value = '';
+              break;
+            case 'token':
+              dom.rawTextInput.value = 'sk_live_9942a7b8e1008c4df7a19283e74b6c5a019d';
+              break;
+            case 'json':
+              dom.rawTextInput.value = JSON.stringify({ name: "UtilinOne", role: "developer_suite", timestamp: 1718000000, secure: true }, null, 2);
+              break;
+          }
+          handleTextChange();
+          showToast(`Preset loaded`);
+        });
+      });
+
+      // Clear text
+      dom.clearTextBtn.addEventListener('click', () => {
+        dom.rawTextInput.value = '';
+        handleTextChange();
+        dom.rawTextInput.focus();
+        showToast('Input cleared');
+      });
+
+      // Paste text
+      dom.pasteTextBtn.addEventListener('click', async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          dom.rawTextInput.value = text;
+          handleTextChange();
+          showToast('Text pasted from clipboard');
+        } catch (e) {
+          dom.rawTextInput.focus();
+          showToast('Please press Ctrl+V to paste', false);
+        }
+      });
+
+      // File Drag & Drop Events
+      dom.fileDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dom.fileDropZone.classList.add('border-indigo-500', 'bg-indigo-950/20');
+      });
+
+      dom.fileDropZone.addEventListener('dragleave', () => {
+        dom.fileDropZone.classList.remove('border-indigo-500', 'bg-indigo-950/20');
+      });
+
+      dom.fileDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dom.fileDropZone.classList.remove('border-indigo-500', 'bg-indigo-950/20');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          processFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      dom.filePickerInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          processFile(e.target.files[0]);
+        }
+      });
+
+      // Remove File
+      dom.removeFileBtn.addEventListener('click', () => {
+        state.file = null;
+        dom.filePickerInput.value = '';
+        dom.activeFileInfo.classList.add('hidden');
+        state.computedRawHex = { 'MD5': '', 'SHA-1': '', 'SHA-256': '', 'SHA-384': '', 'SHA-512': '' };
+        renderHashes();
+        runVerificationCheck();
+        showToast('File removed');
+      });
+
+      // Expected Hash Input events
+      dom.expectedHashInput.addEventListener('input', runVerificationCheck);
+
+      dom.clearVerifyInputBtn.addEventListener('click', () => {
+        dom.expectedHashInput.value = '';
+        runVerificationCheck();
+        dom.expectedHashInput.focus();
+      });
+
+      dom.pasteVerifyBtn.addEventListener('click', async () => {
+        try {
+          const clipText = await navigator.clipboard.readText();
+          dom.expectedHashInput.value = clipText.trim();
+          runVerificationCheck();
+          showToast('Checksum pasted from clipboard');
+        } catch (e) {
+          dom.expectedHashInput.focus();
+          showToast('Please press Ctrl+V to paste', false);
+        }
+      });
+
+      // Quick Test Button
+      dom.quickTestMatchBtn.addEventListener('click', () => {
+        if (state.computedRawHex['SHA-256']) {
+          dom.expectedHashInput.value = formatHash(state.computedRawHex['SHA-256'], state.format);
+          runVerificationCheck();
+          showToast('Loaded SHA-256 checksum into matcher');
+        } else {
+          showToast('Generate a hash first', false);
+        }
+      });
+
+      // Copy individual hash
+      dom.copyButtons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const targetId = btn.dataset.target;
+          const targetEl = document.getElementById(targetId);
+          if (!targetEl) return;
+          const val = targetEl.textContent.trim();
+          if (!val || val === 'Computing...' || val === 'Ready') {
+            showToast('No hash to copy', false);
+            return;
+          }
+
+          try {
+            await navigator.clipboard.writeText(val);
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              <span class="text-emerald-400">Copied!</span>
+            `;
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+            }, 1800);
+            showToast('Copied to clipboard!');
+          } catch (err) {
+            showToast('Copy failed', false);
+          }
+        });
+      });
+
+      // Copy All Hashes
+      dom.copyAllHashesBtn.addEventListener('click', async () => {
+        const fmt = state.format;
+        const sourceDesc = state.mode === 'text' 
+          ? `Text Input (${dom.charCount.textContent} chars, ${dom.byteCount.textContent})` 
+          : `File: ${state.file ? state.file.name + ' (' + formatBytes(state.file.size) + ')' : 'No file'}`;
+
+        const report = [
+          `# UtilinOne Cryptographic Hash Report`,
+          `# Generated: ${new Date().toISOString()}`,
+          `# Source: ${sourceDesc}`,
+          `# Format: ${fmt.toUpperCase()}`,
+          ``,
+          `MD5:     ${formatHash(state.computedRawHex['MD5'], fmt)}`,
+          `SHA-1:   ${formatHash(state.computedRawHex['SHA-1'], fmt)}`,
+          `SHA-256: ${formatHash(state.computedRawHex['SHA-256'], fmt)}`,
+          `SHA-384: ${formatHash(state.computedRawHex['SHA-384'], fmt)}`,
+          `SHA-512: ${formatHash(state.computedRawHex['SHA-512'], fmt)}`
+        ].join('\n');
+
+        try {
+          await navigator.clipboard.writeText(report);
+          showToast('Copied all 5 hashes with metadata!');
+        } catch (e) {
+          showToast('Failed to copy', false);
+        }
+      });
+
+      // Export Report as .txt file
+      dom.exportReportBtn.addEventListener('click', () => {
+        const fmt = state.format;
+        const sourceDesc = state.mode === 'text' 
+          ? `Text Input (${dom.charCount.textContent} chars, ${dom.byteCount.textContent})` 
+          : `File: ${state.file ? state.file.name + ' (' + formatBytes(state.file.size) + ')' : 'No file'}`;
+
+        const content = [
+          `============================================================`,
+          `UTILINONE CRYPTOGRAPHIC HASH DIGEST REPORT`,
+          `============================================================`,
+          `Timestamp:  ${new Date().toISOString()}`,
+          `Mode:       ${state.mode.toUpperCase()}`,
+          `Source:     ${sourceDesc}`,
+          `Format:     ${fmt.toUpperCase()}`,
+          `Security:   100% Client-Side WebCrypto (Zero Server Uplink)`,
+          `------------------------------------------------------------`,
+          `MD5:`,
+          `  ${formatHash(state.computedRawHex['MD5'], fmt)}`,
+          ``,
+          `SHA-1:`,
+          `  ${formatHash(state.computedRawHex['SHA-1'], fmt)}`,
+          ``,
+          `SHA-256:`,
+          `  ${formatHash(state.computedRawHex['SHA-256'], fmt)}`,
+          ``,
+          `SHA-384:`,
+          `  ${formatHash(state.computedRawHex['SHA-384'], fmt)}`,
+          ``,
+          `SHA-512:`,
+          `  ${formatHash(state.computedRawHex['SHA-512'], fmt)}`,
+          `============================================================`
+        ].join('\n');
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const filename = state.file 
+          ? `${state.file.name}-hashes.txt` 
+          : `hashes-${Date.now()}.txt`;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Exported ${filename}`);
+      });
+
+      // --- INITIALIZATION ---
+      handleTextChange();
+
+    })();
+  </script>
+</body>
+</html>

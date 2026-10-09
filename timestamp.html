@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix Timestamp Converter & Epoch Utility | UtilinOne</title>
+  <meta name="description" content="Commercial-grade Unix timestamp converter, live epoch clock, batch processor, and timestamp offset calculator. 100% client-side and secure.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    /* Subtle background grid pattern */
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    }
+    /* Glow animations */
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.03); }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    /* Custom scrollbar for tables & batch input */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-900">
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-indigo-500/10 via-violet-500/10 to-transparent blur-[120px] rounded-full animate-pulse-slow"></div>
+    <div class="absolute top-[35%] -left-40 w-96 h-96 bg-indigo-500/5 blur-[140px] rounded-full"></div>
+    <div class="absolute top-[60%] -right-40 w-96 h-96 bg-purple-500/5 blur-[140px] rounded-full"></div>
+    <div class="absolute inset-0 bg-grid-pattern opacity-60"></div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <header class="relative z-10 border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="group flex items-center gap-2.5 transition-all">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 p-0.5 shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all">
+            <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+              <svg class="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                <polyline points="12 6 12 12 16 14" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-lg tracking-tight text-slate-900">Util<span class="text-indigo-600">in</span>One</span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded">Dev Suite</span>
+            </div>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center text-xs text-slate-500 border-l border-slate-200 pl-4 space-x-2">
+          <span>/</span>
+          <span class="text-slate-800 font-medium flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Timestamp & Epoch Engine
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>🔒 100% Client-Side & Secure</span>
+        </div>
+        <a href="index.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          All Tools
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        High-Precision Time & Epoch Calculator
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
+        Unix Timestamp <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600">Converter & Engine</span>
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+        Convert Unix epoch timestamps to human-readable dates and back. Features millisecond auto-detection, batch conversions, relative time diffs, and time offset math.
+      </p>
+    </div>
+
+    <section class="relative rounded-2xl bg-white border border-slate-200 shadow-xl backdrop-blur-xl p-5 sm:p-7 overflow-hidden">
+      <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="space-y-2">
+          <div class="flex items-center gap-3">
+            <span class="text-xs uppercase tracking-wider font-semibold text-slate-500 flex items-center gap-2">
+              <span id="live-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span id="live-status-label" class="text-emerald-700 font-bold">LIVE CURRENT TIME</span>
+            </span>
+            <span class="text-xs text-slate-300">•</span>
+            <span id="live-local-zone" class="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200"></span>
+          </div>
+
+          <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+            <div>
+              <span class="text-xs font-medium text-indigo-600 block mb-0.5">Seconds (10-digit)</span>
+              <div class="flex items-center gap-2">
+                <span id="live-epoch-sec" class="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 hover:text-indigo-600 transition cursor-pointer select-all" title="Click to copy">0000000000</span>
+                <button type="button" onclick="copyText(document.getElementById('live-epoch-sec').innerText, 'Seconds timestamp')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition" title="Copy Seconds">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="border-l border-slate-200 pl-4 sm:pl-6">
+              <span class="text-xs font-medium text-violet-600 block mb-0.5">Milliseconds (13-digit)</span>
+              <div class="flex items-center gap-2">
+                <span id="live-epoch-ms" class="font-mono text-2xl sm:text-3xl font-semibold tracking-tight text-slate-700 hover:text-violet-600 transition cursor-pointer select-all" title="Click to copy">0000000000000</span>
+                <button type="button" onclick="copyText(document.getElementById('live-epoch-ms').innerText, 'Milliseconds timestamp')" class="p-1.5 text-slate-400 hover:text-violet-600 hover:bg-slate-100 rounded-lg transition" title="Copy Milliseconds">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-1 text-xs sm:text-sm text-slate-600 flex flex-wrap gap-x-4 gap-y-1 font-mono">
+            <span class="text-slate-800"><span class="text-slate-400">UTC:</span> <span id="live-utc-preview">...</span></span>
+            <span class="text-slate-800"><span class="text-slate-400">Local:</span> <span id="live-local-preview">...</span></span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 sm:self-start lg:self-center">
+          <button id="btn-toggle-ticker" type="button" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 shadow-xs">
+            <svg id="icon-ticker-pause" class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span id="ticker-btn-text">Pause Live Ticker</span>
+          </button>
+
+          <button id="btn-copy-current" type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/25 transition active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            <span id="btn-copy-current-text">Copy Current (Sec)</span>
+          </button>
+
+          <button id="btn-use-current" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-50 hover:bg-slate-100 text-indigo-700 border border-indigo-200 hover:border-indigo-300 transition shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            <span>Send to Converter</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="error-banner" class="hidden transition-all duration-300">
+      <div class="rounded-xl bg-amber-50 border border-amber-300 p-4 text-amber-800 flex items-start gap-3 shadow-sm">
+        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div class="flex-1 text-sm font-medium" id="error-banner-message">
+          ⚠️ Invalid timestamp or date format. Please check your input.
+        </div>
+        <button type="button" onclick="hideError()" class="text-amber-600 hover:text-amber-900 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-2 h-5 rounded-full bg-indigo-600"></span>
+            Dual Conversion Engine
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-600">Convert bi-directionally between raw Unix epochs and standardized date formats.</p>
+        </div>
+
+        <div class="inline-flex p-1 rounded-xl bg-slate-200/70 border border-slate-300 self-start sm:self-auto">
+          <button type="button" id="tab-btn-epoch-to-date" class="px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-indigo-600 text-white shadow-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            Epoch → Date
+          </button>
+          <button type="button" id="tab-btn-date-to-epoch" class="px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Date → Epoch
+          </button>
+        </div>
+      </div>
+
+      <div id="view-epoch-to-date" class="space-y-6">
+        <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 shadow-sm backdrop-blur space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <label for="input-epoch" class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+              <span>Enter Unix Timestamp</span>
+              <span id="detected-unit-badge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">Auto-detecting...</span>
+            </label>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-slate-500">Mode:</span>
+              <button type="button" id="mode-btn-single" class="px-2.5 py-1 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs">Single</button>
+              <button type="button" id="mode-btn-batch" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 border border-slate-200 bg-slate-50">Batch Mode</button>
+            </div>
+          </div>
+
+          <div id="single-input-wrapper" class="space-y-3">
+            <div class="relative">
+              <input type="text" id="input-epoch" placeholder="e.g. 1775654828 or 1775654828000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3.5 pr-28 text-slate-900 font-mono text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition placeholder-slate-400 shadow-inner">
+              <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                <button type="button" id="btn-epoch-now" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-200 hover:bg-slate-300 text-indigo-700 border border-slate-300 transition">
+                  Now
+                </button>
+                <button type="button" id="btn-epoch-clear" class="p-1.5 text-xs text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition" title="Clear input">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+              <span class="text-slate-500 font-medium">Quick samples:</span>
+              <button type="button" onclick="setEpochInput(1775654828)" class="hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded border border-slate-200 font-mono transition">Current Sec</button>
+              <button type="button" onclick="setEpochInput(1775654828000)" class="hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded border border-slate-200 font-mono transition">Current Ms</button>
+              <button type="button" onclick="setEpochInput(0)" class="hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded border border-slate-200 font-mono transition">Epoch Zero (1970)</button>
+              <button type="button" onclick="setEpochInput(2147483647)" class="hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded border border-slate-200 font-mono transition">Year 2038 Bug</button>
+            </div>
+          </div>
+
+          <div id="batch-input-wrapper" class="hidden space-y-3">
+            <div>
+              <textarea id="input-batch-epoch" rows="5" placeholder="Paste multiple timestamps (one per line, comma or space separated):&#10;1775654828&#10;1775654828000&#10;1609459200&#10;0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-slate-900 font-mono text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition placeholder-slate-400 shadow-inner"></textarea>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-batch-convert" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition active:scale-95 shadow-xs">
+                  Convert All Timestamps
+                </button>
+                <button type="button" id="btn-batch-sample" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition">
+                  Insert Sample Batch
+                </button>
+                <button type="button" id="btn-batch-clear" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-800 transition">
+                  Clear
+                </button>
+              </div>
+              <div id="batch-count-info" class="text-xs text-slate-500">0 timestamps parsed</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="single-results-container" class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Converted Formats</h3>
+            <button type="button" id="btn-copy-all-formats" class="text-xs font-medium text-indigo-600 hover:text-indigo-700 transition flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+              Copy All Formats (JSON)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-xl bg-white border border-slate-200 p-4 space-y-1.5 hover:border-slate-300 transition group shadow-xs">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> UTC String (GMT)
+                </span>
+                <button type="button" onclick="copyCardOutput('res-utc', 'UTC String')" class="text-slate-400 group-hover:text-indigo-600 hover:text-indigo-700 transition p-1" title="Copy">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+              <div id="res-utc" class="font-mono text-sm sm:text-base font-semibold text-slate-800 break-all select-all">--</div>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-4 space-y-1.5 hover:border-slate-300 transition group shadow-xs">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Local Time Zone
+                </span>
+                <button type="button" onclick="copyCardOutput('res-local', 'Local Time')" class="text-slate-400 group-hover:text-indigo-600 hover:text-indigo-700 transition p-1" title="Copy">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+              <div id="res-local" class="font-mono text-sm sm:text-base font-semibold text-slate-800 break-all select-all">--</div>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-4 space-y-1.5 hover:border-slate-300 transition group shadow-xs">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> ISO 8601 Extended
+                </span>
+                <button type="button" onclick="copyCardOutput('res-iso', 'ISO 8601')" class="text-slate-400 group-hover:text-indigo-600 hover:text-indigo-700 transition p-1" title="Copy">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+              <div id="res-iso" class="font-mono text-sm sm:text-base font-semibold text-slate-800 break-all select-all">--</div>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-4 space-y-1.5 hover:border-slate-300 transition group shadow-xs">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> RFC 2822 / Email Date
+                </span>
+                <button type="button" onclick="copyCardOutput('res-rfc', 'RFC 2822')" class="text-slate-400 group-hover:text-indigo-600 hover:text-indigo-700 transition p-1" title="Copy">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+              </div>
+              <div id="res-rfc" class="font-mono text-sm sm:text-base font-semibold text-slate-800 break-all select-all">--</div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-white border border-slate-200 p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs shadow-xs">
+            <div>
+              <span class="text-slate-500 block">Relative Time</span>
+              <span id="res-relative" class="font-semibold text-indigo-600 text-sm">--</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Day of Year</span>
+              <span id="res-doy" class="font-mono text-slate-800 text-sm">--</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Week Number</span>
+              <span id="res-week" class="font-mono text-slate-800 text-sm">--</span>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Leap Year</span>
+              <span id="res-leap" class="font-mono text-slate-800 text-sm">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="batch-results-container" class="hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Batch Conversion Table</h3>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-batch-export-csv" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition">
+                Export CSV
+              </button>
+              <button type="button" id="btn-batch-copy-json" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+                Copy JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
+            <div class="overflow-x-auto max-h-96">
+              <table class="w-full text-left border-collapse text-xs font-mono">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 sticky top-0">
+                    <th class="py-3 px-4 font-semibold">#</th>
+                    <th class="py-3 px-4 font-semibold">Raw Input</th>
+                    <th class="py-3 px-4 font-semibold">Unit</th>
+                    <th class="py-3 px-4 font-semibold">UTC Date</th>
+                    <th class="py-3 px-4 font-semibold">Local Date</th>
+                    <th class="py-3 px-4 font-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-results-tbody" class="divide-y divide-slate-100 text-slate-800">
+                  <tr>
+                    <td colspan="6" class="py-6 text-center text-slate-400">No timestamps entered. Paste multiple timestamps above to batch convert.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-date-to-epoch" class="hidden space-y-6">
+        <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 shadow-sm backdrop-blur space-y-5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Select Date & Time</h3>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-date-now" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-indigo-700 border border-slate-200 transition">
+                Set Current Time
+              </button>
+              <button type="button" id="btn-date-clear" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800 transition">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="picker-datetime" class="text-xs font-semibold text-slate-700">Interactive Date-Time Picker (Local)</label>
+              <input type="datetime-local" step="1" id="picker-datetime" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 font-mono text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
+            </div>
+            <div class="space-y-1.5">
+              <label for="select-tz-target" class="text-xs font-semibold text-slate-700">Interpretation Mode</label>
+              <select id="select-tz-target" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 font-medium text-sm focus:outline-none focus:border-indigo-500 transition">
+                <option value="local">Local Time Zone</option>
+                <option value="utc">UTC / GMT</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-6 gap-3">
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Year</label>
+              <input type="number" id="manual-year" placeholder="YYYY" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Month</label>
+              <input type="number" id="manual-month" min="1" max="12" placeholder="MM" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Day</label>
+              <input type="number" id="manual-day" min="1" max="31" placeholder="DD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Hour</label>
+              <input type="number" id="manual-hour" min="0" max="23" placeholder="HH" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Minute</label>
+              <input type="number" id="manual-minute" min="0" max="59" placeholder="MM" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Second</label>
+              <input type="number" id="manual-second" min="0" max="59" placeholder="SS" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-xl bg-white border border-slate-200 p-5 space-y-2 hover:border-slate-300 transition group shadow-xs">
+            <div class="flex items-center justify-between text-xs text-slate-500">
+              <span class="font-medium text-indigo-600 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Unix Timestamp (Seconds / 10 digits)
+              </span>
+              <button type="button" onclick="copyCardOutput('res-dto-sec', 'Seconds')" class="text-slate-400 group-hover:text-indigo-600 transition p-1" title="Copy Seconds">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+            <div id="res-dto-sec" class="font-mono text-xl sm:text-2xl font-bold text-slate-900 select-all">--</div>
+          </div>
+
+          <div class="rounded-xl bg-white border border-slate-200 p-5 space-y-2 hover:border-slate-300 transition group shadow-xs">
+            <div class="flex items-center justify-between text-xs text-slate-500">
+              <span class="font-medium text-violet-600 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span> Unix Timestamp (Milliseconds / 13 digits)
+              </span>
+              <button type="button" onclick="copyCardOutput('res-dto-ms', 'Milliseconds')" class="text-slate-400 group-hover:text-violet-600 transition p-1" title="Copy Milliseconds">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+            <div id="res-dto-ms" class="font-mono text-xl sm:text-2xl font-bold text-slate-900 select-all">--</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end">
+          <button type="button" onclick="sendDtoToEpochConverter()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition">
+            <span>Send back to Epoch Converter</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-7 shadow-sm space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-2 h-5 rounded-full bg-violet-600"></span>
+            Timestamp Offset & Date Math Calculator
+          </h2>
+          <p class="text-xs text-slate-600">Add or subtract years, months, days, hours, or minutes from any base timestamp.</p>
+        </div>
+        <button type="button" id="btn-load-offset-base" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-indigo-700 border border-slate-200 transition self-start sm:self-auto">
+          <span>Load Current Converted Epoch</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="space-y-4 lg:col-span-1 border-b lg:border-b-0 lg:border-r border-slate-200 pb-6 lg:pb-0 lg:pr-6">
+          <div class="space-y-1.5">
+            <label for="offset-base-epoch" class="text-xs font-semibold text-slate-700">Base Timestamp (Seconds or Milliseconds)</label>
+            <div class="relative">
+              <input type="text" id="offset-base-epoch" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 pr-20 text-slate-900 font-mono text-sm focus:outline-none focus:border-indigo-500 shadow-inner">
+              <button type="button" id="btn-offset-base-now" class="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-200 hover:bg-slate-300 text-indigo-700 border border-slate-300 transition">
+                Now
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-slate-700 block">Base Date Preview</span>
+            <div id="offset-base-preview" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-600 leading-relaxed">
+              --
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-slate-700 block">Operation Mode</span>
+            <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 w-full">
+              <button type="button" id="offset-op-add" class="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition shadow-xs">
+                + Add Offset
+              </button>
+              <button type="button" id="offset-op-sub" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+                - Subtract Offset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-5 flex flex-col justify-between">
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Years</label>
+              <input type="number" id="offset-years" value="0" min="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Months</label>
+              <input type="number" id="offset-months" value="0" min="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Days</label>
+              <input type="number" id="offset-days" value="0" min="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-500 font-medium">Hours</label>
+              <input type="number" id="offset-hours" value="0" min="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1 col-span-2 sm:col-span-1">
+              <label class="text-[11px] text-slate-500 font-medium">Minutes</label>
+              <input type="number" id="offset-minutes" value="0" min="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 font-mono text-sm text-center focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 sm:p-5 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-500">
+              <span class="font-semibold text-slate-700">Computed Target Result</span>
+              <button type="button" onclick="loadOffsetIntoConverter()" class="text-indigo-600 hover:text-indigo-700 font-medium transition">
+                Send to Main Converter →
+              </button>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="text-[11px] text-slate-500 block">Target Epoch Seconds</span>
+                <span id="offset-res-sec" class="font-mono text-xl sm:text-2xl font-bold text-slate-900 select-all">--</span>
+              </div>
+              <div class="sm:text-right">
+                <span class="text-[11px] text-slate-500 block">Target Date (UTC)</span>
+                <span id="offset-res-date" class="font-mono text-xs sm:text-sm font-semibold text-slate-700 select-all">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+      <div class="rounded-2xl bg-white border border-slate-200 p-6 space-y-3 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Client-Side Processing Guarantee
+        </h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          All calculations, time zone formatting, and parsing happen entirely inside your web browser using JavaScript's native <code class="text-indigo-600 font-mono">Intl</code> and <code class="text-indigo-600 font-mono">Date</code> engines.
+        </p>
+        <ul class="text-xs text-slate-600 space-y-1.5 pt-1">
+          <li class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> No server analytics or timestamp tracking
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Zero network roundtrips & latency
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Safe for private production log timestamps
+          </li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl bg-white border border-slate-200 p-6 space-y-3 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Epoch Digits Reference
+        </h3>
+        <div class="space-y-2 text-xs">
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div>
+              <span class="font-bold text-slate-800">Seconds (10 digits)</span>
+              <span class="block text-[11px] text-slate-500">e.g. Unix, Python time()</span>
+            </div>
+            <span class="font-mono text-indigo-600">1.7e9</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div>
+              <span class="font-bold text-slate-800">Milliseconds (13 digits)</span>
+              <span class="block text-[11px] text-slate-500">e.g. JavaScript Date.now()</span>
+            </div>
+            <span class="font-mono text-violet-600">1.7e12</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div>
+              <span class="font-bold text-slate-800">Microseconds (16 digits)</span>
+              <span class="block text-[11px] text-slate-500">e.g. High-res DB logs</span>
+            </div>
+            <span class="font-mono text-purple-600">1.7e15</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">More Developer Suite Tools</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <a href="regex.html" class="block p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-indigo-300 transition group">
+          <div class="font-semibold text-slate-800 group-hover:text-indigo-600 flex items-center justify-between">
+            <span>Regex Tester</span>
+            <span>→</span>
+          </div>
+          <span class="text-[11px] text-slate-500">Real-time expression debugger</span>
+        </a>
+        <a href="srt.html" class="block p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-indigo-300 transition group">
+          <div class="font-semibold text-slate-800 group-hover:text-indigo-600 flex items-center justify-between">
+            <span>SRT Cleaner</span>
+            <span>→</span>
+          </div>
+          <span class="text-[11px] text-slate-500">Strip subtitles & timestamps</span>
+        </a>
+        <a href="url-encoder.html" class="block p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-indigo-300 transition group">
+          <div class="font-semibold text-slate-800 group-hover:text-indigo-600 flex items-center justify-between">
+            <span>URL Encoder</span>
+            <span>→</span>
+          </div>
+          <span class="text-[11px] text-slate-500">RFC 3986 URI parameter parser</span>
+        </a>
+        <a href="json-formatter.html" class="block p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-indigo-300 transition group">
+          <div class="font-semibold text-slate-800 group-hover:text-indigo-600 flex items-center justify-between">
+            <span>JSON Formatter</span>
+            <span>→</span>
+          </div>
+          <span class="text-[11px] text-slate-500">Minify, prettify and inspect trees</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="relative z-10 border-t border-slate-200 bg-white mt-16 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-800">UtilinOne</span>
+        <span>•</span>
+        <span>Commercial-grade client-side developer utility suite</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-600">
+        <a href="index.html" class="hover:text-slate-900 transition">Home</a>
+        <a href="timestamp.html" class="text-indigo-600 hover:text-indigo-700 transition font-medium">Timestamp Converter</a>
+        <a href="base64.html" class="hover:text-slate-900 transition">Base64</a>
+        <a href="regex.html" class="hover:text-slate-900 transition">Regex Tester</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- STATE & DOM ELEMENTS ---
+    let tickerActive = true;
+    let tickerInterval = null;
+    let activeTab = 'epoch-to-date'; // 'epoch-to-date' or 'date-to-epoch'
+    let inputMode = 'single'; // 'single' or 'batch'
+    let offsetDirection = 'add'; // 'add' or 'sub'
+
+    // Live Ticker Elements
+    const liveEpochSecEl = document.getElementById('live-epoch-sec');
+    const liveEpochMsEl = document.getElementById('live-epoch-ms');
+    const liveUtcPreviewEl = document.getElementById('live-utc-preview');
+    const liveLocalPreviewEl = document.getElementById('live-local-preview');
+    const liveLocalZoneEl = document.getElementById('live-local-zone');
+    const btnToggleTicker = document.getElementById('btn-toggle-ticker');
+    const tickerBtnText = document.getElementById('ticker-btn-text');
+    const iconTickerPause = document.getElementById('icon-ticker-pause');
+
+    // Tab Buttons & Views
+    const tabBtnEpochToDate = document.getElementById('tab-btn-epoch-to-date');
+    const tabBtnDateToEpoch = document.getElementById('tab-btn-date-to-epoch');
+    const viewEpochToDate = document.getElementById('view-epoch-to-date');
+    const viewDateToEpoch = document.getElementById('view-date-to-epoch');
+
+    // Mode Toggle Elements
+    const modeBtnSingle = document.getElementById('mode-btn-single');
+    const modeBtnBatch = document.getElementById('mode-btn-batch');
+    const singleInputWrapper = document.getElementById('single-input-wrapper');
+    const batchInputWrapper = document.getElementById('batch-input-wrapper');
+    const singleResultsContainer = document.getElementById('single-results-container');
+    const batchResultsContainer = document.getElementById('batch-results-container');
+
+    // Epoch to Date Elements
+    const inputEpoch = document.getElementById('input-epoch');
+    const detectedUnitBadge = document.getElementById('detected-unit-badge');
+    const resUtc = document.getElementById('res-utc');
+    const resLocal = document.getElementById('res-local');
+    const resIso = document.getElementById('res-iso');
+    const resRfc = document.getElementById('res-rfc');
+    const resRelative = document.getElementById('res-relative');
+    const resDoy = document.getElementById('res-doy');
+    const resWeek = document.getElementById('res-week');
+    const resLeap = document.getElementById('res-leap');
+
+    // Batch Elements
+    const inputBatchEpoch = document.getElementById('input-batch-epoch');
+    const btnBatchConvert = document.getElementById('btn-batch-convert');
+    const btnBatchSample = document.getElementById('btn-batch-sample');
+    const btnBatchClear = document.getElementById('btn-batch-clear');
+    const batchCountInfo = document.getElementById('batch-count-info');
+    const batchResultsTbody = document.getElementById('batch-results-tbody');
+    const btnBatchExportCsv = document.getElementById('btn-batch-export-csv');
+    const btnBatchCopyJson = document.getElementById('btn-batch-copy-json');
+
+    // Date to Epoch Elements
+    const pickerDatetime = document.getElementById('picker-datetime');
+    const selectTzTarget = document.getElementById('select-tz-target');
+    const manualYear = document.getElementById('manual-year');
+    const manualMonth = document.getElementById('manual-month');
+    const manualDay = document.getElementById('manual-day');
+    const manualHour = document.getElementById('manual-hour');
+    const manualMinute = document.getElementById('manual-minute');
+    const manualSecond = document.getElementById('manual-second');
+    const resDtoSec = document.getElementById('res-dto-sec');
+    const resDtoMs = document.getElementById('res-dto-ms');
+    const btnDateNow = document.getElementById('btn-date-now');
+    const btnDateClear = document.getElementById('btn-date-clear');
+
+    // Offset Calculator Elements
+    const offsetBaseEpoch = document.getElementById('offset-base-epoch');
+    const btnOffsetBaseNow = document.getElementById('btn-offset-base-now');
+    const offsetBasePreview = document.getElementById('offset-base-preview');
+    const offsetOpAdd = document.getElementById('offset-op-add');
+    const offsetOpSub = document.getElementById('offset-op-sub');
+    const offsetYears = document.getElementById('offset-years');
+    const offsetMonths = document.getElementById('offset-months');
+    const offsetDays = document.getElementById('offset-days');
+    const offsetHours = document.getElementById('offset-hours');
+    const offsetMinutes = document.getElementById('offset-minutes');
+    const offsetResSec = document.getElementById('offset-res-sec');
+    const offsetResDate = document.getElementById('offset-res-date');
+
+    // Error Banner
+    const errorBanner = document.getElementById('error-banner');
+    const errorBannerMessage = document.getElementById('error-banner-message');
+
+    function showError(msg) {
+      errorBannerMessage.textContent = msg;
+      errorBanner.classList.remove('hidden');
+    }
+    function hideError() {
+      errorBanner.classList.add('hidden');
+    }
+
+    // --- TOAST NOTIFICATION SYSTEM ---
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-xs font-semibold border transition-all duration-300 translate-y-4 opacity-0 ${
+        type === 'success' 
+          ? 'bg-white text-emerald-800 border-emerald-300' 
+          : 'bg-white text-slate-800 border-slate-300'
+      }`;
+      toast.innerHTML = `
+        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 10);
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    function copyText(text, label = 'Text') {
+      if (!text || text === '--') return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`Copied ${label} to clipboard!`);
+      }).catch(() => {
+        showToast('Failed to copy to clipboard', 'error');
+      });
+    }
+
+    function copyCardOutput(elementId, label) {
+      const el = document.getElementById(elementId);
+      if (el) copyText(el.innerText, label);
+    }
+
+    // --- 1. LIVE TICKER LOGIC ---
+    function startLiveTicker() {
+      tickerActive = true;
+      tickerBtnText.textContent = 'Pause Live Ticker';
+      iconTickerPause.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+      document.getElementById('live-indicator-dot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping';
+      document.getElementById('live-status-label').className = 'text-emerald-700 font-bold';
+      document.getElementById('live-status-label').textContent = 'LIVE CURRENT TIME';
+
+      const update = () => {
+        const now = new Date();
+        const ms = now.getTime();
+        const sec = Math.floor(ms / 1000);
+
+        liveEpochSecEl.textContent = sec;
+        liveEpochMsEl.textContent = ms;
+        liveUtcPreviewEl.textContent = now.toUTCString();
+        liveLocalPreviewEl.textContent = now.toLocaleString();
+      };
+
+      update();
+      tickerInterval = setInterval(update, 1000);
+    }
+
+    function pauseLiveTicker() {
+      tickerActive = false;
+      clearInterval(tickerInterval);
+      tickerBtnText.textContent = 'Resume Live Ticker';
+      iconTickerPause.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><circle cx="12" cy="12" r="9" stroke-width="2"/>';
+      document.getElementById('live-indicator-dot').className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
+      document.getElementById('live-status-label').className = 'text-amber-700 font-bold';
+      document.getElementById('live-status-label').textContent = 'PAUSED TICKER';
+    }
+
+    btnToggleTicker.addEventListener('click', () => {
+      if (tickerActive) {
+        pauseLiveTicker();
+        showToast('Live ticker paused', 'info');
+      } else {
+        startLiveTicker();
+        showToast('Live ticker resumed');
+      }
+    });
+
+    document.getElementById('btn-copy-current').addEventListener('click', () => {
+      const val = liveEpochSecEl.innerText;
+      copyText(val, 'Current Unix Timestamp (Sec)');
+    });
+
+    document.getElementById('btn-use-current').addEventListener('click', () => {
+      const currentSec = liveEpochSecEl.innerText;
+      switchTab('epoch-to-date');
+      setEpochInput(currentSec);
+      showToast('Loaded current epoch into converter');
+      window.scrollTo({ top: viewEpochToDate.offsetTop - 80, behavior: 'smooth' });
+    });
+
+    // Detect user's local timezone string
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const offsetMin = new Date().getTimezoneOffset();
+      const sign = offsetMin <= 0 ? '+' : '-';
+      const absH = String(Math.floor(Math.abs(offsetMin) / 60)).padStart(2, '0');
+      const absM = String(Math.abs(offsetMin) % 60).padStart(2, '0');
+      const offsetStr = `UTC${sign}${absH}:${absM}`;
+      liveLocalZoneEl.textContent = `${tz} (${offsetStr})`;
+    } catch {
+      liveLocalZoneEl.textContent = 'Local Time';
+    }
+
+    // --- 2. TAB SWITCHING ---
+    function switchTab(tab) {
+      activeTab = tab;
+      if (tab === 'epoch-to-date') {
+        tabBtnEpochToDate.className = 'px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-indigo-600 text-white shadow-sm flex items-center gap-1.5';
+        tabBtnDateToEpoch.className = 'px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+        viewEpochToDate.classList.remove('hidden');
+        viewDateToEpoch.classList.add('hidden');
+      } else {
+        tabBtnDateToEpoch.className = 'px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-indigo-600 text-white shadow-sm flex items-center gap-1.5';
+        tabBtnEpochToDate.className = 'px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+        viewDateToEpoch.classList.remove('hidden');
+        viewEpochToDate.classList.add('hidden');
+        syncPickerWithManualFields();
+        calculateDateToEpoch();
+      }
+    }
+
+    tabBtnEpochToDate.addEventListener('click', () => switchTab('epoch-to-date'));
+    tabBtnDateToEpoch.addEventListener('click', () => switchTab('date-to-epoch'));
+
+    // --- 3. MODE SWITCHING (Single vs Batch) ---
+    modeBtnSingle.addEventListener('click', () => {
+      inputMode = 'single';
+      modeBtnSingle.className = 'px-2.5 py-1 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs';
+      modeBtnBatch.className = 'px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 border border-slate-200 bg-slate-50';
+      singleInputWrapper.classList.remove('hidden');
+      batchInputWrapper.classList.add('hidden');
+      singleResultsContainer.classList.remove('hidden');
+      batchResultsContainer.classList.add('hidden');
+      processSingleEpoch();
+    });
+
+    modeBtnBatch.addEventListener('click', () => {
+      inputMode = 'batch';
+      modeBtnBatch.className = 'px-2.5 py-1 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs';
+      modeBtnSingle.className = 'px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 border border-slate-200 bg-slate-50';
+      batchInputWrapper.classList.remove('hidden');
+      singleInputWrapper.classList.add('hidden');
+      batchResultsContainer.classList.remove('hidden');
+      singleResultsContainer.classList.add('hidden');
+      processBatchEpochs();
+    });
+
+    // --- 4. EPOCH TO DATE LOGIC ---
+    function parseTimestamp(rawStr) {
+      if (!rawStr) return null;
+      const cleanedStr = rawStr.trim();
+      if (!/^-?\d+(\.\d+)?$/.test(cleanedStr)) return null;
+
+      const num = Number(cleanedStr);
+      if (isNaN(num)) return null;
+
+      const abs = Math.abs(num);
+      let ms = num;
+      let unit = 'seconds';
+
+      if (abs < 1e11) {
+        ms = num * 1000;
+        unit = 'seconds';
+      } else if (abs < 1e14) {
+        ms = num;
+        unit = 'milliseconds';
+      } else if (abs < 1e17) {
+        ms = num / 1000;
+        unit = 'microseconds';
+      } else {
+        ms = num / 1000000;
+        unit = 'nanoseconds';
+      }
+
+      const date = new Date(ms);
+      if (isNaN(date.getTime())) return null;
+      return { num, ms, date, unit };
+    }
+
+    function getRelativeTimeString(date) {
+      const now = new Date();
+      const diffSec = Math.round((date.getTime() - now.getTime()) / 1000);
+      const isPast = diffSec < 0;
+      const absSec = Math.abs(diffSec);
+
+      if (absSec < 5) return 'Just now';
+      if (absSec < 60) return isPast ? `${absSec} seconds ago` : `In ${absSec} seconds`;
+      const absMin = Math.round(absSec / 60);
+      if (absMin < 60) return isPast ? `${absMin} minute${absMin > 1 ? 's' : ''} ago` : `In ${absMin} minute${absMin > 1 ? 's' : ''}`;
+      const absHours = Math.round(absMin / 60);
+      if (absHours < 24) return isPast ? `${absHours} hour${absHours > 1 ? 's' : ''} ago` : `In ${absHours} hour${absHours > 1 ? 's' : ''}`;
+      const absDays = Math.round(absHours / 24);
+      if (absDays < 30) return isPast ? `${absDays} day${absDays > 1 ? 's' : ''} ago` : `In ${absDays} day${absDays > 1 ? 's' : ''}`;
+      const absMonths = Math.round(absDays / 30.4375);
+      if (absMonths < 12) return isPast ? `${absMonths} month${absMonths > 1 ? 's' : ''} ago` : `In ${absMonths} month${absMonths > 1 ? 's' : ''}`;
+      const absYears = (absDays / 365.25).toFixed(1);
+      return isPast ? `${absYears} years ago` : `In ${absYears} years`;
+    }
+
+    function getDayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    function getWeekNumber(date) {
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    }
+
+    function isLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+
+    function clearSingleOutputs() {
+      resUtc.textContent = '--';
+      resLocal.textContent = '--';
+      resIso.textContent = '--';
+      resRfc.textContent = '--';
+      resRelative.textContent = '--';
+      resDoy.textContent = '--';
+      resWeek.textContent = '--';
+      resLeap.textContent = '--';
+    }
+
+    function processSingleEpoch() {
+      hideError();
+      const raw = inputEpoch.value.trim();
+      if (!raw) {
+        detectedUnitBadge.textContent = 'Auto-detecting...';
+        detectedUnitBadge.className = 'text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200';
+        clearSingleOutputs();
+        return;
+      }
+
+      const parsed = parseTimestamp(raw);
+      if (!parsed) {
+        showError('Invalid timestamp: Please provide a valid numeric Unix epoch timestamp.');
+        detectedUnitBadge.textContent = 'Invalid Input';
+        detectedUnitBadge.className = 'text-[11px] font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300';
+        clearSingleOutputs();
+        return;
+      }
+
+      detectedUnitBadge.textContent = `Detected: ${parsed.unit}`;
+      detectedUnitBadge.className = 'text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200';
+
+      const d = parsed.date;
+      resUtc.textContent = d.toUTCString();
+      resLocal.textContent = d.toLocaleString();
+      resIso.textContent = d.toISOString();
+      resRfc.textContent = d.toUTCString(); // Standard fallback representation
+      resRelative.textContent = getRelativeTimeString(d);
+      resDoy.textContent = getDayOfYear(d);
+      resWeek.textContent = getWeekNumber(d);
+      resLeap.textContent = isLeapYear(d.getFullYear()) ? `Yes (${d.getFullYear()})` : `No (${d.getFullYear()})`;
+    }
+
+    function setEpochInput(val) {
+      inputEpoch.value = val;
+      processSingleEpoch();
+    }
+
+    inputEpoch.addEventListener('input', processSingleEpoch);
+
+    document.getElementById('btn-epoch-now').addEventListener('click', () => {
+      setEpochInput(Math.floor(Date.now() / 1000));
+      showToast('Set to current timestamp');
+    });
+
+    document.getElementById('btn-epoch-clear').addEventListener('click', () => {
+      inputEpoch.value = '';
+      processSingleEpoch();
+      inputEpoch.focus();
+    });
+
+    document.getElementById('btn-copy-all-formats').addEventListener('click', () => {
+      const raw = inputEpoch.value.trim();
+      const parsed = parseTimestamp(raw);
+      if (!parsed) {
+        showToast('No valid timestamp to export', 'error');
+        return;
+      }
+      const data = {
+        input: raw,
+        unit: parsed.unit,
+        utc: parsed.date.toUTCString(),
+        local: parsed.date.toLocaleString(),
+        iso: parsed.date.toISOString(),
+        relative: getRelativeTimeString(parsed.date),
+        dayOfYear: getDayOfYear(parsed.date),
+        weekNumber: getWeekNumber(parsed.date)
+      };
+      copyText(JSON.stringify(data, null, 2), 'All Formats JSON');
+    });
+
+    // --- 5. BATCH CONVERSION LOGIC ---
+    let lastBatchResults = [];
+
+    function processBatchEpochs() {
+      const raw = inputBatchEpoch.value;
+      const lines = raw.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
+      batchCountInfo.textContent = `${lines.length} timestamp${lines.length === 1 ? '' : 's'} parsed`;
+
+      if (lines.length === 0) {
+        batchResultsTbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No timestamps entered. Paste multiple timestamps above to batch convert.</td></tr>`;
+        lastBatchResults = [];
+        return;
+      }
+
+      lastBatchResults = [];
+      let rowsHtml = '';
+
+      lines.forEach((line, idx) => {
+        const parsed = parseTimestamp(line);
+        if (parsed) {
+          const item = {
+            index: idx + 1,
+            raw: line,
+            unit: parsed.unit,
+            iso: parsed.date.toISOString(),
+            local: parsed.date.toLocaleString(),
+            date: parsed.date
+          };
+          lastBatchResults.push(item);
+
+          rowsHtml += `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="py-2.5 px-4 text-slate-400">${idx + 1}</td>
+              <td class="py-2.5 px-4 font-bold text-slate-900">${line}</td>
+              <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-indigo-50 text-indigo-700 font-semibold uppercase border border-indigo-200">${parsed.unit}</span></td>
+              <td class="py-2.5 px-4 text-slate-700">${parsed.date.toUTCString()}</td>
+              <td class="py-2.5 px-4 text-slate-700">${parsed.date.toLocaleString()}</td>
+              <td class="py-2.5 px-4 text-right">
+                <button type="button" onclick="copyText('${line} --> ${parsed.date.toISOString()}', 'Row')" class="text-indigo-600 hover:text-indigo-700 text-xs font-medium">Copy</button>
+              </td>
+            </tr>
+          `;
+        } else {
+          rowsHtml += `
+            <tr class="hover:bg-amber-50/40 transition bg-amber-50/20">
+              <td class="py-2.5 px-4 text-slate-400">${idx + 1}</td>
+              <td class="py-2.5 px-4 font-bold text-amber-800">${line}</td>
+              <td colspan="4" class="py-2.5 px-4 text-amber-600 text-xs italic">⚠️ Invalid timestamp format</td>
+            </tr>
+          `;
+        }
+      });
+
+      batchResultsTbody.innerHTML = rowsHtml;
+    }
+
+    inputBatchEpoch.addEventListener('input', processBatchEpochs);
+    btnBatchConvert.addEventListener('click', processBatchEpochs);
+
+    btnBatchSample.addEventListener('click', () => {
+      const samples = [
+        Math.floor(Date.now() / 1000),
+        Date.now(),
+        1704067200,
+        1609459200,
+        0,
+        946684800
+      ].join('\n');
+      inputBatchEpoch.value = samples;
+      processBatchEpochs();
+      showToast('Inserted sample batch');
+    });
+
+    btnBatchClear.addEventListener('click', () => {
+      inputBatchEpoch.value = '';
+      processBatchEpochs();
+      inputBatchEpoch.focus();
+    });
+
+    btnBatchExportCsv.addEventListener('click', () => {
+      if (lastBatchResults.length === 0) {
+        showToast('No valid batch results to export', 'error');
+        return;
+      }
+      let csv = 'Index,RawInput,Unit,UTC,Local\n';
+      lastBatchResults.forEach(r => {
+        csv += `${r.index},"${r.raw}",${r.unit},"${r.iso}","${r.local}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'batch-timestamps-export.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Exported batch results as CSV');
+    });
+
+    btnBatchCopyJson.addEventListener('click', () => {
+      if (lastBatchResults.length === 0) {
+        showToast('No valid batch results to copy', 'error');
+        return;
+      }
+      const json = JSON.stringify(lastBatchResults.map(r => ({
+        index: r.index,
+        timestamp: r.raw,
+        unit: r.unit,
+        utc: r.iso,
+        local: r.local
+      })), null, 2);
+      copyText(json, 'Batch Results JSON');
+    });
+
+    // --- 6. DATE TO EPOCH LOGIC ---
+    function syncPickerWithManualFields() {
+      const val = pickerDatetime.value;
+      if (!val) return;
+      const d = new Date(val);
+      if (isNaN(d.getTime())) return;
+      manualYear.value = d.getFullYear();
+      manualMonth.value = d.getMonth() + 1;
+      manualDay.value = d.getDate();
+      manualHour.value = d.getHours();
+      manualMinute.value = d.getMinutes();
+      manualSecond.value = d.getSeconds();
+    }
+
+    function calculateDateToEpoch() {
+      hideError();
+      const mode = selectTzTarget.value; // 'local' or 'utc'
+      let year = parseInt(manualYear.value, 10);
+      let month = parseInt(manualMonth.value, 10);
+      let day = parseInt(manualDay.value, 10);
+      let hour = parseInt(manualHour.value, 10) || 0;
+      let min = parseInt(manualMinute.value, 10) || 0;
+      let sec = parseInt(manualSecond.value, 10) || 0;
+
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        resDtoSec.textContent = '--';
+        resDtoMs.textContent = '--';
+        return;
+      }
+
+      let date;
+      if (mode === 'utc') {
+        date = new Date(Date.UTC(year, month - 1, day, hour, min, sec));
+      } else {
+        date = new Date(year, month - 1, day, hour, min, sec);
+      }
+
+      if (isNaN(date.getTime())) {
+        resDtoSec.textContent = '--';
+        resDtoMs.textContent = '--';
+        return;
+      }
+
+      const ms = date.getTime();
+      const s = Math.floor(ms / 1000);
+
+      resDtoSec.textContent = s;
+      resDtoMs.textContent = ms;
+    }
+
+    pickerDatetime.addEventListener('input', () => {
+      syncPickerWithManualFields();
+      calculateDateToEpoch();
+    });
+
+    selectTzTarget.addEventListener('change', calculateDateToEpoch);
+
+    [manualYear, manualMonth, manualDay, manualHour, manualMinute, manualSecond].forEach(el => {
+      el.addEventListener('input', calculateDateToEpoch);
+    });
+
+    btnDateNow.addEventListener('click', () => {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      pickerDatetime.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      syncPickerWithManualFields();
+      calculateDateToEpoch();
+      showToast('Set picker to current date and time');
+    });
+
+    btnDateClear.addEventListener('click', () => {
+      pickerDatetime.value = '';
+      manualYear.value = '';
+      manualMonth.value = '';
+      manualDay.value = '';
+      manualHour.value = '0';
+      manualMinute.value = '0';
+      manualSecond.value = '0';
+      calculateDateToEpoch();
+    });
+
+    function sendDtoToEpochConverter() {
+      const sec = resDtoSec.innerText;
+      if (!sec || sec === '--') {
+        showToast('Calculate a date first', 'error');
+        return;
+      }
+      switchTab('epoch-to-date');
+      setEpochInput(sec);
+      showToast('Loaded generated timestamp into converter');
+      window.scrollTo({ top: viewEpochToDate.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // --- 7. OFFSET CALCULATOR LOGIC ---
+    offsetOpAdd.addEventListener('click', () => {
+      offsetDirection = 'add';
+      offsetOpAdd.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition shadow-xs';
+      offsetOpSub.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+      calculateOffset();
+    });
+
+    offsetOpSub.addEventListener('click', () => {
+      offsetDirection = 'sub';
+      offsetOpSub.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition shadow-xs';
+      offsetOpAdd.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+      calculateOffset();
+    });
+
+    function calculateOffset() {
+      const baseRaw = offsetBaseEpoch.value.trim();
+      if (!baseRaw) {
+        offsetBasePreview.textContent = 'Enter a valid base timestamp above.';
+        offsetResSec.textContent = '--';
+        offsetResDate.textContent = '--';
+        return;
+      }
+
+      const parsedBase = parseTimestamp(baseRaw);
+      if (!parsedBase) {
+        offsetBasePreview.textContent = '⚠️ Invalid base timestamp.';
+        offsetResSec.textContent = '--';
+        offsetResDate.textContent = '--';
+        return;
+      }
+
+      offsetBasePreview.textContent = `Base: ${parsedBase.date.toUTCString()}`;
+
+      const y = parseInt(offsetYears.value, 10) || 0;
+      const m = parseInt(offsetMonths.value, 10) || 0;
+      const d = parseInt(offsetDays.value, 10) || 0;
+      const h = parseInt(offsetHours.value, 10) || 0;
+      const min = parseInt(offsetMinutes.value, 10) || 0;
+
+      const sign = offsetDirection === 'add' ? 1 : -1;
+
+      const targetDate = new Date(parsedBase.date.getTime());
+      if (y !== 0) targetDate.setUTCFullYear(targetDate.getUTCFullYear() + y * sign);
+      if (m !== 0) targetDate.setUTCMonth(targetDate.getUTCMonth() + m * sign);
+      if (d !== 0) targetDate.setUTCDate(targetDate.getUTCDate() + d * sign);
+      if (h !== 0) targetDate.setUTCHours(targetDate.getUTCHours() + h * sign);
+      if (min !== 0) targetDate.setUTCMinutes(targetDate.getUTCMinutes() + min * sign);
+
+      const targetMs = targetDate.getTime();
+      const targetSec = Math.floor(targetMs / 1000);
+
+      offsetResSec.textContent = targetSec;
+      offsetResDate.textContent = targetDate.toUTCString();
+    }
+
+    offsetBaseEpoch.addEventListener('input', calculateOffset);
+    [offsetYears, offsetMonths, offsetDays, offsetHours, offsetMinutes].forEach(el => {
+      el.addEventListener('input', calculateOffset);
+    });
+
+    btnOffsetBaseNow.addEventListener('click', () => {
+      offsetBaseEpoch.value = Math.floor(Date.now() / 1000);
+      calculateOffset();
+    });
+
+    document.getElementById('btn-load-offset-base').addEventListener('click', () => {
+      const cur = inputEpoch.value.trim();
+      if (!cur || cur === '--') {
+        offsetBaseEpoch.value = Math.floor(Date.now() / 1000);
+      } else {
+        offsetBaseEpoch.value = cur;
+      }
+      calculateOffset();
+      showToast('Loaded current converted epoch into offset calculator');
+    });
+
+    function loadOffsetIntoConverter() {
+      const sec = offsetResSec.innerText;
+      if (!sec || sec === '--') {
+        showToast('Calculate an offset result first', 'error');
+        return;
+      }
+      switchTab('epoch-to-date');
+      setEpochInput(sec);
+      showToast('Loaded computed offset into converter');
+      window.scrollTo({ top: viewEpochToDate.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Start live ticker
+      startLiveTicker();
+
+      // 2. Set default initial input values
+      const initialSec = Math.floor(Date.now() / 1000);
+      inputEpoch.value = initialSec;
+      processSingleEpoch();
+
+      // Date to epoch default
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      pickerDatetime.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      manualYear.value = now.getFullYear();
+      manualMonth.value = now.getMonth() + 1;
+      manualDay.value = now.getDate();
+      manualHour.value = now.getHours();
+      manualMinute.value = now.getMinutes();
+      manualSecond.value = now.getSeconds();
+      calculateDateToEpoch();
+
+      // Offset calculator default
+      offsetBaseEpoch.value = initialSec;
+      calculateOffset();
+    });
+  </script>
+</body>
+</html>

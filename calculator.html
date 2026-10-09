@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +7,18 @@
   <meta name="description" content="Global Freelancer Fee & Net Payout Calculator with default USD currency." />
   <meta property="og:title" content="FeeFlow Pro — Global Freelancer Fee & Net Payout Calculator" />
   <meta property="og:description" content="Global Freelancer Fee & Net Payout Calculator with default USD currency." />
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -43,76 +46,102 @@
       width: 6px;
       height: 6px;
     }
+
     ::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(248, 250, 252, 0.8);
     }
+
     ::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: #cbd5e1;
       border-radius: 9999px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+      background: #94a3b8;
     }
-    
+
     .glow-effect {
-      box-shadow: 0 0 45px -10px rgba(16, 185, 129, 0.16);
+      box-shadow: 0 0 45px -10px rgba(14, 165, 233, 0.12);
     }
+
     .glow-indigo {
-      box-shadow: 0 0 35px -8px rgba(99, 102, 241, 0.18);
+      box-shadow: 0 0 35px -8px rgba(99, 102, 241, 0.12);
     }
 
     /* Input spinners removal */
-    input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
+
     input[type=number] {
       -moz-appearance: textfield;
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-emerald-500/30 selection:text-emerald-300 antialiased">
 
-  <!-- Ambient Glow Effects -->
-  <div class="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<body class="bg-slate-50 text-slate-900 min-h-screen font-sans selection:bg-sky-500/20 selection:text-sky-800 antialiased">
+
+  <!-- Ambient Light Effects -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
   <div class="fixed top-1/3 right-10 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
-  <div class="fixed bottom-10 left-1/3 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+  <div class="fixed bottom-10 left-1/3 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
   <!-- Header / Navigation Bar -->
-  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-40">
+  <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+
       <div class="flex items-center space-x-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-slate-950 font-black flex-shrink-0">
-          <i data-lucide="calculator" class="w-6 h-6 text-slate-950 stroke-[2.5]"></i>
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white font-black flex-shrink-0">
+          <i data-lucide="calculator" class="w-6 h-6 text-white stroke-[2.5]"></i>
         </div>
+
         <div>
           <div class="flex items-center space-x-2.5">
-            <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">FeeFlow Pro</h1>
-            <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Client-Side SPA</span>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              FeeFlow Pro
+            </h1>
+
+            <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-700 border border-sky-500/20">
+              Client-Side SPA
+            </span>
           </div>
-          <p class="text-xs sm:text-sm text-slate-400 hidden sm:block font-medium">Global Freelance Platform Fees & Currency Conversion Payout Calculator</p>
+
+          <p class="text-xs sm:text-sm text-slate-500 hidden sm:block font-medium">
+            Global Freelance Platform Fees & Currency Conversion Payout Calculator
+          </p>
         </div>
       </div>
 
       <!-- Currency Switcher & Global FX Rate Bar -->
       <div class="flex items-center space-x-3">
-        
+
         <!-- Quick FX Pair Bar -->
-        <div class="flex items-center space-x-2 bg-slate-850/80 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
-          <div class="flex items-center gap-1.5 text-slate-400 font-medium">
-            <i data-lucide="arrow-right-left" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <div class="flex items-center space-x-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-xs shadow-sm">
+          <div class="flex items-center gap-1.5 text-slate-500 font-medium">
+            <i data-lucide="arrow-right-left" class="w-3.5 h-3.5 text-sky-600"></i>
             <span id="fxPairLabel">1 USD =</span>
           </div>
-          <div class="flex items-center space-x-1 font-mono font-semibold text-emerald-400">
+
+          <div class="flex items-center space-x-1 font-mono font-semibold text-sky-700">
             <span id="headerTargetCurrencySymbol">$</span>
-            <input id="headerFxInput" type="number" step="any" value="1.00" 
-              class="w-20 bg-transparent text-emerald-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-500 rounded px-1 text-right"
-              title="Edit the baseline exchange rate directly">
+            <input
+              id="headerFxInput"
+              type="number"
+              step="any"
+              value="1.00"
+              class="w-20 bg-transparent text-sky-700 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-sky-500 rounded px-1 text-right"
+              title="Edit the baseline exchange rate directly"
+            >
           </div>
         </div>
 
-        <button id="btnResetAll" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs flex items-center gap-1.5" title="Reset All Settings">
+        <button
+          id="btnResetAll"
+          class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition text-xs flex items-center gap-1.5"
+          title="Reset All Settings"
+        >
           <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
           <span class="hidden md:inline">Reset</span>
         </button>
@@ -124,28 +153,45 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
     <!-- Mode Selector Navigation & Currency Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-      <div class="flex space-x-1 p-1 bg-slate-900 border border-slate-800 rounded-xl" id="tabContainer">
-        <button data-tab="calc" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
+
+      <div class="flex space-x-1 p-1 bg-white border border-slate-200 rounded-xl shadow-sm" id="tabContainer">
+
+        <button
+          data-tab="calc"
+          class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-sky-500/10 text-sky-700 border border-sky-500/20 shadow-sm"
+        >
           <i data-lucide="receipt" class="w-4 h-4"></i>
           <span>Fee Calculator</span>
         </button>
-        <button data-tab="compare" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+
+        <button
+          data-tab="compare"
+          class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-500 hover:text-slate-800"
+        >
           <i data-lucide="layers" class="w-4 h-4"></i>
           <span>Multi-Platform Comparison</span>
         </button>
-        <button data-tab="target" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-slate-200">
+
+        <button
+          data-tab="target"
+          class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 text-slate-500 hover:text-slate-800"
+        >
           <i data-lucide="target" class="w-4 h-4"></i>
           <span>Reverse Target Invoicing</span>
         </button>
       </div>
 
       <!-- Currency Selectors -->
-      <div class="flex items-center space-x-2 bg-slate-900 border border-slate-800 p-1.5 rounded-xl text-xs">
+      <div class="flex items-center space-x-2 bg-white border border-slate-200 p-1.5 rounded-xl text-xs shadow-sm">
+
         <div class="flex items-center space-x-1 pl-1">
           <span class="text-slate-500 uppercase text-[10px] font-bold">From:</span>
-          <select id="sourceCurrencySelect" class="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-200 font-semibold font-mono focus:outline-none focus:border-emerald-500">
-            <!-- Major Global Currencies -->
+
+          <select
+            id="sourceCurrencySelect"
+            class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-800 font-semibold font-mono focus:outline-none focus:border-sky-500"
+          >
             <option value="USD" selected>USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="GBP">GBP (£)</option>
@@ -154,12 +200,15 @@
           </select>
         </div>
 
-        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-500"></i>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-400"></i>
 
         <div class="flex items-center space-x-1 pr-1">
           <span class="text-slate-500 uppercase text-[10px] font-bold">To:</span>
-          <select id="targetCurrencySelect" class="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-emerald-400 font-semibold font-mono focus:outline-none focus:border-emerald-500">
-            <!-- Payout Currencies -->
+
+          <select
+            id="targetCurrencySelect"
+            class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-sky-700 font-semibold font-mono focus:outline-none focus:border-sky-500"
+          >
             <option value="USD" selected>USD ($) United States</option>
             <option value="EUR">EUR (€) Europe</option>
             <option value="GBP">GBP (£) United Kingdom</option>
@@ -178,128 +227,175 @@
 
     <!-- TAB 1: Main Calculator -->
     <div id="tabContent-calc" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      
-      <!-- Left Column: Input Form (5 cols) -->
+
+      <!-- Left Column -->
       <section class="lg:col-span-5 space-y-6">
-        
+
         <!-- Platform Selection Cards -->
-        <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+
           <div class="flex items-center justify-between">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="globe" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <i data-lucide="globe" class="w-3.5 h-3.5 text-indigo-600"></i>
               Platform Selection
             </label>
-            <span id="platformPresetBadge" class="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300">Upwork Standard Policy</span>
+
+            <span
+              id="platformPresetBadge"
+              class="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200"
+            >
+              Upwork Standard Policy
+            </span>
           </div>
 
           <!-- Platform Grid Selector -->
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="platformSelector">
+
             <!-- Upwork -->
-            <button type="button" data-platform="upwork" class="platform-btn active p-3 rounded-xl border border-emerald-500/50 bg-emerald-500/10 text-left transition relative group overflow-hidden">
+            <button
+              type="button"
+              data-platform="upwork"
+              class="platform-btn active p-3 rounded-xl border border-emerald-500/50 bg-emerald-500/10 text-left transition relative group overflow-hidden"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-emerald-400">10%</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-emerald-700">10%</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-emerald-300 transition">Upwork</div>
-              <div class="text-[11px] text-slate-400">Flat 10% Fee</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-emerald-700 transition">Upwork</div>
+              <div class="text-[11px] text-slate-500">Flat 10% Fee</div>
             </button>
 
             <!-- PayPal -->
-            <button type="button" data-platform="paypal" class="platform-btn p-3 rounded-xl border border-slate-800 bg-slate-850 hover:bg-slate-800/60 text-left transition relative group">
+            <button
+              type="button"
+              data-platform="paypal"
+              class="platform-btn p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition relative group"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-blue-400">4.4%+$0.49</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-blue-700">4.4%+$0.49</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-blue-300 transition">PayPal</div>
-              <div class="text-[11px] text-slate-400">Cross-Border</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-blue-700 transition">PayPal</div>
+              <div class="text-[11px] text-slate-500">Cross-Border</div>
             </button>
 
             <!-- Fiverr -->
-            <button type="button" data-platform="fiverr" class="platform-btn p-3 rounded-xl border border-slate-800 bg-slate-850 hover:bg-slate-800/60 text-left transition relative group">
+            <button
+              type="button"
+              data-platform="fiverr"
+              class="platform-btn p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition relative group"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-teal-400">20%</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-teal-700">20%</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-teal-300 transition">Fiverr</div>
-              <div class="text-[11px] text-slate-400">Freelancer Cut</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-teal-700 transition">Fiverr</div>
+              <div class="text-[11px] text-slate-500">Freelancer Cut</div>
             </button>
 
             <!-- Stripe -->
-            <button type="button" data-platform="stripe" class="platform-btn p-3 rounded-xl border border-slate-800 bg-slate-850 hover:bg-slate-800/60 text-left transition relative group">
+            <button
+              type="button"
+              data-platform="stripe"
+              class="platform-btn p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition relative group"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-indigo-400">4.4%+$0.30</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-indigo-700">4.4%+$0.30</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-indigo-300 transition">Stripe</div>
-              <div class="text-[11px] text-slate-400">Global Card Invoice</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-indigo-700 transition">Stripe</div>
+              <div class="text-[11px] text-slate-500">Global Card Invoice</div>
             </button>
 
             <!-- Payoneer -->
-            <button type="button" data-platform="payoneer" class="platform-btn p-3 rounded-xl border border-slate-800 bg-slate-850 hover:bg-slate-800/60 text-left transition relative group">
+            <button
+              type="button"
+              data-platform="payoneer"
+              class="platform-btn p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition relative group"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-amber-400">3% + $2.0</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-amber-700">3% + $2.0</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-amber-300 transition">Payoneer</div>
-              <div class="text-[11px] text-slate-400">Payout Solution</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-amber-700 transition">Payoneer</div>
+              <div class="text-[11px] text-slate-500">Payout Solution</div>
             </button>
 
             <!-- Custom -->
-            <button type="button" data-platform="custom" class="platform-btn p-3 rounded-xl border border-slate-800 bg-slate-850 hover:bg-slate-800/60 text-left transition relative group">
+            <button
+              type="button"
+              data-platform="custom"
+              class="platform-btn p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition relative group"
+            >
               <div class="flex items-center justify-between mb-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
-                <span class="text-[10px] font-mono font-semibold text-purple-400">Custom</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                <span class="text-[10px] font-mono font-semibold text-purple-700">Custom</span>
               </div>
-              <div class="font-bold text-sm text-white group-hover:text-purple-300 transition">Custom</div>
-              <div class="text-[11px] text-slate-400">Manual Rates</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-purple-700 transition">Custom</div>
+              <div class="text-[11px] text-slate-500">Manual Rates</div>
             </button>
+
           </div>
         </div>
 
         <!-- Main Billing Amount Input -->
-        <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+
           <div class="flex items-center justify-between">
-            <label for="grossAmountInput" class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="receipt" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <label
+              for="grossAmountInput"
+              class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5"
+            >
+              <i data-lucide="receipt" class="w-3.5 h-3.5 text-sky-600"></i>
               Gross Invoice / Billing Amount
             </label>
+
             <div class="flex space-x-1">
-              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300" data-amt="500">500</button>
-              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300" data-amt="1000">1,000</button>
-              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300" data-amt="2500">2,500</button>
-              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300" data-amt="5000">5,000</button>
+              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-mono text-slate-700" data-amt="500">500</button>
+              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-mono text-slate-700" data-amt="1000">1,000</button>
+              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-mono text-slate-700" data-amt="2500">2,500</button>
+              <button class="quick-amt-btn px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-mono text-slate-700" data-amt="5000">5,000</button>
             </div>
           </div>
 
-          <div class="relative rounded-xl bg-slate-950 border border-slate-750 border-slate-800 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition">
+          <div class="relative rounded-xl bg-slate-50 border border-slate-200 focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500/20 transition">
+
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span id="grossCurrencySymbol" class="text-2xl font-black text-slate-500 font-mono">$</span>
+              <span id="grossCurrencySymbol" class="text-2xl font-black text-slate-400 font-mono">$</span>
             </div>
-            <input 
-              id="grossAmountInput" 
-              type="number" 
-              min="0" 
+
+            <input
+              id="grossAmountInput"
+              type="number"
+              min="0"
               step="any"
-              value="0" 
-              class="w-full pl-10 pr-20 py-3.5 bg-transparent text-3xl font-extrabold text-white font-mono tracking-tight focus:outline-none placeholder-slate-600"
+              value="0"
+              class="w-full pl-10 pr-20 py-3.5 bg-transparent text-3xl font-extrabold text-slate-900 font-mono tracking-tight focus:outline-none placeholder-slate-400"
               placeholder="0.00"
             >
+
             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-              <span id="grossCurrencyCodeBadge" class="text-xs font-mono uppercase px-2 py-1 rounded bg-slate-800 text-slate-400 font-semibold">USD</span>
+              <span
+                id="grossCurrencyCodeBadge"
+                class="text-xs font-mono uppercase px-2 py-1 rounded bg-slate-200 text-slate-600 font-semibold"
+              >
+                USD
+              </span>
             </div>
           </div>
 
           <!-- Slider -->
           <div class="space-y-1 pt-1">
-            <input 
-              id="amountSlider" 
-              type="range" 
-              min="0" 
-              max="10000" 
-              step="50" 
+            <input
+              id="amountSlider"
+              type="range"
+              min="0"
+              max="10000"
+              step="50"
               value="0"
-              class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500 focus:outline-none"
+              class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500 focus:outline-none"
             >
+
             <div class="flex justify-between text-[11px] font-mono text-slate-500">
               <span id="sliderMinLabel">0</span>
               <span id="sliderMidLabel">5,000</span>
@@ -308,81 +404,119 @@
           </div>
         </div>
 
-        <!-- Detailed Fee Settings (Collapsible) -->
-        <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl space-y-4">
+        <!-- Detailed Fee Settings -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+
           <div class="flex items-center justify-between">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="sliders" class="w-3.5 h-3.5 text-blue-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <i data-lucide="sliders" class="w-3.5 h-3.5 text-blue-600"></i>
               Deductions & Withdrawal Method
             </h2>
-            <button id="btnToggleAdvanced" class="text-xs text-slate-400 hover:text-emerald-400 transition flex items-center gap-1">
+
+            <button
+              id="btnToggleAdvanced"
+              class="text-xs text-slate-500 hover:text-sky-700 transition flex items-center gap-1"
+            >
               <span id="advToggleText">Collapse Details</span>
               <i id="advToggleIcon" data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
             </button>
           </div>
 
-          <!-- Withdrawal Method Selection -->
+          <!-- Withdrawal Method -->
           <div class="space-y-2">
-            <label class="text-xs font-medium text-slate-300">Payout / Withdrawal Method</label>
-            <select id="payoutMethodSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-medium">
-              <!-- Dynamically populated based on platform -->
+            <label class="text-xs font-medium text-slate-600">Payout / Withdrawal Method</label>
+
+            <select
+              id="payoutMethodSelect"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-sky-500 font-medium"
+            >
             </select>
           </div>
 
-          <!-- Advanced Fee Configuration Block -->
-          <div id="advancedFeeBlock" class="pt-3 border-t border-slate-800/70 space-y-3">
-            
+          <!-- Advanced Fee Configuration -->
+          <div id="advancedFeeBlock" class="pt-3 border-t border-slate-200 space-y-3">
+
             <div class="grid grid-cols-2 gap-3">
-              <!-- Platform Percentage Fee -->
+
               <div class="space-y-1">
-                <label for="platformFeePercent" class="text-[11px] font-medium text-slate-400 flex justify-between">
+                <label for="platformFeePercent" class="text-[11px] font-medium text-slate-500 flex justify-between">
                   <span>Platform Fee</span>
-                  <span id="labelPlatformFeePct" class="text-emerald-400 font-mono">10.0%</span>
+                  <span id="labelPlatformFeePct" class="text-sky-700 font-mono">10.0%</span>
                 </label>
+
                 <div class="relative">
-                  <input id="platformFeePercent" type="number" step="0.1" min="0" max="100" value="10.0" 
-                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white pr-7 focus:outline-none focus:border-emerald-500">
+                  <input
+                    id="platformFeePercent"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    value="10.0"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono text-slate-800 pr-7 focus:outline-none focus:border-sky-500"
+                  >
                   <span class="absolute right-2.5 top-2 text-xs text-slate-500 font-mono">%</span>
                 </div>
               </div>
 
-              <!-- Fixed Processing Fee -->
               <div class="space-y-1">
-                <label for="platformFixedFee" class="text-[11px] font-medium text-slate-400 flex justify-between">
+                <label for="platformFixedFee" class="text-[11px] font-medium text-slate-500 flex justify-between">
                   <span>Fixed Fee</span>
-                  <span id="labelFixedFee" class="text-emerald-400 font-mono">$0.00</span>
+                  <span id="labelFixedFee" class="text-sky-700 font-mono">$0.00</span>
                 </label>
+
                 <div class="relative">
                   <span class="platformCurrencySymbol absolute left-2.5 top-2 text-xs text-slate-500 font-mono">$</span>
-                  <input id="platformFixedFee" type="number" step="0.01" min="0" value="0.00" 
-                    class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-6 pr-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-emerald-500">
+
+                  <input
+                    id="platformFixedFee"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value="0.00"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-6 pr-3 py-2 text-sm font-mono text-slate-800 focus:outline-none focus:border-sky-500"
+                  >
                 </div>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-              <!-- Withdrawal Transfer Fee -->
+
               <div class="space-y-1">
-                <label for="withdrawalFixedFee" class="text-[11px] font-medium text-slate-400 flex justify-between">
+                <label for="withdrawalFixedFee" class="text-[11px] font-medium text-slate-500 flex justify-between">
                   <span>Transfer / Wire Fee</span>
-                  <span id="labelWithdrawalFee" class="text-emerald-400 font-mono">$0.99</span>
+                  <span id="labelWithdrawalFee" class="text-sky-700 font-mono">$0.99</span>
                 </label>
+
                 <div class="relative">
                   <span class="platformCurrencySymbol absolute left-2.5 top-2 text-xs text-slate-500 font-mono">$</span>
-                  <input id="withdrawalFixedFee" type="number" step="0.01" min="0" value="0.99" 
-                    class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-6 pr-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-emerald-500">
+
+                  <input
+                    id="withdrawalFixedFee"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value="0.99"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-6 pr-3 py-2 text-sm font-mono text-slate-800 focus:outline-none focus:border-sky-500"
+                  >
                 </div>
               </div>
 
-              <!-- FX Margin Spread % -->
               <div class="space-y-1">
-                <label for="fxSpreadPercent" class="text-[11px] font-medium text-slate-400 flex justify-between">
+                <label for="fxSpreadPercent" class="text-[11px] font-medium text-slate-500 flex justify-between">
                   <span>FX Spread Margin</span>
-                  <span id="labelFxSpread" class="text-amber-400 font-mono">2.5%</span>
+                  <span id="labelFxSpread" class="text-amber-600 font-mono">2.5%</span>
                 </label>
+
                 <div class="relative">
-                  <input id="fxSpreadPercent" type="number" step="0.1" min="0" max="20" value="2.5" 
-                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white pr-7 focus:outline-none focus:border-emerald-500">
+                  <input
+                    id="fxSpreadPercent"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="20"
+                    value="2.5"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono text-slate-800 pr-7 focus:outline-none focus:border-sky-500"
+                  >
                   <span class="absolute right-2.5 top-2 text-xs text-slate-500 font-mono">%</span>
                 </div>
               </div>
@@ -390,28 +524,32 @@
 
             <p class="text-[11px] text-slate-500 leading-relaxed pt-1">
               <i data-lucide="info" class="w-3 h-3 inline mr-1 text-slate-400"></i>
-              Most platforms (Upwork, PayPal, Fiverr) apply an unfavorable exchange rate margin (typically 2.0% – 4.0% below mid-market rates) when converting to your local bank currency.
+              Most platforms (Upwork, PayPal, Fiverr) apply an unfavorable exchange rate margin
+              (typically 2.0% – 4.0% below mid-market rates) when converting to your local bank currency.
             </p>
           </div>
         </div>
-
       </section>
 
-      <!-- Right Column: Results Dashboard (7 cols) -->
+      <!-- Right Column -->
       <section class="lg:col-span-7 space-y-6">
 
         <!-- Highlight Result Hero Card -->
-        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-850 border border-emerald-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden glow-effect">
-          
-          <!-- Top badge row -->
+        <div class="bg-gradient-to-br from-white via-white to-sky-50 border border-sky-200 rounded-3xl p-6 sm:p-7 shadow-sm relative overflow-hidden glow-effect">
+
           <div class="flex items-center justify-between mb-4">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
               Estimated Net Take-Home Payout
             </span>
+
             <div class="text-right">
-              <span class="text-xs text-slate-400">Total Deduction Rate:</span>
-              <span id="totalLossRateBadge" class="ml-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              <span class="text-xs text-slate-500">Total Deduction Rate:</span>
+              <span
+                id="totalLossRateBadge"
+                class="ml-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-700 border border-rose-500/20"
+              >
                 0.0%
               </span>
             </div>
@@ -419,64 +557,120 @@
 
           <!-- Main Payout Amounts -->
           <div class="space-y-2 mb-6">
+
             <div class="flex items-baseline flex-wrap gap-2">
-              <span class="text-sm sm:text-base font-semibold text-slate-400">Local Bank Deposit:</span>
+              <span class="text-sm sm:text-base font-semibold text-slate-500">
+                Local Bank Deposit:
+              </span>
+
               <div class="flex items-baseline space-x-1">
-                <span class="text-3xl sm:text-5xl font-black text-white font-mono tracking-tight" id="resultTargetNet">$0.00</span>
+                <span
+                  class="text-3xl sm:text-5xl font-black text-slate-900 font-mono tracking-tight"
+                  id="resultTargetNet"
+                >
+                  $0.00
+                </span>
               </div>
             </div>
 
-            <div class="flex items-center space-x-2 text-slate-300">
-              <span class="text-xs font-medium text-slate-400">Net in Source Currency:</span>
-              <span class="text-xl sm:text-2xl font-bold font-mono text-emerald-400" id="resultSourceNet">$0.00</span>
-              <span class="text-xs text-slate-500" id="resultActualExchangeRate">(Effective FX Rate: 0.975)</span>
+            <div class="flex items-center space-x-2 text-slate-600">
+              <span class="text-xs font-medium text-slate-500">
+                Net in Source Currency:
+              </span>
+
+              <span
+                class="text-xl sm:text-2xl font-bold font-mono text-emerald-600"
+                id="resultSourceNet"
+              >
+                $0.00
+              </span>
+
+              <span class="text-xs text-slate-400" id="resultActualExchangeRate">
+                (Effective FX Rate: 0.975)
+              </span>
             </div>
           </div>
 
-          <!-- Visual Deduction Bar Chart (Stacked) -->
+          <!-- Visual Deduction Bar Chart -->
           <div class="space-y-2 pt-2 pb-2">
+
             <div class="flex justify-between text-xs font-semibold">
-              <span class="text-slate-300">Earnings Allocation Breakdown</span>
-              <span class="text-slate-400 font-mono" id="labelRetentionRate">Retention: 0.0%</span>
+              <span class="text-slate-700">Earnings Allocation Breakdown</span>
+              <span class="text-slate-500 font-mono" id="labelRetentionRate">
+                Retention: 0.0%
+              </span>
             </div>
 
-            <!-- Progress bar container -->
-            <div class="w-full h-4 bg-slate-950 rounded-full overflow-hidden flex p-0.5 border border-slate-800">
-              <div id="barNet" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-300" style="width: 0%" title="Net Payout"></div>
-              <div id="barPlatform" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%" title="Platform Fee"></div>
-              <div id="barTransfer" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%" title="Transfer Fee"></div>
-              <div id="barFx" class="h-full bg-indigo-500 rounded-r-full transition-all duration-300" style="width: 0%" title="FX Spread Loss"></div>
+            <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex p-0.5 border border-slate-200">
+              <div
+                id="barNet"
+                class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-300"
+                style="width: 0%"
+                title="Net Payout"
+              ></div>
+
+              <div
+                id="barPlatform"
+                class="h-full bg-rose-500 transition-all duration-300"
+                style="width: 0%"
+                title="Platform Fee"
+              ></div>
+
+              <div
+                id="barTransfer"
+                class="h-full bg-amber-500 transition-all duration-300"
+                style="width: 0%"
+                title="Transfer Fee"
+              ></div>
+
+              <div
+                id="barFx"
+                class="h-full bg-indigo-500 rounded-r-full transition-all duration-300"
+                style="width: 0%"
+                title="FX Spread Loss"
+              ></div>
             </div>
 
             <!-- Legend -->
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] pt-1 text-slate-400 font-mono">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] pt-1 text-slate-500 font-mono">
+
               <div class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>
-                <span>You Keep: <b class="text-white" id="legendNetVal">$0.00</b></span>
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
+                <span>You Keep: <b class="text-slate-800" id="legendNetVal">$0.00</b></span>
               </div>
+
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span>
-                <span>Platform: <b class="text-white" id="legendPlatformVal">$0.00</b></span>
+                <span>Platform: <b class="text-slate-800" id="legendPlatformVal">$0.00</b></span>
               </div>
+
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
-                <span>Transfer: <b class="text-white" id="legendTransferVal">$0.00</b></span>
+                <span>Transfer: <b class="text-slate-800" id="legendTransferVal">$0.00</b></span>
               </div>
+
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span>
-                <span>FX Spread: <b class="text-white" id="legendFxVal">$0.00</b></span>
+                <span>FX Spread: <b class="text-slate-800" id="legendFxVal">$0.00</b></span>
               </div>
             </div>
           </div>
 
-          <!-- Action buttons inside hero -->
-          <div class="pt-5 border-t border-slate-800/80 flex flex-wrap gap-2 justify-between items-center">
-            <button id="btnCopySummary" class="px-4 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-750 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition flex items-center gap-2 border border-slate-700/60 shadow-sm active:scale-95">
-              <i data-lucide="copy" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <!-- Action Buttons -->
+          <div class="pt-5 border-t border-slate-200 flex flex-wrap gap-2 justify-between items-center">
+
+            <button
+              id="btnCopySummary"
+              class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition flex items-center gap-2 border border-slate-200 shadow-sm active:scale-95"
+            >
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-sky-600"></i>
               <span>Copy Payout Summary</span>
             </button>
 
-            <button id="btnSaveHistory" class="px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-300 border border-emerald-500/30 transition flex items-center gap-2 active:scale-95">
+            <button
+              id="btnSaveHistory"
+              class="px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-700 border border-emerald-500/30 transition flex items-center gap-2 active:scale-95"
+            >
               <i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>
               <span>Save Calculation</span>
             </button>
@@ -484,146 +678,188 @@
         </div>
 
         <!-- Detailed Deduction Waterfall Table Card -->
-        <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="git-commit" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <i data-lucide="git-commit" class="w-3.5 h-3.5 text-emerald-600"></i>
               Deduction Waterfall Statement
             </h3>
-            <span class="text-xs text-slate-500">Live Breakdown</span>
+
+            <span class="text-xs text-slate-400">Live Breakdown</span>
           </div>
 
-          <div class="divide-y divide-slate-800/80 text-sm">
-            <!-- Step 1: Gross -->
+          <div class="divide-y divide-slate-200 text-sm">
+
+            <!-- Step 1 -->
             <div class="py-3 flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-6 h-6 rounded-full bg-slate-800 text-slate-300 font-mono text-xs flex items-center justify-center font-bold">1</span>
+                <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 font-mono text-xs flex items-center justify-center font-bold">1</span>
+
                 <div>
-                  <div class="font-medium text-white">Gross Client Billed Amount</div>
+                  <div class="font-medium text-slate-900">Gross Client Billed Amount</div>
                   <div class="text-xs text-slate-500">Initial agreed project invoice</div>
                 </div>
               </div>
-              <div class="text-right font-mono font-bold text-white text-base" id="wfGrossVal">$0.00</div>
+
+              <div class="text-right font-mono font-bold text-slate-900 text-base" id="wfGrossVal">$0.00</div>
             </div>
 
-            <!-- Step 2: Platform Cut -->
+            <!-- Step 2 -->
             <div class="py-3 flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-6 h-6 rounded-full bg-rose-500/10 text-rose-400 font-mono text-xs flex items-center justify-center font-bold">2</span>
+                <span class="w-6 h-6 rounded-full bg-rose-500/10 text-rose-700 font-mono text-xs flex items-center justify-center font-bold">2</span>
+
                 <div>
-                  <div class="font-medium text-slate-200">Platform Service Commission</div>
-                  <div class="text-xs text-slate-500" id="wfPlatformDesc">Platform rate (10.0%) + fixed processing</div>
+                  <div class="font-medium text-slate-800">Platform Service Commission</div>
+                  <div class="text-xs text-slate-500" id="wfPlatformDesc">
+                    Platform rate (10.0%) + fixed processing
+                  </div>
                 </div>
               </div>
-              <div class="text-right font-mono font-semibold text-slate-400" id="wfPlatformVal">$0.00</div>
+
+              <div class="text-right font-mono font-semibold text-slate-600" id="wfPlatformVal">$0.00</div>
             </div>
 
-            <!-- Step 3: Platform Net Balance -->
-            <div class="py-3 flex items-center justify-between bg-slate-950/40 px-3 rounded-lg -mx-1">
-              <div class="text-xs text-slate-400 font-medium flex items-center gap-1">
-                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-slate-500"></i>
+            <!-- Step 3 -->
+            <div class="py-3 flex items-center justify-between bg-slate-50 px-3 rounded-lg -mx-1">
+              <div class="text-xs text-slate-500 font-medium flex items-center gap-1">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-slate-400"></i>
                 Platform Balance (After Commission)
               </div>
-              <div class="text-right font-mono text-slate-300 font-medium" id="wfPlatformNetVal">$0.00</div>
+
+              <div class="text-right font-mono text-slate-700 font-medium" id="wfPlatformNetVal">$0.00</div>
             </div>
 
-            <!-- Step 4: Withdrawal / Transfer Fee -->
+            <!-- Step 4 -->
             <div class="py-3 flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-6 h-6 rounded-full bg-amber-500/10 text-amber-400 font-mono text-xs flex items-center justify-center font-bold">3</span>
+                <span class="w-6 h-6 rounded-full bg-amber-500/10 text-amber-700 font-mono text-xs flex items-center justify-center font-bold">3</span>
+
                 <div>
-                  <div class="font-medium text-slate-200">Withdrawal / Wire Payout Fee</div>
-                  <div class="text-xs text-slate-500" id="wfWithdrawalDesc">Direct bank transfer payout fee</div>
+                  <div class="font-medium text-slate-800">Withdrawal / Wire Payout Fee</div>
+                  <div class="text-xs text-slate-500" id="wfWithdrawalDesc">
+                    Direct bank transfer payout fee
+                  </div>
                 </div>
               </div>
-              <div class="text-right font-mono font-semibold text-slate-400" id="wfWithdrawalVal">$0.00</div>
+
+              <div class="text-right font-mono font-semibold text-slate-600" id="wfWithdrawalVal">$0.00</div>
             </div>
 
-            <!-- Step 5: Net Transferred USD -->
-            <div class="py-3 flex items-center justify-between bg-slate-950/40 px-3 rounded-lg -mx-1">
-              <div class="text-xs text-slate-400 font-medium flex items-center gap-1">
-                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-slate-500"></i>
+            <!-- Step 5 -->
+            <div class="py-3 flex items-center justify-between bg-slate-50 px-3 rounded-lg -mx-1">
+              <div class="text-xs text-slate-500 font-medium flex items-center gap-1">
+                <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-slate-400"></i>
                 Net Remitted in Source Currency
               </div>
-              <div class="text-right font-mono font-semibold text-emerald-400 text-sm" id="wfNetSourceVal">$0.00</div>
+
+              <div class="text-right font-mono font-semibold text-emerald-600 text-sm" id="wfNetSourceVal">$0.00</div>
             </div>
 
-            <!-- Step 6: FX Margin Spread Loss -->
+            <!-- Step 6 -->
             <div class="py-3 flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-6 h-6 rounded-full bg-indigo-500/10 text-indigo-400 font-mono text-xs flex items-center justify-center font-bold">4</span>
+                <span class="w-6 h-6 rounded-full bg-indigo-500/10 text-indigo-700 font-mono text-xs flex items-center justify-center font-bold">4</span>
+
                 <div>
-                  <div class="font-medium text-slate-200">FX Conversion Spread Margin Loss</div>
-                  <div class="text-xs text-slate-500" id="wfFxDesc">Loss compared to interbank mid-market rate</div>
+                  <div class="font-medium text-slate-800">FX Conversion Spread Margin Loss</div>
+                  <div class="text-xs text-slate-500" id="wfFxDesc">
+                    Loss compared to interbank mid-market rate
+                  </div>
                 </div>
               </div>
+
               <div class="text-right">
-                <div class="font-mono font-semibold text-slate-400" id="wfFxVal">$0.00</div>
-                <div class="text-[11px] font-mono text-slate-500" id="wfFxTargetVal">($0.00)</div>
+                <div class="font-mono font-semibold text-slate-600" id="wfFxVal">$0.00</div>
+                <div class="text-[11px] font-mono text-slate-400" id="wfFxTargetVal">($0.00)</div>
               </div>
             </div>
 
-            <!-- Final Step: Net in Bank -->
+            <!-- Final Step -->
             <div class="pt-4 pb-1 flex items-center justify-between">
+
               <div>
-                <div class="font-bold text-white text-base flex items-center gap-2">
-                  <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                <div class="font-bold text-slate-900 text-base flex items-center gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
                   Final Bank Deposit Amount
                 </div>
-                <div class="text-xs text-emerald-400/80 font-medium" id="wfTargetCurrencyNotice">Estimated credited to local account</div>
+
+                <div class="text-xs text-emerald-600/80 font-medium" id="wfTargetCurrencyNotice">
+                  Estimated credited to local account
+                </div>
               </div>
+
               <div class="text-right">
-                <div class="font-mono font-black text-emerald-400 text-xl" id="wfFinalTargetVal">$0.00</div>
-                <div class="text-[11px] font-mono text-slate-400" id="wfTotalFeeSummary">Total Deductions: $0.00</div>
+                <div class="font-mono font-black text-emerald-600 text-xl" id="wfFinalTargetVal">$0.00</div>
+                <div class="text-[11px] font-mono text-slate-500" id="wfTotalFeeSummary">
+                  Total Deductions: $0.00
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Pro-Tips Card -->
-        <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-xs text-slate-300 space-y-2">
-          <div class="font-bold text-slate-200 flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 text-xs text-slate-600 space-y-2 shadow-sm">
+
+          <div class="font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
             <span id="tipPlatformTitle">Platform Fee Optimization Strategy</span>
           </div>
-          <p id="tipPlatformBody" class="text-slate-400 leading-relaxed"></p>
+
+          <p id="tipPlatformBody" class="text-slate-500 leading-relaxed"></p>
         </div>
-
       </section>
-
     </div>
 
     <!-- TAB 2: Multi-Platform Side-by-Side Comparison -->
     <div id="tabContent-compare" class="hidden space-y-6">
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl">
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+
           <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i>
               Cross-Platform Net Payout Comparison
             </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Comparing your net take-home earnings on a gross invoice of <span class="font-mono text-emerald-400 font-bold text-sm" id="compareGrossHeader">$0.00</span> across major international platforms.
+
+            <p class="text-xs text-slate-500 mt-1">
+              Comparing your net take-home earnings on a gross invoice of
+              <span class="font-mono text-emerald-600 font-bold text-sm" id="compareGrossHeader">$0.00</span>
+              across major international platforms.
             </p>
           </div>
-          <div class="flex items-center space-x-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-            <label for="compareAmountInput" class="text-xs text-slate-400">Comparison Amount:</label>
+
+          <div class="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+            <label for="compareAmountInput" class="text-xs text-slate-500">
+              Comparison Amount:
+            </label>
+
             <div class="relative">
-              <span class="compareCurrencySymbol absolute left-2 top-1.5 text-xs text-slate-500 font-mono">$</span>
-              <input id="compareAmountInput" type="number" value="0" class="w-24 pl-5 pr-2 py-1 bg-slate-900 border border-slate-750 border-slate-800 rounded text-sm font-mono text-white focus:outline-none focus:border-indigo-500">
+              <span class="compareCurrencySymbol absolute left-2 top-1.5 text-xs text-slate-400 font-mono">$</span>
+
+              <input
+                id="compareAmountInput"
+                type="number"
+                value="0"
+                class="w-24 pl-5 pr-2 py-1 bg-white border border-slate-200 rounded text-sm font-mono text-slate-800 focus:outline-none focus:border-indigo-500"
+              >
             </div>
           </div>
         </div>
 
         <!-- Comparison Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="compareCardsGrid">
-          <!-- Dynamically populated -->
         </div>
 
         <!-- Comparative Table -->
         <div class="mt-8 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-950/80 text-xs uppercase font-mono text-slate-400 border-b border-slate-800">
+
+            <thead class="bg-slate-50 text-xs uppercase font-mono text-slate-500 border-b border-slate-200">
               <tr>
                 <th class="py-3 px-4">Platform</th>
                 <th class="py-3 px-4">Service Commission</th>
@@ -633,8 +869,8 @@
                 <th class="py-3 px-4 text-right" id="compareColNetTarget">Local Bank Payout</th>
               </tr>
             </thead>
-            <tbody id="compareTableBody" class="divide-y divide-slate-800/60 font-mono text-xs">
-              <!-- Dynamically populated -->
+
+            <tbody id="compareTableBody" class="divide-y divide-slate-200 font-mono text-xs">
             </tbody>
           </table>
         </div>
@@ -643,34 +879,80 @@
 
     <!-- TAB 3: Reverse Target Invoicing Calculator -->
     <div id="tabContent-target" class="hidden space-y-6">
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl max-w-4xl mx-auto space-y-6">
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm max-w-4xl mx-auto space-y-6">
+
         <div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 border border-indigo-500/20 mb-2">
             <i data-lucide="compass" class="w-3.5 h-3.5"></i>
             Reverse Take-Home Goal Calculator
           </div>
-          <h2 class="text-xl font-bold text-white">"How much do I need to quote the client to take home an exact net amount?"</h2>
-          <p class="text-xs text-slate-400 mt-1">Specify your desired net payout in your local or billing currency, and automatically calculate the gross invoice quote required to cover platform commissions and currency exchange margins.</p>
+
+          <h2 class="text-xl font-bold text-slate-900">
+            "How much do I need to quote the client to take home an exact net amount?"
+          </h2>
+
+          <p class="text-xs text-slate-500 mt-1">
+            Specify your desired net payout in your local or billing currency,
+            and automatically calculate the gross invoice quote required to cover
+            platform commissions and currency exchange margins.
+          </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-950 p-6 rounded-2xl border border-slate-800">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+
           <!-- Target Input -->
           <div class="space-y-4">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Target Net Payout Goal</label>
-            
+
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Target Net Payout Goal
+            </label>
+
             <div class="flex space-x-2">
-              <button id="targetModeLocal" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">In Local Currency</button>
-              <button id="targetModeSource" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">In Billing Currency</button>
+
+              <button
+                id="targetModeLocal"
+                class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-700 border border-emerald-500/40"
+              >
+                In Local Currency
+              </button>
+
+              <button
+                id="targetModeSource"
+                class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-500 border border-slate-200 hover:text-slate-800"
+              >
+                In Billing Currency
+              </button>
             </div>
 
-            <div class="relative rounded-xl bg-slate-900 border border-slate-800 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20">
-              <span id="targetCurrencySymbol" class="absolute left-4 top-3 text-2xl font-bold text-slate-500 font-mono">$</span>
-              <input id="targetNetInput" type="number" step="any" value="0" class="w-full pl-11 pr-4 py-3 bg-transparent text-2xl font-extrabold text-white font-mono focus:outline-none" placeholder="0.00">
+            <div class="relative rounded-xl bg-white border border-slate-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20">
+
+              <span
+                id="targetCurrencySymbol"
+                class="absolute left-4 top-3 text-2xl font-bold text-slate-400 font-mono"
+              >
+                $
+              </span>
+
+              <input
+                id="targetNetInput"
+                type="number"
+                step="any"
+                value="0"
+                class="w-full pl-11 pr-4 py-3 bg-transparent text-2xl font-extrabold text-slate-900 font-mono focus:outline-none"
+                placeholder="0.00"
+              >
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs text-slate-400 font-medium">Platform Profile</label>
-              <select id="targetPlatformSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200">
+              <label class="text-xs text-slate-500 font-medium">
+                Platform Profile
+              </label>
+
+              <select
+                id="targetPlatformSelect"
+                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800"
+              >
                 <option value="upwork">Upwork (10% commission + $0.99 + 2.5% FX spread)</option>
                 <option value="paypal">PayPal (4.4% + $0.49 + 3.5% FX spread)</option>
                 <option value="fiverr">Fiverr (20% commission + $3.00 + 2.5% FX spread)</option>
@@ -681,27 +963,42 @@
           </div>
 
           <!-- Reverse Calculation Result -->
-          <div class="flex flex-col justify-between p-6 rounded-xl bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/30 glow-indigo">
+          <div class="flex flex-col justify-between p-6 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-200 glow-indigo">
+
             <div class="space-y-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Required Quote / Gross Invoice</span>
-              <div class="text-3xl sm:text-4xl font-black text-white font-mono tracking-tight" id="targetRequiredGrossSource">
+              <span class="text-xs font-bold uppercase tracking-wider text-indigo-700">
+                Required Quote / Gross Invoice
+              </span>
+
+              <div
+                class="text-3xl sm:text-4xl font-black text-slate-900 font-mono tracking-tight"
+                id="targetRequiredGrossSource"
+              >
                 $0.00
               </div>
-              <div class="text-xs text-slate-400" id="targetRequiredGrossTarget">
+
+              <div class="text-xs text-slate-500" id="targetRequiredGrossTarget">
                 (Equivalent to approximately $0.00)
               </div>
             </div>
 
-            <div class="pt-4 border-t border-slate-800/80 space-y-2 text-xs">
-              <div class="flex justify-between text-slate-400">
+            <div class="pt-4 border-t border-slate-200 space-y-2 text-xs">
+
+              <div class="flex justify-between text-slate-500">
                 <span>Estimated Total Deductions:</span>
-                <span class="font-mono text-rose-400 font-semibold" id="targetTotalFeeSource">-$0.00</span>
+                <span class="font-mono text-rose-700 font-semibold" id="targetTotalFeeSource">
+                  -$0.00
+                </span>
               </div>
-              <div class="flex justify-between text-slate-400">
+
+              <div class="flex justify-between text-slate-500">
                 <span>Recommended Client Markup:</span>
-                <span class="font-mono text-amber-400 font-semibold" id="targetExtraBufferPct">+14.2%</span>
+                <span class="font-mono text-amber-700 font-semibold" id="targetExtraBufferPct">
+                  +14.2%
+                </span>
               </div>
-              <div class="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] leading-relaxed">
+
+              <div class="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-[11px] leading-relaxed">
                 💡 <b>Pro Tip:</b> When sending freelance quotes, consider adding a 3% to 5% buffer margin above this figure to absorb short-term exchange rate fluctuations.
               </div>
             </div>
@@ -711,33 +1008,50 @@
     </div>
 
     <!-- Saved History Section -->
-    <section class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+
       <div class="flex items-center justify-between">
+
         <div class="flex items-center space-x-2">
-          <i data-lucide="history" class="w-4 h-4 text-emerald-400"></i>
-          <h3 class="text-sm font-bold text-white">Recent Saved Calculations</h3>
-          <span id="historyCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-semibold">0 items</span>
+          <i data-lucide="history" class="w-4 h-4 text-emerald-600"></i>
+
+          <h3 class="text-sm font-bold text-slate-900">
+            Recent Saved Calculations
+          </h3>
+
+          <span
+            id="historyCountBadge"
+            class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 font-semibold"
+          >
+            0 items
+          </span>
         </div>
-        <button id="btnClearHistory" class="text-xs text-slate-500 hover:text-rose-400 transition flex items-center gap-1">
+
+        <button
+          id="btnClearHistory"
+          class="text-xs text-slate-500 hover:text-rose-600 transition flex items-center gap-1"
+        >
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
           <span>Clear History</span>
         </button>
       </div>
 
       <div id="historyListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <!-- Dynamically populated or empty -->
       </div>
     </section>
 
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-900 py-8 mt-12 text-center text-xs text-slate-500">
+  <footer class="border-t border-slate-200 bg-white/60 py-8 mt-12 text-center text-xs text-slate-500">
+
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+
       <div class="flex items-center space-x-2">
-        <span class="font-bold text-slate-400">FeeFlow Pro</span>
+        <span class="font-bold text-slate-600">FeeFlow Pro</span>
         <span>— Standalone Single-Page Application (SPA)</span>
       </div>
+
       <div>
         Platform fee policies, conversion spreads, and currency rates are subject to change by respective services.
       </div>
@@ -745,12 +1059,15 @@
   </footer>
 
   <!-- Toast Notification Container -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-2 px-4 py-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-300 shadow-2xl text-xs font-semibold">
-    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+  <div
+    id="toast"
+    class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-2 px-4 py-3 rounded-xl bg-white border border-emerald-500/30 text-emerald-700 shadow-xl text-xs font-semibold"
+  >
+    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
     <span id="toastMsg">Action completed successfully.</span>
   </div>
 
-  <!-- JAVASCRIPT ENGINE (Standalone Client-Side) -->
+  <!-- JAVASCRIPT ENGINE (UNCHANGED) -->
   <script>
     // --- Currency Database & Baseline Rates relative to 1 USD ---
     const CURRENCIES = {
@@ -785,6 +1102,7 @@
         tipTitle: 'Upwork Payout Optimization',
         tipBody: 'Upwork charges a flat 10% freelancer service fee. Withdrawing via Direct to Local Bank has a low $0.99 flat fee, but Upwork embeds a ~2.5% FX margin into the conversion rate. For invoices exceeding $3,500, a direct USD wire transfer ($30 flat fee) into a foreign currency account often yields higher net earnings.'
       },
+
       paypal: {
         name: 'PayPal',
         color: '#0070ba',
@@ -799,6 +1117,7 @@
         tipTitle: 'PayPal Cross-Border Considerations',
         tipBody: 'Commercial cross-border payments received through PayPal face a standard 4.4% + $0.49 cut. Furthermore, withdrawing to a local currency bank incurs an aggressive 3.5% to 4.0% exchange rate markup, causing total losses to easily exceed 8% to 9%.'
       },
+
       fiverr: {
         name: 'Fiverr',
         color: '#1dbf73',
@@ -814,10 +1133,11 @@
         tipTitle: 'Fiverr 20% Cut Mitigation',
         tipBody: 'Fiverr retains a substantial 20% commission on every order. Adding withdrawal and currency conversion fees brings your take-home amount down to ~75% of the gig price. Be sure to account for this 25% total deduction when pricing your gig packages.'
       },
+
       stripe: {
         name: 'Stripe',
         color: '#635bff',
-        feePercent: 4.4, // 2.9% + 1.5% international card
+        feePercent: 4.4,
         fixedFee: 0.30,
         fxSpreadPercent: 1.5,
         defaultPayoutMethod: 'standard_payout',
@@ -828,6 +1148,7 @@
         tipTitle: 'Stripe Direct Invoice Advantages',
         tipBody: 'Stripe eliminates intermediary marketplace cuts (10%~20%). You only pay card processing (2.9% + $0.30) plus an international card premium (~1.5%). This makes direct client invoicing the most profitable avenue for seasoned independent freelancers.'
       },
+
       payoneer: {
         name: 'Payoneer',
         color: '#ff4800',
@@ -842,6 +1163,7 @@
         tipTitle: 'Payoneer Global Payout Tip',
         tipBody: 'Payoneer connects smoothly with Upwork and Fiverr. Withdrawing to a local bank carries approximately 2.0% FX margin, which is notably lower than PayPal for medium-to-large payouts.'
       },
+
       custom: {
         name: 'Custom Profile',
         color: '#a855f7',
@@ -864,17 +1186,15 @@
       targetCurrency: 'USD',
       platform: 'upwork',
       grossAmount: 0,
-      exchangeRate: 1.0, // 1 Source Currency in Target Currency
+      exchangeRate: 1.0,
       payoutMethodId: 'local_bank',
       platformFeePercent: 10.0,
       fixedFee: 0.0,
       withdrawalFixedFee: 0.99,
       fxSpreadPercent: 2.5,
-      // Target calculator state
-      targetMode: 'LOCAL', // 'LOCAL' or 'SOURCE'
+      targetMode: 'LOCAL',
       targetNetVal: 0,
       targetPlatform: 'upwork',
-      // History
       history: []
     };
 
@@ -895,7 +1215,6 @@
     function calculateDefaultExchangeRate(fromCode, toCode) {
       const fromCurr = CURRENCIES[fromCode] || CURRENCIES.USD;
       const toCurr = CURRENCIES[toCode] || CURRENCIES.USD;
-      // Rate = Target against USD / Source against USD
       const rate = toCurr.rateAgainstUsd / fromCurr.rateAgainstUsd;
       return rate;
     }
@@ -916,24 +1235,18 @@
       const fxSpread = Math.max(0, parseFloat(fxSpreadPercent) || 0) / 100;
       const rate = Math.max(0.000001, parseFloat(exchangeRate) || 1.0);
 
-      // 1. Platform Fee
       const platformFee = Math.min(gross, (gross * platFeePct) + fixFee);
       const afterPlatformNet = Math.max(0, gross - platformFee);
 
-      // 2. Withdrawal Transfer Fee
       const withdrawalFee = Math.min(afterPlatformNet, withFee);
       const netSource = Math.max(0, afterPlatformNet - withdrawalFee);
 
-      // 3. FX Spread & Conversion
-      // Effective FX applied = Mid-market Rate * (1 - fxSpread)
       const effectiveRate = rate * (1 - fxSpread);
       const netTarget = netSource * effectiveRate;
 
-      // FX Spread Loss in Source Currency
       const fxLossSource = netSource * fxSpread;
       const fxLossTarget = fxLossSource * rate;
 
-      // Total Deductions in Source terms
       const totalLossSource = platformFee + withdrawalFee + fxLossSource;
       const effectiveLossPercent = gross > 0 ? (totalLossSource / gross) * 100 : 0;
       const retentionPercent = gross > 0 ? Math.max(0, 100 - effectiveLossPercent) : 0;
@@ -959,7 +1272,6 @@
       const srcCurr = CURRENCIES[state.sourceCurrency];
       const tgtCurr = CURRENCIES[state.targetCurrency];
 
-      // Update static currency badges & symbols
       document.getElementById('grossCurrencySymbol').textContent = srcCurr.symbol;
       document.getElementById('grossCurrencyCodeBadge').textContent = srcCurr.code;
       document.querySelectorAll('.platformCurrencySymbol').forEach(el => el.textContent = srcCurr.symbol);
@@ -967,7 +1279,6 @@
       document.getElementById('headerTargetCurrencySymbol').textContent = tgtCurr.symbol;
       document.getElementById('fxPairLabel').textContent = `1 ${srcCurr.code} =`;
 
-      // 1. Perform calculation
       const res = calculateFees({
         grossAmount: state.grossAmount,
         platformFeePercent: state.platformFeePercent,
@@ -977,19 +1288,22 @@
         exchangeRate: state.exchangeRate
       });
 
-      // 2. Hero Results
       document.getElementById('resultTargetNet').textContent = formatCurrency(res.netTarget, tgtCurr.code);
       document.getElementById('resultSourceNet').textContent = formatCurrency(res.netSource, srcCurr.code);
-      
-      const effectiveRateDisplay = res.effectiveRate >= 100 
-        ? Math.round(res.effectiveRate).toLocaleString() 
+
+      const effectiveRateDisplay = res.effectiveRate >= 100
+        ? Math.round(res.effectiveRate).toLocaleString()
         : res.effectiveRate.toFixed(4);
-      document.getElementById('resultActualExchangeRate').textContent = `(Effective Rate: ${effectiveRateDisplay} ${tgtCurr.code}, Spread -${state.fxSpreadPercent}%)`;
 
-      document.getElementById('totalLossRateBadge').textContent = res.gross > 0 ? `-${res.effectiveLossPercent.toFixed(1)}%` : '0.0%';
-      document.getElementById('labelRetentionRate').textContent = res.gross > 0 ? `Retention: ${res.retentionPercent.toFixed(1)}%` : 'Retention: 0.0%';
+      document.getElementById('resultActualExchangeRate').textContent =
+        `(Effective Rate: ${effectiveRateDisplay} ${tgtCurr.code}, Spread -${state.fxSpreadPercent}%)`;
 
-      // 3. Progress Bar Breakdown
+      document.getElementById('totalLossRateBadge').textContent =
+        res.gross > 0 ? `-${res.effectiveLossPercent.toFixed(1)}%` : '0.0%';
+
+      document.getElementById('labelRetentionRate').textContent =
+        res.gross > 0 ? `Retention: ${res.retentionPercent.toFixed(1)}%` : 'Retention: 0.0%';
+
       if (res.gross > 0) {
         const netW = (res.netSource - res.fxLossSource) / res.gross * 100;
         const platW = (res.platformFee / res.gross) * 100;
@@ -1007,42 +1321,86 @@
         document.getElementById('barFx').style.width = '0%';
       }
 
-      document.getElementById('legendNetVal').textContent = formatCurrency(res.netSource - res.fxLossSource, srcCurr.code);
-      document.getElementById('legendPlatformVal').textContent = formatCurrency(res.platformFee, srcCurr.code);
-      document.getElementById('legendTransferVal').textContent = formatCurrency(res.withdrawalFee, srcCurr.code);
-      document.getElementById('legendFxVal').textContent = formatCurrency(res.fxLossSource, srcCurr.code);
+      document.getElementById('legendNetVal').textContent =
+        formatCurrency(res.netSource - res.fxLossSource, srcCurr.code);
 
-      // 4. Waterfall Statement
-      document.getElementById('wfGrossVal').textContent = formatCurrency(res.gross, srcCurr.code);
-      document.getElementById('wfPlatformVal').textContent = res.platformFee > 0 ? '-' + formatCurrency(res.platformFee, srcCurr.code) : formatCurrency(0, srcCurr.code);
-      document.getElementById('wfPlatformDesc').textContent = `${PLATFORM_PRESETS[state.platform].name} commission (${state.platformFeePercent}%)${state.fixedFee > 0 ? ` + ${formatCurrency(state.fixedFee, srcCurr.code)} fixed` : ''}`;
-      document.getElementById('wfPlatformNetVal').textContent = formatCurrency(res.afterPlatformNet, srcCurr.code);
-      
-      document.getElementById('wfWithdrawalVal').textContent = res.withdrawalFee > 0 ? '-' + formatCurrency(res.withdrawalFee, srcCurr.code) : formatCurrency(0, srcCurr.code);
-      const activeMethod = PLATFORM_PRESETS[state.platform].payoutMethods.find(m => m.id === state.payoutMethodId);
-      document.getElementById('wfWithdrawalDesc').textContent = activeMethod ? activeMethod.name : 'Payout Transfer Fee';
-      
-      document.getElementById('wfNetSourceVal').textContent = formatCurrency(res.netSource, srcCurr.code);
-      document.getElementById('wfFxVal').textContent = res.fxLossSource > 0 ? '-' + formatCurrency(res.fxLossSource, srcCurr.code) : formatCurrency(0, srcCurr.code);
-      document.getElementById('wfFxDesc').textContent = `Loss from baseline rate (${state.exchangeRate}) with ${state.fxSpreadPercent}% spread`;
-      document.getElementById('wfFxTargetVal').textContent = `(${res.fxLossTarget > 0 ? '-' : ''}${formatCurrency(res.fxLossTarget, tgtCurr.code)})`;
-      
-      document.getElementById('wfFinalTargetVal').textContent = formatCurrency(res.netTarget, tgtCurr.code);
-      document.getElementById('wfTotalFeeSummary').textContent = `Total Deductions: ${formatCurrency(res.totalLossSource, srcCurr.code)} (-${formatCurrency(res.totalLossSource * state.exchangeRate, tgtCurr.code)})`;
+      document.getElementById('legendPlatformVal').textContent =
+        formatCurrency(res.platformFee, srcCurr.code);
 
-      // 5. Input labels
-      document.getElementById('labelPlatformFeePct').textContent = `${state.platformFeePercent}%`;
-      document.getElementById('labelFixedFee').textContent = formatCurrency(state.fixedFee, srcCurr.code);
-      document.getElementById('labelWithdrawalFee').textContent = formatCurrency(state.withdrawalFixedFee, srcCurr.code);
-      document.getElementById('labelFxSpread').textContent = `${state.fxSpreadPercent}%`;
+      document.getElementById('legendTransferVal').textContent =
+        formatCurrency(res.withdrawalFee, srcCurr.code);
 
-      // 6. Platform Preset Badge & Tips
+      document.getElementById('legendFxVal').textContent =
+        formatCurrency(res.fxLossSource, srcCurr.code);
+
+      document.getElementById('wfGrossVal').textContent =
+        formatCurrency(res.gross, srcCurr.code);
+
+      document.getElementById('wfPlatformVal').textContent =
+        res.platformFee > 0
+          ? '-' + formatCurrency(res.platformFee, srcCurr.code)
+          : formatCurrency(0, srcCurr.code);
+
+      document.getElementById('wfPlatformDesc').textContent =
+        `${PLATFORM_PRESETS[state.platform].name} commission (${state.platformFeePercent}%)${state.fixedFee > 0 ? ` + ${formatCurrency(state.fixedFee, srcCurr.code)} fixed` : ''}`;
+
+      document.getElementById('wfPlatformNetVal').textContent =
+        formatCurrency(res.afterPlatformNet, srcCurr.code);
+
+      document.getElementById('wfWithdrawalVal').textContent =
+        res.withdrawalFee > 0
+          ? '-' + formatCurrency(res.withdrawalFee, srcCurr.code)
+          : formatCurrency(0, srcCurr.code);
+
+      const activeMethod =
+        PLATFORM_PRESETS[state.platform].payoutMethods.find(m => m.id === state.payoutMethodId);
+
+      document.getElementById('wfWithdrawalDesc').textContent =
+        activeMethod ? activeMethod.name : 'Payout Transfer Fee';
+
+      document.getElementById('wfNetSourceVal').textContent =
+        formatCurrency(res.netSource, srcCurr.code);
+
+      document.getElementById('wfFxVal').textContent =
+        res.fxLossSource > 0
+          ? '-' + formatCurrency(res.fxLossSource, srcCurr.code)
+          : formatCurrency(0, srcCurr.code);
+
+      document.getElementById('wfFxDesc').textContent =
+        `Loss from baseline rate (${state.exchangeRate}) with ${state.fxSpreadPercent}% spread`;
+
+      document.getElementById('wfFxTargetVal').textContent =
+        `(${res.fxLossTarget > 0 ? '-' : ''}${formatCurrency(res.fxLossTarget, tgtCurr.code)})`;
+
+      document.getElementById('wfFinalTargetVal').textContent =
+        formatCurrency(res.netTarget, tgtCurr.code);
+
+      document.getElementById('wfTotalFeeSummary').textContent =
+        `Total Deductions: ${formatCurrency(res.totalLossSource, srcCurr.code)} (-${formatCurrency(res.totalLossSource * state.exchangeRate, tgtCurr.code)})`;
+
+      document.getElementById('labelPlatformFeePct').textContent =
+        `${state.platformFeePercent}%`;
+
+      document.getElementById('labelFixedFee').textContent =
+        formatCurrency(state.fixedFee, srcCurr.code);
+
+      document.getElementById('labelWithdrawalFee').textContent =
+        formatCurrency(state.withdrawalFixedFee, srcCurr.code);
+
+      document.getElementById('labelFxSpread').textContent =
+        `${state.fxSpreadPercent}%`;
+
       const currentPreset = PLATFORM_PRESETS[state.platform];
-      document.getElementById('platformPresetBadge').textContent = `${currentPreset.name} Active`;
-      document.getElementById('tipPlatformTitle').textContent = currentPreset.tipTitle;
-      document.getElementById('tipPlatformBody').textContent = currentPreset.tipBody;
 
-      // 7. Sub-tabs sync
+      document.getElementById('platformPresetBadge').textContent =
+        `${currentPreset.name} Active`;
+
+      document.getElementById('tipPlatformTitle').textContent =
+        currentPreset.tipTitle;
+
+      document.getElementById('tipPlatformBody').textContent =
+        currentPreset.tipBody;
+
       if (state.activeTab === 'compare') renderComparisonTab();
       if (state.activeTab === 'target') renderTargetTab();
     }
@@ -1052,16 +1410,21 @@
       const preset = PLATFORM_PRESETS[platformKey];
       const select = document.getElementById('payoutMethodSelect');
       select.innerHTML = '';
-      
+
       preset.payoutMethods.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.id;
         opt.textContent = `${m.name} [${m.desc}]`;
+
         if (m.id === preset.defaultPayoutMethod) opt.selected = true;
+
         select.appendChild(opt);
       });
 
-      const defaultM = preset.payoutMethods.find(m => m.id === preset.defaultPayoutMethod) || preset.payoutMethods[0];
+      const defaultM =
+        preset.payoutMethods.find(m => m.id === preset.defaultPayoutMethod) ||
+        preset.payoutMethods[0];
+
       state.payoutMethodId = defaultM.id;
       state.withdrawalFixedFee = defaultM.fee;
       state.fxSpreadPercent = defaultM.spread;
@@ -1077,10 +1440,12 @@
 
       document.querySelectorAll('.platform-btn').forEach(btn => {
         const isSelected = btn.getAttribute('data-platform') === platformKey;
+
         btn.classList.toggle('border-emerald-500/50', isSelected);
         btn.classList.toggle('bg-emerald-500/10', isSelected);
-        btn.classList.toggle('border-slate-800', !isSelected);
-        btn.classList.toggle('bg-slate-850', !isSelected);
+
+        btn.classList.toggle('border-slate-200', !isSelected);
+        btn.classList.toggle('bg-slate-50', !isSelected);
       });
 
       updatePayoutMethods(platformKey);
@@ -1098,21 +1463,33 @@
     function renderComparisonTab() {
       const srcCurr = CURRENCIES[state.sourceCurrency];
       const tgtCurr = CURRENCIES[state.targetCurrency];
-      const compareGross = Math.max(0, parseFloat(document.getElementById('compareAmountInput').value) || 0);
-      
-      document.getElementById('compareGrossHeader').textContent = formatCurrency(compareGross, srcCurr.code);
-      document.getElementById('compareColNetSource').textContent = `Net (${srcCurr.code})`;
-      document.getElementById('compareColNetTarget').textContent = `Local Payout (${tgtCurr.code})`;
+
+      const compareGross =
+        Math.max(0, parseFloat(document.getElementById('compareAmountInput').value) || 0);
+
+      document.getElementById('compareGrossHeader').textContent =
+        formatCurrency(compareGross, srcCurr.code);
+
+      document.getElementById('compareColNetSource').textContent =
+        `Net (${srcCurr.code})`;
+
+      document.getElementById('compareColNetTarget').textContent =
+        `Local Payout (${tgtCurr.code})`;
 
       const platformsToCompare = ['upwork', 'paypal', 'fiverr', 'stripe'];
+
       const grid = document.getElementById('compareCardsGrid');
       const table = document.getElementById('compareTableBody');
+
       grid.innerHTML = '';
       table.innerHTML = '';
 
       let results = platformsToCompare.map(pk => {
         const p = PLATFORM_PRESETS[pk];
-        const defaultMethod = p.payoutMethods.find(m => m.id === p.defaultPayoutMethod) || p.payoutMethods[0];
+
+        const defaultMethod =
+          p.payoutMethods.find(m => m.id === p.defaultPayoutMethod) ||
+          p.payoutMethods[0];
 
         const calc = calculateFees({
           grossAmount: compareGross,
@@ -1123,75 +1500,113 @@
           exchangeRate: state.exchangeRate
         });
 
-        return { key: pk, preset: p, method: defaultMethod, calc };
+        return {
+          key: pk,
+          preset: p,
+          method: defaultMethod,
+          calc
+        };
       });
 
-      // Sort descending by highest local bank payout
       results.sort((a, b) => b.calc.netTarget - a.calc.netTarget);
 
       results.forEach((item, index) => {
         const isBest = (index === 0 && item.calc.netTarget > 0);
 
-        // Card
         const card = document.createElement('div');
-        card.className = `p-5 rounded-2xl border transition relative overflow-hidden ${
-          isBest 
-            ? 'bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-900 border-emerald-500/40 shadow-lg glow-effect' 
-            : 'bg-slate-900 border-slate-800'
-        }`;
+
+        card.className = `
+          p-5 rounded-2xl border transition relative overflow-hidden
+          ${isBest
+            ? 'bg-gradient-to-br from-emerald-50 via-white to-white border-emerald-300 shadow-sm glow-effect'
+            : 'bg-white border-slate-200 shadow-sm'}
+        `;
 
         card.innerHTML = `
           ${isBest ? `
-            <div class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <div class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
               #1 Highest Payout
             </div>` : ''}
+
           <div class="flex items-center space-x-2 mb-3">
             <span class="w-3 h-3 rounded-full" style="background-color: ${item.preset.color}"></span>
-            <span class="font-bold text-base text-white">${item.preset.name}</span>
+            <span class="font-bold text-base text-slate-900">${item.preset.name}</span>
           </div>
 
           <div class="space-y-1 mb-4">
-            <div class="text-xs text-slate-400">Estimated Bank Credit</div>
-            <div class="text-2xl font-black font-mono ${isBest ? 'text-emerald-400' : 'text-slate-100'}">
+            <div class="text-xs text-slate-500">Estimated Bank Credit</div>
+
+            <div class="text-2xl font-black font-mono ${isBest ? 'text-emerald-600' : 'text-slate-900'}">
               ${formatCurrency(item.calc.netTarget, tgtCurr.code)}
             </div>
-            <div class="text-xs font-mono text-slate-400 font-medium">
+
+            <div class="text-xs font-mono text-slate-500 font-medium">
               ${formatCurrency(item.calc.netSource, srcCurr.code)} (${srcCurr.code})
             </div>
           </div>
 
-          <div class="space-y-1.5 pt-3 border-t border-slate-800 text-xs text-slate-400">
+          <div class="space-y-1.5 pt-3 border-t border-slate-200 text-xs text-slate-500">
+
             <div class="flex justify-between">
               <span>Platform Fee:</span>
-              <span class="font-mono text-rose-400">-${formatCurrency(item.calc.platformFee, srcCurr.code)}</span>
+              <span class="font-mono text-rose-600">
+                -${formatCurrency(item.calc.platformFee, srcCurr.code)}
+              </span>
             </div>
+
             <div class="flex justify-between">
               <span>Transfer + FX Spread:</span>
-              <span class="font-mono text-amber-400">-${formatCurrency(item.calc.withdrawalFee + item.calc.fxLossSource, srcCurr.code)}</span>
+              <span class="font-mono text-amber-600">
+                -${formatCurrency(item.calc.withdrawalFee + item.calc.fxLossSource, srcCurr.code)}
+              </span>
             </div>
-            <div class="flex justify-between font-semibold pt-1 border-t border-slate-800/60">
+
+            <div class="flex justify-between font-semibold pt-1 border-t border-slate-200">
               <span>Total Loss %:</span>
-              <span class="font-mono text-rose-400">-${item.calc.effectiveLossPercent.toFixed(1)}%</span>
+              <span class="font-mono text-rose-600">
+                -${item.calc.effectiveLossPercent.toFixed(1)}%
+              </span>
             </div>
           </div>
         `;
+
         grid.appendChild(card);
 
-        // Table Row
         const row = document.createElement('tr');
-        row.className = 'hover:bg-slate-850/60 transition';
+
+        row.className = 'hover:bg-slate-50 transition';
+
         row.innerHTML = `
-          <td class="py-3.5 px-4 font-sans font-bold text-white flex items-center gap-2">
+          <td class="py-3.5 px-4 font-sans font-bold text-slate-900 flex items-center gap-2">
             <span class="w-2 h-2 rounded-full" style="background-color: ${item.preset.color}"></span>
             ${item.preset.name}
-            ${isBest ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">BEST</span>' : ''}
+
+            ${isBest
+              ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 font-bold">BEST</span>'
+              : ''}
           </td>
-          <td class="py-3.5 px-4 text-slate-300">${item.preset.feePercent}% + ${formatCurrency(item.preset.fixedFee, srcCurr.code)}</td>
-          <td class="py-3.5 px-4 text-slate-400">${formatCurrency(item.calc.withdrawalFee, srcCurr.code)} + ${item.method.spread}% spread</td>
-          <td class="py-3.5 px-4 font-bold text-rose-400">-${item.calc.effectiveLossPercent.toFixed(1)}%</td>
-          <td class="py-3.5 px-4 font-bold text-slate-200">${formatCurrency(item.calc.netSource, srcCurr.code)}</td>
-          <td class="py-3.5 px-4 text-right font-bold text-emerald-400 text-sm">${formatCurrency(item.calc.netTarget, tgtCurr.code)}</td>
+
+          <td class="py-3.5 px-4 text-slate-700">
+            ${item.preset.feePercent}% + ${formatCurrency(item.preset.fixedFee, srcCurr.code)}
+          </td>
+
+          <td class="py-3.5 px-4 text-slate-500">
+            ${formatCurrency(item.calc.withdrawalFee, srcCurr.code)} + ${item.method.spread}% spread
+          </td>
+
+          <td class="py-3.5 px-4 font-bold text-rose-600">
+            -${item.calc.effectiveLossPercent.toFixed(1)}%
+          </td>
+
+          <td class="py-3.5 px-4 font-bold text-slate-700">
+            ${formatCurrency(item.calc.netSource, srcCurr.code)}
+          </td>
+
+          <td class="py-3.5 px-4 text-right font-bold text-emerald-600 text-sm">
+            ${formatCurrency(item.calc.netTarget, tgtCurr.code)}
+          </td>
         `;
+
         table.appendChild(row);
       });
     }
@@ -1200,20 +1615,34 @@
     function renderTargetTab() {
       const srcCurr = CURRENCIES[state.sourceCurrency];
       const tgtCurr = CURRENCIES[state.targetCurrency];
-      const mode = state.targetMode; // 'LOCAL' or 'SOURCE'
-      const targetVal = Math.max(0, parseFloat(document.getElementById('targetNetInput').value) || 0);
+      const mode = state.targetMode;
+
+      const targetVal =
+        Math.max(0, parseFloat(document.getElementById('targetNetInput').value) || 0);
 
       if (targetVal === 0) {
-        document.getElementById('targetRequiredGrossSource').textContent = formatCurrency(0, srcCurr.code);
-        document.getElementById('targetRequiredGrossTarget').textContent = `(Equivalent to approximately ${formatCurrency(0, tgtCurr.code)})`;
-        document.getElementById('targetTotalFeeSource').textContent = formatCurrency(0, srcCurr.code);
+        document.getElementById('targetRequiredGrossSource').textContent =
+          formatCurrency(0, srcCurr.code);
+
+        document.getElementById('targetRequiredGrossTarget').textContent =
+          `(Equivalent to approximately ${formatCurrency(0, tgtCurr.code)})`;
+
+        document.getElementById('targetTotalFeeSource').textContent =
+          formatCurrency(0, srcCurr.code);
+
         document.getElementById('targetExtraBufferPct').textContent = '0.0%';
+
         return;
       }
 
-      const presetKey = document.getElementById('targetPlatformSelect').value;
+      const presetKey =
+        document.getElementById('targetPlatformSelect').value;
+
       const preset = PLATFORM_PRESETS[presetKey];
-      const defaultMethod = preset.payoutMethods.find(m => m.id === preset.defaultPayoutMethod) || preset.payoutMethods[0];
+
+      const defaultMethod =
+        preset.payoutMethods.find(m => m.id === preset.defaultPayoutMethod) ||
+        preset.payoutMethods[0];
 
       const pPct = preset.feePercent / 100;
       const pFixed = preset.fixedFee;
@@ -1223,33 +1652,49 @@
       const effectiveRate = rate * (1 - fxSpread);
 
       let targetNetSource = 0;
+
       if (mode === 'LOCAL') {
         targetNetSource = targetVal / effectiveRate;
       } else {
         targetNetSource = targetVal;
       }
 
-      // Reverse Formula:
-      // RequiredGross = (targetNetSource + pFixed + wFixed) / (1 - pPct)
-      const requiredGrossSource = (targetNetSource + pFixed + wFixed) / (1 - pPct);
-      const requiredGrossTarget = requiredGrossSource * rate;
-      const totalFeeSource = requiredGrossSource - targetNetSource;
-      const extraBufferPct = (totalFeeSource / targetNetSource) * 100;
+      const requiredGrossSource =
+        (targetNetSource + pFixed + wFixed) / (1 - pPct);
 
-      document.getElementById('targetRequiredGrossSource').textContent = formatCurrency(requiredGrossSource, srcCurr.code);
-      document.getElementById('targetRequiredGrossTarget').textContent = `(Equivalent to approximately ${formatCurrency(requiredGrossTarget, tgtCurr.code)})`;
-      document.getElementById('targetTotalFeeSource').textContent = '-' + formatCurrency(totalFeeSource, srcCurr.code);
-      document.getElementById('targetExtraBufferPct').textContent = `+${extraBufferPct.toFixed(1)}%`;
+      const requiredGrossTarget =
+        requiredGrossSource * rate;
+
+      const totalFeeSource =
+        requiredGrossSource - targetNetSource;
+
+      const extraBufferPct =
+        (totalFeeSource / targetNetSource) * 100;
+
+      document.getElementById('targetRequiredGrossSource').textContent =
+        formatCurrency(requiredGrossSource, srcCurr.code);
+
+      document.getElementById('targetRequiredGrossTarget').textContent =
+        `(Equivalent to approximately ${formatCurrency(requiredGrossTarget, tgtCurr.code)})`;
+
+      document.getElementById('targetTotalFeeSource').textContent =
+        '-' + formatCurrency(totalFeeSource, srcCurr.code);
+
+      document.getElementById('targetExtraBufferPct').textContent =
+        `+${extraBufferPct.toFixed(1)}%`;
     }
 
     // --- Saved History Management ---
     function loadSavedHistory() {
       try {
         const stored = localStorage.getItem('feeflow_history_v2');
+
         if (stored) state.history = JSON.parse(stored);
+
       } catch (e) {
         state.history = [];
       }
+
       renderHistoryList();
     }
 
@@ -1268,7 +1713,10 @@
 
       const newItem = {
         id: Date.now(),
-        date: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
         platform: PLATFORM_PRESETS[state.platform].name,
         gross: res.gross,
         grossFormatted: formatCurrency(res.gross, srcCurr.code),
@@ -1278,10 +1726,14 @@
       };
 
       state.history.unshift(newItem);
+
       if (state.history.length > 9) state.history.pop();
 
       try {
-        localStorage.setItem('feeflow_history_v2', JSON.stringify(state.history));
+        localStorage.setItem(
+          'feeflow_history_v2',
+          JSON.stringify(state.history)
+        );
       } catch (e) {}
 
       renderHistoryList();
@@ -1290,41 +1742,65 @@
 
     function clearHistory() {
       state.history = [];
+
       try {
         localStorage.removeItem('feeflow_history_v2');
       } catch (e) {}
+
       renderHistoryList();
       showToast('All saved calculation history has been cleared.');
     }
 
     function renderHistoryList() {
-      document.getElementById('historyCountBadge').textContent = `${state.history.length} items`;
-      const container = document.getElementById('historyListContainer');
+      document.getElementById('historyCountBadge').textContent =
+        `${state.history.length} items`;
+
+      const container =
+        document.getElementById('historyListContainer');
 
       if (state.history.length === 0) {
         container.innerHTML = `
           <div class="col-span-full py-8 text-center text-slate-500 text-xs">
-            No saved calculation records yet. Click <span class="text-emerald-400 font-semibold">'Save Calculation'</span> above to log an entry.
+            No saved calculation records yet.
+            Click
+            <span class="text-emerald-600 font-semibold">'Save Calculation'</span>
+            above to log an entry.
           </div>
         `;
+
         return;
       }
 
       container.innerHTML = state.history.map(item => `
-        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs hover:border-slate-700 transition">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs hover:border-slate-300 transition">
+
           <div>
             <div class="flex items-center space-x-1.5 mb-1">
-              <span class="font-bold text-white">${item.platform}</span>
-              <span class="text-[10px] text-slate-500 font-mono">${item.date}</span>
-              <span class="text-[9px] px-1 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">${item.pair}</span>
+              <span class="font-bold text-slate-800">${item.platform}</span>
+
+              <span class="text-[10px] text-slate-400 font-mono">
+                ${item.date}
+              </span>
+
+              <span class="text-[9px] px-1 py-0.5 rounded bg-slate-200 text-slate-500 font-mono">
+                ${item.pair}
+              </span>
             </div>
-            <div class="text-slate-400 font-mono">
-              Billed: <span class="text-slate-200">${item.grossFormatted}</span>
+
+            <div class="text-slate-500 font-mono">
+              Billed:
+              <span class="text-slate-700">${item.grossFormatted}</span>
             </div>
           </div>
+
           <div class="text-right">
-            <div class="font-mono font-bold text-emerald-400 text-sm">${item.netTargetFormatted}</div>
-            <div class="text-[10px] text-rose-400 font-mono font-semibold">-${item.feeRate.toFixed(1)}% total</div>
+            <div class="font-mono font-bold text-emerald-600 text-sm">
+              ${item.netTargetFormatted}
+            </div>
+
+            <div class="text-[10px] text-rose-600 font-mono font-semibold">
+              -${item.feeRate.toFixed(1)}% total
+            </div>
           </div>
         </div>
       `).join('');
@@ -1332,13 +1808,17 @@
 
     // --- Toast Notification Helper ---
     let toastTimeout = null;
+
     function showToast(msg) {
       const toast = document.getElementById('toast');
+
       document.getElementById('toastMsg').textContent = msg;
+
       toast.classList.remove('translate-y-20', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
 
       if (toastTimeout) clearTimeout(toastTimeout);
+
       toastTimeout = setTimeout(() => {
         toast.classList.remove('translate-y-0', 'opacity-100');
         toast.classList.add('translate-y-20', 'opacity-0');
@@ -1378,21 +1858,42 @@
 
     // --- Event Handlers Setup ---
     function bindEvents() {
+
       // 1. Tab Navigation
       document.querySelectorAll('.tab-btn').forEach(btn => {
+
         btn.addEventListener('click', () => {
+
           const targetTab = btn.getAttribute('data-tab');
+
           state.activeTab = targetTab;
 
           document.querySelectorAll('.tab-btn').forEach(b => {
-            b.classList.remove('bg-emerald-500/10', 'text-emerald-400', 'border', 'border-emerald-500/20', 'shadow-sm');
-            b.classList.add('text-slate-400');
+            b.classList.remove(
+              'bg-sky-500/10',
+              'text-sky-700',
+              'border',
+              'border-sky-500/20',
+              'shadow-sm'
+            );
+
+            b.classList.add('text-slate-500');
           });
-          btn.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border', 'border-emerald-500/20', 'shadow-sm');
-          btn.classList.remove('text-slate-400');
+
+          btn.classList.add(
+            'bg-sky-500/10',
+            'text-sky-700',
+            'border',
+            'border-sky-500/20',
+            'shadow-sm'
+          );
+
+          btn.classList.remove('text-slate-500');
 
           ['calc', 'compare', 'target'].forEach(t => {
-            document.getElementById(`tabContent-${t}`).classList.toggle('hidden', t !== targetTab);
+            document
+              .getElementById(`tabContent-${t}`)
+              .classList.toggle('hidden', t !== targetTab);
           });
 
           if (targetTab === 'compare') renderComparisonTab();
@@ -1402,24 +1903,44 @@
 
       // 2. Platform Selection
       document.querySelectorAll('.platform-btn').forEach(btn => {
-        btn.addEventListener('click', () => setPlatform(btn.getAttribute('data-platform')));
+        btn.addEventListener('click', () =>
+          setPlatform(btn.getAttribute('data-platform'))
+        );
       });
 
       // 3. Currency Change Handlers
-      const srcSelect = document.getElementById('sourceCurrencySelect');
-      const tgtSelect = document.getElementById('targetCurrencySelect');
+      const srcSelect =
+        document.getElementById('sourceCurrencySelect');
+
+      const tgtSelect =
+        document.getElementById('targetCurrencySelect');
 
       function onCurrencyChanged() {
+
         state.sourceCurrency = srcSelect.value;
         state.targetCurrency = tgtSelect.value;
-        const newRate = calculateDefaultExchangeRate(state.sourceCurrency, state.targetCurrency);
-        state.exchangeRate = newRate >= 10 ? Math.round(newRate * 100) / 100 : Math.round(newRate * 10000) / 10000;
-        document.getElementById('headerFxInput').value = state.exchangeRate;
 
-        // Update target symbol
+        const newRate =
+          calculateDefaultExchangeRate(
+            state.sourceCurrency,
+            state.targetCurrency
+          );
+
+        state.exchangeRate =
+          newRate >= 10
+            ? Math.round(newRate * 100) / 100
+            : Math.round(newRate * 10000) / 10000;
+
+        document.getElementById('headerFxInput').value =
+          state.exchangeRate;
+
         const tgtCurr = CURRENCIES[state.targetCurrency];
         const srcCurr = CURRENCIES[state.sourceCurrency];
-        document.getElementById('targetCurrencySymbol').textContent = state.targetMode === 'LOCAL' ? tgtCurr.symbol : srcCurr.symbol;
+
+        document.getElementById('targetCurrencySymbol').textContent =
+          state.targetMode === 'LOCAL'
+            ? tgtCurr.symbol
+            : srcCurr.symbol;
 
         render();
       }
@@ -1428,145 +1949,302 @@
       tgtSelect.addEventListener('change', onCurrencyChanged);
 
       // 4. Amount Inputs & Slider
-      const amtInput = document.getElementById('grossAmountInput');
-      const amtSlider = document.getElementById('amountSlider');
+      const amtInput =
+        document.getElementById('grossAmountInput');
+
+      const amtSlider =
+        document.getElementById('amountSlider');
 
       amtInput.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value) || 0;
+
+        const val =
+          parseFloat(e.target.value) || 0;
+
         state.grossAmount = val;
-        amtSlider.value = Math.min(10000, Math.max(50, val));
+
+        amtSlider.value =
+          Math.min(10000, Math.max(50, val));
+
         render();
       });
 
       amtSlider.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value) || 0;
+
+        const val =
+          parseFloat(e.target.value) || 0;
+
         state.grossAmount = val;
         amtInput.value = val;
+
         render();
       });
 
       document.querySelectorAll('.quick-amt-btn').forEach(btn => {
+
         btn.addEventListener('click', () => {
-          const amt = parseFloat(btn.getAttribute('data-amt'));
+
+          const amt =
+            parseFloat(btn.getAttribute('data-amt'));
+
           state.grossAmount = amt;
           amtInput.value = amt;
           amtSlider.value = amt;
+
           render();
         });
       });
 
       // 5. Header FX Rate Input
-      document.getElementById('headerFxInput').addEventListener('input', (e) => {
-        state.exchangeRate = Math.max(0.000001, parseFloat(e.target.value) || 1.0);
-        render();
-      });
+      document
+        .getElementById('headerFxInput')
+        .addEventListener('input', (e) => {
+
+          state.exchangeRate =
+            Math.max(
+              0.000001,
+              parseFloat(e.target.value) || 1.0
+            );
+
+          render();
+        });
 
       // 6. Payout Method Select
-      document.getElementById('payoutMethodSelect').addEventListener('change', (e) => {
-        state.payoutMethodId = e.target.value;
-        const preset = PLATFORM_PRESETS[state.platform];
-        const m = preset.payoutMethods.find(item => item.id === e.target.value);
-        if (m) {
-          state.withdrawalFixedFee = m.fee;
-          state.fxSpreadPercent = m.spread;
-          document.getElementById('withdrawalFixedFee').value = m.fee;
-          document.getElementById('fxSpreadPercent').value = m.spread;
-        }
-        render();
-      });
+      document
+        .getElementById('payoutMethodSelect')
+        .addEventListener('change', (e) => {
+
+          state.payoutMethodId = e.target.value;
+
+          const preset =
+            PLATFORM_PRESETS[state.platform];
+
+          const m =
+            preset.payoutMethods.find(
+              item => item.id === e.target.value
+            );
+
+          if (m) {
+            state.withdrawalFixedFee = m.fee;
+            state.fxSpreadPercent = m.spread;
+
+            document.getElementById('withdrawalFixedFee').value =
+              m.fee;
+
+            document.getElementById('fxSpreadPercent').value =
+              m.spread;
+          }
+
+          render();
+        });
 
       // 7. Manual Override Inputs
-      document.getElementById('platformFeePercent').addEventListener('input', (e) => {
-        state.platformFeePercent = parseFloat(e.target.value) || 0;
-        render();
-      });
+      document
+        .getElementById('platformFeePercent')
+        .addEventListener('input', (e) => {
 
-      document.getElementById('platformFixedFee').addEventListener('input', (e) => {
-        state.fixedFee = parseFloat(e.target.value) || 0;
-        render();
-      });
+          state.platformFeePercent =
+            parseFloat(e.target.value) || 0;
 
-      document.getElementById('withdrawalFixedFee').addEventListener('input', (e) => {
-        state.withdrawalFixedFee = parseFloat(e.target.value) || 0;
-        render();
-      });
+          render();
+        });
 
-      document.getElementById('fxSpreadPercent').addEventListener('input', (e) => {
-        state.fxSpreadPercent = parseFloat(e.target.value) || 0;
-        render();
-      });
+      document
+        .getElementById('platformFixedFee')
+        .addEventListener('input', (e) => {
+
+          state.fixedFee =
+            parseFloat(e.target.value) || 0;
+
+          render();
+        });
+
+      document
+        .getElementById('withdrawalFixedFee')
+        .addEventListener('input', (e) => {
+
+          state.withdrawalFixedFee =
+            parseFloat(e.target.value) || 0;
+
+          render();
+        });
+
+      document
+        .getElementById('fxSpreadPercent')
+        .addEventListener('input', (e) => {
+
+          state.fxSpreadPercent =
+            parseFloat(e.target.value) || 0;
+
+          render();
+        });
 
       // 8. Advanced Toggle
       let isAdvancedOpen = true;
-      const advBtn = document.getElementById('btnToggleAdvanced');
-      const advBlock = document.getElementById('advancedFeeBlock');
-      const advIcon = document.getElementById('advToggleIcon');
-      const advText = document.getElementById('advToggleText');
+
+      const advBtn =
+        document.getElementById('btnToggleAdvanced');
+
+      const advBlock =
+        document.getElementById('advancedFeeBlock');
+
+      const advIcon =
+        document.getElementById('advToggleIcon');
+
+      const advText =
+        document.getElementById('advToggleText');
 
       advBtn.addEventListener('click', () => {
+
         isAdvancedOpen = !isAdvancedOpen;
-        advBlock.classList.toggle('hidden', !isAdvancedOpen);
-        advText.textContent = isAdvancedOpen ? 'Collapse Details' : 'Expand Details';
-        advIcon.setAttribute('data-lucide', isAdvancedOpen ? 'chevron-up' : 'chevron-down');
+
+        advBlock.classList.toggle(
+          'hidden',
+          !isAdvancedOpen
+        );
+
+        advText.textContent =
+          isAdvancedOpen
+            ? 'Collapse Details'
+            : 'Expand Details';
+
+        advIcon.setAttribute(
+          'data-lucide',
+          isAdvancedOpen
+            ? 'chevron-up'
+            : 'chevron-down'
+        );
+
         lucide.createIcons();
       });
 
       // 9. Comparison Input
-      document.getElementById('compareAmountInput').addEventListener('input', renderComparisonTab);
+      document
+        .getElementById('compareAmountInput')
+        .addEventListener(
+          'input',
+          renderComparisonTab
+        );
 
       // 10. Target Calculator Inputs
-      const targetModeLocal = document.getElementById('targetModeLocal');
-      const targetModeSource = document.getElementById('targetModeSource');
-      const targetCurrSym = document.getElementById('targetCurrencySymbol');
+      const targetModeLocal =
+        document.getElementById('targetModeLocal');
+
+      const targetModeSource =
+        document.getElementById('targetModeSource');
+
+      const targetCurrSym =
+        document.getElementById('targetCurrencySymbol');
 
       targetModeLocal.addEventListener('click', () => {
+
         state.targetMode = 'LOCAL';
-        targetModeLocal.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-        targetModeSource.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-900 text-slate-400 border border-slate-800 hover:text-white';
-        targetCurrSym.textContent = CURRENCIES[state.targetCurrency].symbol;
+
+        targetModeLocal.className =
+          'flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-700 border border-emerald-500/40';
+
+        targetModeSource.className =
+          'flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-500 border border-slate-200 hover:text-slate-800';
+
+        targetCurrSym.textContent =
+          CURRENCIES[state.targetCurrency].symbol;
+
         renderTargetTab();
       });
 
       targetModeSource.addEventListener('click', () => {
+
         state.targetMode = 'SOURCE';
-        targetModeSource.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-        targetModeLocal.className = 'flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-900 text-slate-400 border border-slate-800 hover:text-white';
-        targetCurrSym.textContent = CURRENCIES[state.sourceCurrency].symbol;
+
+        targetModeSource.className =
+          'flex-1 py-2 rounded-lg text-xs font-bold transition bg-emerald-500/20 text-emerald-700 border border-emerald-500/40';
+
+        targetModeLocal.className =
+          'flex-1 py-2 rounded-lg text-xs font-bold transition bg-white text-slate-500 border border-slate-200 hover:text-slate-800';
+
+        targetCurrSym.textContent =
+          CURRENCIES[state.sourceCurrency].symbol;
+
         renderTargetTab();
       });
 
-      document.getElementById('targetNetInput').addEventListener('input', renderTargetTab);
-      document.getElementById('targetPlatformSelect').addEventListener('change', renderTargetTab);
+      document
+        .getElementById('targetNetInput')
+        .addEventListener(
+          'input',
+          renderTargetTab
+        );
+
+      document
+        .getElementById('targetPlatformSelect')
+        .addEventListener(
+          'change',
+          renderTargetTab
+        );
 
       // 11. Buttons
-      document.getElementById('btnResetAll').addEventListener('click', () => {
-        state.grossAmount = 0;
-        state.sourceCurrency = 'USD';
-        state.targetCurrency = 'USD';
-        srcSelect.value = 'USD';
-        tgtSelect.value = 'USD';
-        onCurrencyChanged();
-        setPlatform('upwork');
-        amtInput.value = 0;
-        amtSlider.value = 0;
-        document.getElementById('compareAmountInput').value = 0;
-        document.getElementById('targetNetInput').value = 0;
-        showToast('All parameters have been reset to 0.');
-      });
+      document
+        .getElementById('btnResetAll')
+        .addEventListener('click', () => {
 
-      document.getElementById('btnCopySummary').addEventListener('click', copySummaryText);
-      document.getElementById('btnSaveHistory').addEventListener('click', saveCurrentToHistory);
-      document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
+          state.grossAmount = 0;
+          state.sourceCurrency = 'USD';
+          state.targetCurrency = 'USD';
+
+          srcSelect.value = 'USD';
+          tgtSelect.value = 'USD';
+
+          onCurrencyChanged();
+
+          setPlatform('upwork');
+
+          amtInput.value = 0;
+          amtSlider.value = 0;
+
+          document.getElementById('compareAmountInput').value = 0;
+          document.getElementById('targetNetInput').value = 0;
+
+          showToast('All parameters have been reset to 0.');
+        });
+
+      document
+        .getElementById('btnCopySummary')
+        .addEventListener(
+          'click',
+          copySummaryText
+        );
+
+      document
+        .getElementById('btnSaveHistory')
+        .addEventListener(
+          'click',
+          saveCurrentToHistory
+        );
+
+      document
+        .getElementById('btnClearHistory')
+        .addEventListener(
+          'click',
+          clearHistory
+        );
     }
 
     // --- Initialization ---
     window.addEventListener('DOMContentLoaded', () => {
-      state.exchangeRate = calculateDefaultExchangeRate('USD', 'USD');
-      document.getElementById('headerFxInput').value = state.exchangeRate;
+
+      state.exchangeRate =
+        calculateDefaultExchangeRate('USD', 'USD');
+
+      document.getElementById('headerFxInput').value =
+        state.exchangeRate;
+
       updatePayoutMethods('upwork');
+
       bindEvents();
+
       loadSavedHistory();
+
       render();
+
       lucide.createIcons();
     });
   </script>
