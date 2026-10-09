@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,11 @@
   
   <!-- Tailwind CSS v4 via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- Tailwind v4 Custom Dark Mode Variant Configuration -->
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+  </style>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +20,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
+    :root { color-scheme: light; }
+    .dark { color-scheme: dark; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -36,6 +43,12 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    .dark ::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+    }
     @keyframes pulse-subtle {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.6; }
@@ -45,13 +58,13 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-800">
+<body class="bg-slate-50 dark:bg-gray-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-800 dark:selection:text-indigo-200 transition-colors duration-200">
   
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite"></div>
 
   <!-- Header & Navigation -->
-  <header class="border-b border-gray-200 bg-white/90 backdrop-blur-md sticky top-0 z-40">
+  <header class="border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <a href="index.html" class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg p-1 transition-colors">
@@ -62,23 +75,41 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-bold text-lg tracking-tight text-gray-900 group-hover:text-indigo-600 transition-colors">UtilinOne</span>
-              <span class="text-xs px-2 py-0.5 rounded font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200">v4.2</span>
+              <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">UtilinOne</span>
+              <span class="text-xs px-2 py-0.5 rounded font-mono font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">v4.2</span>
             </div>
-            <p class="text-xs text-gray-500 hidden sm:block">Client-Side Developer Suite</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Client-Side Developer Suite</p>
           </div>
         </a>
       </div>
 
       <!-- Center / Right Header Badges & Actions -->
       <div class="flex items-center gap-3">
-        <div class="hidden md:flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-inner">
+        <!-- Dark Mode Toggle -->
+        <button id="btnThemeToggle" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all cursor-pointer border border-gray-200 dark:border-gray-700 shadow-sm" title="Toggle Dark / Light Mode">
+          <svg id="themeIconSun" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <div class="hidden md:flex items-center gap-2 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-full shadow-inner">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-subtle"></span>
           <span>🔒 100% Client-Side &amp; Secure</span>
         </div>
 
-        <a href="index.html" class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shadow-sm">
-          <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <a href="index.html" class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shadow-sm">
+          <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
           <span>All Tools</span>
@@ -91,25 +122,25 @@
   <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-10">
     
     <!-- Hero / Title Section -->
-    <div class="text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+    <div class="text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
       <div>
         <div class="flex items-center justify-center sm:justify-start gap-2 mb-2">
-          <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600 font-mono">RFC 4122 Compliant</span>
-          <span class="text-gray-300">/</span>
-          <span class="text-xs text-gray-500">Standard Web Crypto API</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-mono">RFC 4122 Compliant</span>
+          <span class="text-gray-300 dark:text-gray-700">/</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Standard Web Crypto API</span>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">UUID v4 Generator</h1>
-        <p class="text-gray-600 text-sm sm:text-base mt-1.5 max-w-2xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">UUID v4 Generator</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base mt-1.5 max-w-2xl">
           Create cryptographically secure, universally unique identifiers instantly. No server round-trips, zero latency, and 128-bit local entropy.
         </p>
       </div>
 
       <!-- Quick Shortcuts Hint -->
-      <div class="hidden lg:flex items-center gap-2 text-xs text-gray-600 bg-white border border-gray-200 px-3.5 py-2 rounded-xl shadow-sm">
-        <span class="text-gray-500">Shortcuts:</span>
-        <kbd class="px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-700 rounded font-mono text-[11px] shadow-sm">Space</kbd>
+      <div class="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-3.5 py-2 rounded-xl shadow-sm">
+        <span class="text-gray-500 dark:text-gray-400">Shortcuts:</span>
+        <kbd class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded font-mono text-[11px] shadow-sm">Space</kbd>
         <span>or</span>
-        <kbd class="px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-700 rounded font-mono text-[11px] shadow-sm">Enter</kbd>
+        <kbd class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded font-mono text-[11px] shadow-sm">Enter</kbd>
         <span>to regenerate</span>
       </div>
     </div>
@@ -118,15 +149,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
       <!-- Left Column: Controls & Configuration (5 cols) -->
-      <section aria-labelledby="controls-heading" class="lg:col-span-5 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-6">
-        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
-          <h2 id="controls-heading" class="font-semibold text-lg text-gray-900 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <section aria-labelledby="controls-heading" class="lg:col-span-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
+          <h2 id="controls-heading" class="font-semibold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
             </svg>
             Configuration &amp; Options
           </h2>
-          <button id="reset-options-btn" type="button" class="text-xs text-gray-500 hover:text-indigo-600 transition-colors flex items-center gap-1 focus:outline-none" title="Reset to defaults">
+          <button id="reset-options-btn" type="button" class="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1 focus:outline-none cursor-pointer" title="Reset to defaults">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             Reset
           </button>
@@ -135,63 +166,63 @@
         <!-- Quantity Control -->
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <label for="quantity-input" class="text-sm font-medium text-gray-800">Quantity (1 - 100)</label>
-            <span id="quantity-display" class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">1 UUID</span>
+            <label for="quantity-input" class="text-sm font-medium text-gray-800 dark:text-gray-200">Quantity (1 - 100)</label>
+            <span id="quantity-display" class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">1 UUID</span>
           </div>
 
           <div class="flex items-center gap-2">
-            <button type="button" id="qty-decrement" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg border border-gray-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Decrease quantity">-</button>
+            <button type="button" id="qty-decrement" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer" aria-label="Decrease quantity">-</button>
             <input 
               type="number" 
               id="quantity-input" 
               min="1" 
               max="100" 
               value="1" 
-              class="w-full h-10 bg-gray-50 border border-gray-300 rounded-xl px-4 text-center font-mono font-semibold text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
+              class="w-full h-10 bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-700 rounded-xl px-4 text-center font-mono font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
             />
-            <button type="button" id="qty-increment" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg border border-gray-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Increase quantity">+</button>
+            <button type="button" id="qty-increment" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer" aria-label="Increase quantity">+</button>
           </div>
 
           <!-- Quick Preset Buttons -->
           <div class="grid grid-cols-6 gap-1.5 pt-1">
-            <button type="button" data-qty="1" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">1</button>
-            <button type="button" data-qty="5" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">5</button>
-            <button type="button" data-qty="10" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">10</button>
-            <button type="button" data-qty="25" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">25</button>
-            <button type="button" data-qty="50" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">50</button>
-            <button type="button" data-qty="100" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 border border-gray-200 transition-colors">100</button>
+            <button type="button" data-qty="1" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">1</button>
+            <button type="button" data-qty="5" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">5</button>
+            <button type="button" data-qty="10" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">10</button>
+            <button type="button" data-qty="25" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">25</button>
+            <button type="button" data-qty="50" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">50</button>
+            <button type="button" data-qty="100" class="qty-preset-btn py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-400 border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer">100</button>
           </div>
         </div>
 
         <!-- Formatting Toggles -->
-        <div class="space-y-4 pt-3 border-t border-gray-200">
-          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider font-mono">Format Options</h3>
+        <div class="space-y-4 pt-3 border-t border-gray-200 dark:border-gray-800">
+          <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider font-mono">Format Options</h3>
           
           <!-- Hyphens Toggle -->
-          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800">
             <div>
-              <span class="text-sm font-medium text-gray-800 block">Include Hyphens</span>
-              <span class="text-xs text-gray-500 font-mono block">e.g. 550e8400-e29b-41d4-...</span>
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200 block">Include Hyphens</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400 font-mono block">e.g. 550e8400-e29b-41d4-...</span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="toggle-hyphens" class="sr-only peer" checked>
-              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div class="w-11 h-6 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
             </label>
           </div>
 
           <!-- Letter Case Selector -->
-          <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-            <span class="text-sm font-medium text-gray-800 block">Letter Casing</span>
+          <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 space-y-2">
+            <span class="text-sm font-medium text-gray-800 dark:text-gray-200 block">Letter Casing</span>
             <div class="grid grid-cols-2 gap-2">
               <label class="cursor-pointer">
                 <input type="radio" name="case-option" value="lower" class="sr-only peer" checked>
-                <div class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-xs font-medium text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all shadow-sm">
+                <div class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-xs font-medium text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-950/60 peer-checked:text-indigo-700 dark:peer-checked:text-indigo-400 transition-all shadow-sm">
                   lowercase
                 </div>
               </label>
               <label class="cursor-pointer">
                 <input type="radio" name="case-option" value="upper" class="sr-only peer">
-                <div class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-xs font-medium text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all shadow-sm">
+                <div class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-xs font-medium text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-950/60 peer-checked:text-indigo-700 dark:peer-checked:text-indigo-400 transition-all shadow-sm">
                   UPPERCASE
                 </div>
               </label>
@@ -199,36 +230,36 @@
           </div>
 
           <!-- Prefix & Suffix Customization -->
-          <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
-            <span class="text-sm font-medium text-gray-800 block">Developer Prefix &amp; Suffix (Optional)</span>
+          <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 space-y-3">
+            <span class="text-sm font-medium text-gray-800 dark:text-gray-200 block">Developer Prefix &amp; Suffix (Optional)</span>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label for="prefix-input" class="text-xs text-gray-500 block mb-1">Prefix</label>
+                <label for="prefix-input" class="text-xs text-gray-500 dark:text-gray-400 block mb-1">Prefix</label>
                 <input 
                   type="text" 
                   id="prefix-input" 
                   placeholder="e.g. user_" 
                   maxlength="20"
-                  class="w-full h-9 bg-white border border-gray-300 rounded-lg px-2.5 text-xs font-mono text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 shadow-sm"
+                  class="w-full h-9 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-2.5 text-xs font-mono text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:border-indigo-500 shadow-sm"
                 />
               </div>
               <div>
-                <label for="suffix-input" class="text-xs text-gray-500 block mb-1">Suffix</label>
+                <label for="suffix-input" class="text-xs text-gray-500 dark:text-gray-400 block mb-1">Suffix</label>
                 <input 
                   type="text" 
                   id="suffix-input" 
                   placeholder="e.g. _v1" 
                   maxlength="20"
-                  class="w-full h-9 bg-white border border-gray-300 rounded-lg px-2.5 text-xs font-mono text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 shadow-sm"
+                  class="w-full h-9 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-2.5 text-xs font-mono text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:border-indigo-500 shadow-sm"
                 />
               </div>
             </div>
           </div>
 
           <!-- Wrap Style (Quotes / Brackets) -->
-          <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-            <label for="wrap-style-select" class="text-sm font-medium text-gray-800 block">Output Formatting / Wrapping</label>
-            <select id="wrap-style-select" class="w-full h-9 bg-white border border-gray-300 rounded-lg px-2.5 text-xs text-gray-800 focus:outline-none focus:border-indigo-500 shadow-sm">
+          <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 space-y-2">
+            <label for="wrap-style-select" class="text-sm font-medium text-gray-800 dark:text-gray-200 block">Output Formatting / Wrapping</label>
+            <select id="wrap-style-select" class="w-full h-9 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-2.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer">
               <option value="none">Plain (Raw UUIDs)</option>
               <option value="double-quotes">Double Quoted ("...")</option>
               <option value="single-quotes">Single Quoted ('...')</option>
@@ -241,7 +272,7 @@
         <button 
           type="button" 
           id="regenerate-btn" 
-          class="w-full py-3.5 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-white"
+          class="w-full py-3.5 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
         >
           <svg id="refresh-icon" class="w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -251,18 +282,18 @@
       </section>
 
       <!-- Right Column: Output Display & Batch Actions (7 cols) -->
-      <section aria-labelledby="output-heading" class="lg:col-span-7 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5 flex flex-col min-h-[580px]">
+      <section aria-labelledby="output-heading" class="lg:col-span-7 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-5 flex flex-col min-h-[580px]">
         
         <!-- Output Header & Batch Actions -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-200">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-200 dark:border-gray-800">
           <div>
-            <h2 id="output-heading" class="font-semibold text-lg text-gray-900 flex items-center gap-2">
-              <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <h2 id="output-heading" class="font-semibold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Generated Identifiers
             </h2>
-            <p id="output-meta-text" class="text-xs text-gray-500 font-mono mt-0.5">1 item ready · 128-bit cryptographic entropy</p>
+            <p id="output-meta-text" class="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">1 item ready · 128-bit cryptographic entropy</p>
           </div>
 
           <!-- Batch Action Buttons -->
@@ -270,7 +301,7 @@
             <button 
               type="button" 
               id="copy-all-btn" 
-              class="px-3.5 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              class="px-3.5 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer"
               title="Copy entire list to clipboard"
             >
               <svg id="copy-all-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,10 +313,10 @@
             <button 
               type="button" 
               id="download-txt-btn" 
-              class="px-3 py-2 rounded-xl text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="px-3 py-2 rounded-xl text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 flex items-center gap-1.5 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               title="Download as .txt file"
             >
-              <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               <span>Download</span>
@@ -294,7 +325,7 @@
             <button 
               type="button" 
               id="clear-btn" 
-              class="p-2 rounded-xl text-xs text-gray-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors focus:outline-none"
+              class="p-2 rounded-xl text-xs text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 border border-transparent hover:border-red-200 dark:hover:border-red-800 transition-colors focus:outline-none cursor-pointer"
               title="Clear output"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -304,10 +335,10 @@
 
         <!-- Hero Single Display (Visible when 1 item generated) -->
         <div id="single-hero-container" class="space-y-4">
-          <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-indigo-300 transition-colors shadow-sm">
+          <div class="p-5 rounded-2xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors shadow-sm">
             <div class="space-y-1.5 overflow-hidden">
-              <span class="text-[11px] font-mono text-indigo-600 uppercase tracking-wider block">Single UUID v4</span>
-              <div id="hero-uuid-text" class="font-mono text-lg sm:text-xl font-semibold text-gray-900 tracking-wide break-all select-all">
+              <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Single UUID v4</span>
+              <div id="hero-uuid-text" class="font-mono text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-wide break-all select-all">
                 <!-- Dynamically injected -->
               </div>
             </div>
@@ -315,7 +346,7 @@
             <button 
               type="button" 
               id="hero-copy-btn" 
-              class="self-start md:self-auto px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-medium text-xs flex items-center gap-2 transition-all cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
+              class="self-start md:self-auto px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-medium text-xs flex items-center gap-2 transition-all cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
             >
               <svg class="w-4 h-4 hero-copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -325,30 +356,30 @@
           </div>
 
           <!-- Anatomical Breakdown of the generated UUID -->
-          <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-xs space-y-2.5 shadow-sm">
+          <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-xs space-y-2.5 shadow-sm">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-gray-700">RFC 4122 Structure Verification</span>
-              <span class="text-emerald-700 font-mono text-[11px] flex items-center gap-1">
+              <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">RFC 4122 Structure Verification</span>
+              <span class="text-emerald-700 dark:text-emerald-400 font-mono text-[11px] flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 Valid UUID v4
               </span>
             </div>
             <div id="anatomy-pills" class="font-mono grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
-              <div class="p-2 rounded-lg bg-white border border-gray-200 shadow-sm">
+              <div class="p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <span class="text-gray-400 block text-[10px]">Version:</span>
-                <span class="text-indigo-600 font-bold">v4 (Random)</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">v4 (Random)</span>
               </div>
-              <div class="p-2 rounded-lg bg-white border border-gray-200 shadow-sm">
+              <div class="p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <span class="text-gray-400 block text-[10px]">Variant:</span>
-                <span class="text-indigo-600 font-bold">1 (RFC 4122)</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">1 (RFC 4122)</span>
               </div>
-              <div class="p-2 rounded-lg bg-white border border-gray-200 shadow-sm">
+              <div class="p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <span class="text-gray-400 block text-[10px]">Entropy:</span>
-                <span class="text-indigo-600 font-bold">122 Random bits</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">122 Random bits</span>
               </div>
-              <div class="p-2 rounded-lg bg-white border border-gray-200 shadow-sm">
+              <div class="p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <span class="text-gray-400 block text-[10px]">Length:</span>
-                <span id="anatomy-len" class="text-indigo-600 font-bold">36 chars</span>
+                <span id="anatomy-len" class="text-indigo-600 dark:text-indigo-400 font-bold">36 chars</span>
               </div>
             </div>
           </div>
@@ -356,7 +387,7 @@
 
         <!-- Bulk Output List Container (Scrollable) -->
         <div class="flex-1 flex flex-col">
-          <div class="flex items-center justify-between text-xs text-gray-500 mb-2 px-1">
+          <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2 px-1">
             <span>List View</span>
             <span id="rendered-count-badge" class="font-mono text-gray-400">Showing 1 of 1</span>
           </div>
@@ -377,10 +408,10 @@
     </div>
 
     <!-- Technical Guide, Anatomy & Collision Probability Section -->
-    <section class="border-t border-gray-200 pt-10 space-y-8">
+    <section class="border-t border-gray-200 dark:border-gray-800 pt-10 space-y-8">
       <div class="text-center max-w-3xl mx-auto space-y-2">
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Understanding UUID v4</h2>
-        <p class="text-gray-600 text-sm">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Understanding UUID v4</h2>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">
           Universally Unique Identifiers (UUIDs) provide an open, standardized mechanism for identifying information across distributed architectures without central coordination.
         </p>
       </div>
@@ -388,38 +419,38 @@
       <!-- 3 Feature Informational Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <h3 class="text-base font-semibold text-gray-900">Cryptographically Secure</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">
-            UtilinOne harnesses the browser's native <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-indigo-700 font-mono">crypto.randomUUID()</code> backed by the operating system's CSPRNG (Cryptographically Secure Pseudo-Random Number Generator).
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white">Cryptographically Secure</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            UtilinOne harnesses the browser's native <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-indigo-700 dark:text-indigo-400 font-mono">crypto.randomUUID()</code> backed by the operating system's CSPRNG (Cryptographically Secure Pseudo-Random Number Generator).
           </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center text-violet-600">
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 flex items-center justify-center text-violet-600 dark:text-violet-400">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 class="text-base font-semibold text-gray-900">Negligible Collision Risk</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white">Negligible Collision Risk</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
             With 122 bits of true entropy, there are $2^{122}$ ($5.3 \times 10^{36}$) combinations. Generating 1 billion UUIDs every second for 85 years yields a 50% chance of a single collision.
           </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h3 class="text-base font-semibold text-gray-900">Zero Telemetry &amp; Private</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white">Zero Telemetry &amp; Private</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
             Zero network requests are initiated. Your generated tokens never touch an external server or logging facility. Ideal for confidential keys and production database IDs.
           </p>
         </div>
@@ -427,83 +458,83 @@
       </div>
 
       <!-- Structure Breakdown Diagram -->
-      <div class="p-6 sm:p-8 rounded-2xl bg-white border border-gray-200 shadow-sm space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900">UUID v4 Anatomy (RFC 4122)</h3>
-        <p class="text-sm text-gray-600">
+      <div class="p-6 sm:p-8 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">UUID v4 Anatomy (RFC 4122)</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           A UUID is a 128-bit number represented as a 32-character hexadecimal string divided into 5 groups by 4 hyphens (8-4-4-4-12):
         </p>
 
-        <div class="p-4 sm:p-6 rounded-xl bg-gray-50 border border-gray-200 text-center font-mono text-sm sm:text-base overflow-x-auto shadow-inner">
+        <div class="p-4 sm:p-6 rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-center font-mono text-sm sm:text-base overflow-x-auto shadow-inner">
           <div class="inline-flex items-center gap-1 min-w-[500px] justify-center">
-            <div class="px-2 py-1.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+            <div class="px-2 py-1.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
               <span class="block text-[10px] text-gray-500 font-sans">time_low (8)</span>
               <span>xxxxxxxx</span>
             </div>
             <span class="text-gray-400 font-bold">-</span>
-            <div class="px-2 py-1.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <div class="px-2 py-1.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
               <span class="block text-[10px] text-gray-500 font-sans">time_mid (4)</span>
               <span>xxxx</span>
             </div>
             <span class="text-gray-400 font-bold">-</span>
-            <div class="px-2 py-1.5 rounded bg-violet-50 text-violet-700 border border-violet-200">
+            <div class="px-2 py-1.5 rounded bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
               <span class="block text-[10px] text-gray-500 font-sans">version '4' (4)</span>
-              <span><strong class="text-amber-600">4</strong>xxx</span>
+              <span><strong class="text-amber-600 dark:text-amber-400">4</strong>xxx</span>
             </div>
             <span class="text-gray-400 font-bold">-</span>
-            <div class="px-2 py-1.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+            <div class="px-2 py-1.5 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
               <span class="block text-[10px] text-gray-500 font-sans">variant [8-b] (4)</span>
-              <span><strong class="text-emerald-600">y</strong>xxx</span>
+              <span><strong class="text-emerald-600 dark:text-emerald-400">y</strong>xxx</span>
             </div>
             <span class="text-gray-400 font-bold">-</span>
-            <div class="px-2 py-1.5 rounded bg-pink-50 text-pink-700 border border-pink-200">
+            <div class="px-2 py-1.5 rounded bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
               <span class="block text-[10px] text-gray-500 font-sans">node (12)</span>
               <span>xxxxxxxxxxxx</span>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-600">
-          <div class="p-3 rounded-lg bg-gray-50 border border-gray-200">
-            <strong class="text-gray-900">The Version Digit (4):</strong> The 13th hexadecimal digit is fixed to <code class="text-amber-600 font-mono font-bold">4</code>, indicating a pseudo-randomly generated UUID under RFC 4122 Section 4.4.
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-600 dark:text-gray-400">
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800">
+            <strong class="text-gray-900 dark:text-white">The Version Digit (4):</strong> The 13th hexadecimal digit is fixed to <code class="text-amber-600 dark:text-amber-400 font-mono font-bold">4</code>, indicating a pseudo-randomly generated UUID under RFC 4122 Section 4.4.
           </div>
-          <div class="p-3 rounded-lg bg-gray-50 border border-gray-200">
-            <strong class="text-gray-900">The Variant Digit (y):</strong> The 17th digit represents the UUID variant. For RFC 4122, the two most significant bits are <code class="font-mono">10</code>, yielding values <code class="text-emerald-600 font-mono font-bold">8, 9, a, or b</code>.
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800">
+            <strong class="text-gray-900 dark:text-white">The Variant Digit (y):</strong> The 17th digit represents the UUID variant. For RFC 4122, the two most significant bits are <code class="font-mono">10</code>, yielding values <code class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">8, 9, a, or b</code>.
           </div>
         </div>
       </div>
 
       <!-- FAQ Section -->
       <div class="space-y-4">
-        <h3 class="text-xl font-bold text-gray-900">Frequently Asked Questions</h3>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-5 rounded-xl bg-white border border-gray-200 shadow-sm space-y-2">
-            <h4 class="font-semibold text-sm text-gray-900">How does UUID v4 compare to UUID v7?</h4>
-            <p class="text-xs text-gray-600 leading-relaxed">
+          <div class="p-5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-2">
+            <h4 class="font-semibold text-sm text-gray-900 dark:text-white">How does UUID v4 compare to UUID v7?</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
               UUID v4 is purely random, offering maximum entropy and zero information leakage. UUID v7 includes a Unix timestamp prefix, making it sequential and well-suited for database B-Tree index locality, though v4 remains the most universally compatible standard.
             </p>
           </div>
 
-          <div class="p-5 rounded-xl bg-white border border-gray-200 shadow-sm space-y-2">
-            <h4 class="font-semibold text-sm text-gray-900">How do I generate UUID v4 in backend languages?</h4>
-            <p class="text-xs text-gray-600 leading-relaxed font-mono">
-              <span class="text-indigo-600 font-bold">JS:</span> crypto.randomUUID()<br>
-              <span class="text-indigo-600 font-bold">Python:</span> uuid.uuid4()<br>
-              <span class="text-indigo-600 font-bold">Go:</span> google/uuid.New()<br>
-              <span class="text-indigo-600 font-bold">PostgreSQL:</span> gen_random_uuid()
+          <div class="p-5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-2">
+            <h4 class="font-semibold text-sm text-gray-900 dark:text-white">How do I generate UUID v4 in backend languages?</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-mono">
+              <span class="text-indigo-600 dark:text-indigo-400 font-bold">JS:</span> crypto.randomUUID()<br>
+              <span class="text-indigo-600 dark:text-indigo-400 font-bold">Python:</span> uuid.uuid4()<br>
+              <span class="text-indigo-600 dark:text-indigo-400 font-bold">Go:</span> google/uuid.New()<br>
+              <span class="text-indigo-600 dark:text-indigo-400 font-bold">PostgreSQL:</span> gen_random_uuid()
             </p>
           </div>
 
-          <div class="p-5 rounded-xl bg-white border border-gray-200 shadow-sm space-y-2">
-            <h4 class="font-semibold text-sm text-gray-900">Can I generate 100+ UUIDs without freezing the browser?</h4>
-            <p class="text-xs text-gray-600 leading-relaxed">
+          <div class="p-5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-2">
+            <h4 class="font-semibold text-sm text-gray-900 dark:text-white">Can I generate 100+ UUIDs without freezing the browser?</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
               Yes. Native Web Crypto random generation completes in microseconds. The DOM is updated in a single batched DocumentFragment, guaranteeing fluid 60fps rendering even at bulk capacities.
             </p>
           </div>
 
-          <div class="p-5 rounded-xl bg-white border border-gray-200 shadow-sm space-y-2">
-            <h4 class="font-semibold text-sm text-gray-900">Is this safe for production secrets or session tokens?</h4>
-            <p class="text-xs text-gray-600 leading-relaxed">
+          <div class="p-5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm space-y-2">
+            <h4 class="font-semibold text-sm text-gray-900 dark:text-white">Is this safe for production secrets or session tokens?</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
               While UUID v4 provides 122 bits of high-quality entropy suitable for database keys and transaction IDs, cryptographic auth tokens and passwords typically benefit from dedicated high-entropy byte sequences (such as 256-bit hex or base64 keys).
             </p>
           </div>
@@ -511,17 +542,17 @@
       </div>
 
       <!-- Privacy Guarantee Callout -->
-      <div class="p-6 rounded-2xl bg-gradient-to-r from-gray-50 via-white to-indigo-50/50 border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="p-6 rounded-2xl bg-gradient-to-r from-gray-50 dark:from-gray-900 via-white dark:via-gray-900 to-indigo-50/50 dark:to-indigo-950/30 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="space-y-1 text-center sm:text-left">
-          <div class="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-gray-900">
-            <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <div class="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             UtilinOne Privacy &amp; Security Policy
           </div>
-          <p class="text-xs text-gray-600 max-w-2xl">
+          <p class="text-xs text-gray-600 dark:text-gray-400 max-w-2xl">
             Your data never leaves your browser. All UUIDs are generated locally using the standard Web Crypto API. No analytics, no server requests, no tracking cookies.
           </p>
         </div>
-        <a href="index.html" class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-medium text-gray-700 border border-gray-300 shrink-0 transition-colors">
+        <a href="index.html" class="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 shrink-0 transition-colors">
           Explore Developer Suite →
         </a>
       </div>
@@ -531,49 +562,49 @@
   </main>
 
   <!-- Related Tools Footer -->
-  <footer class="border-t border-gray-200 bg-white mt-16 py-12">
+  <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 mt-16 py-12 transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
       <div>
-        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider font-mono mb-4">Related Developer Utilities in UtilinOne</h3>
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider font-mono mb-4">Related Developer Utilities in UtilinOne</h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           
-          <a href="timestamp.html" class="p-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-all group shadow-sm">
-            <span class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 block mb-0.5">Timestamp Tool</span>
-            <span class="text-[11px] text-gray-500">Epoch &amp; ISO converter</span>
+          <a href="timestamp.html" class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group shadow-sm">
+            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block mb-0.5">Timestamp Tool</span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">Epoch &amp; ISO converter</span>
           </a>
 
-          <a href="base64.html" class="p-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-all group shadow-sm">
-            <span class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 block mb-0.5">Base64 Encode</span>
-            <span class="text-[11px] text-gray-500">Binary &amp; text encoder</span>
+          <a href="base64.html" class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group shadow-sm">
+            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block mb-0.5">Base64 Encode</span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">Binary &amp; text encoder</span>
           </a>
 
-          <a href="url.html" class="p-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-all group shadow-sm">
-            <span class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 block mb-0.5">URL Tool</span>
-            <span class="text-[11px] text-gray-500">Encode, decode &amp; parse</span>
+          <a href="url.html" class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group shadow-sm">
+            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block mb-0.5">URL Tool</span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">Encode, decode &amp; parse</span>
           </a>
 
-          <a href="hash.html" class="p-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-all group shadow-sm">
-            <span class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 block mb-0.5">Hash Generator</span>
-            <span class="text-[11px] text-gray-500">SHA-256, MD5, SHA-1</span>
+          <a href="hash.html" class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group shadow-sm">
+            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block mb-0.5">Hash Generator</span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">SHA-256, MD5, SHA-1</span>
           </a>
 
-          <a href="json.html" class="p-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-all group shadow-sm">
-            <span class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 block mb-0.5">JSON Formatter</span>
-            <span class="text-[11px] text-gray-500">Prettify &amp; minify syntax</span>
+          <a href="json.html" class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group shadow-sm">
+            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block mb-0.5">JSON Formatter</span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400">Prettify &amp; minify syntax</span>
           </a>
 
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 text-xs text-gray-500">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
         <div class="flex items-center gap-2">
           <span>&copy; UtilinOne. Built for developers with zero tracking.</span>
         </div>
         <div class="flex items-center gap-4">
-          <a href="index.html" class="hover:text-gray-900 transition-colors">Suite Home</a>
+          <a href="index.html" class="hover:text-gray-900 dark:hover:text-white transition-colors">Suite Home</a>
           <span>·</span>
-          <span class="text-emerald-600 font-medium">RFC 4122 Compliant</span>
+          <span class="text-emerald-600 dark:text-emerald-400 font-medium">RFC 4122 Compliant</span>
           <span>·</span>
           <span>Web Crypto CSPRNG</span>
         </div>
@@ -586,6 +617,27 @@
   <script>
     (function () {
       'use strict';
+
+      // --- THEME INIT (Default Light Mode) ---
+      function initTheme() {
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      initTheme();
+
+      const btnThemeToggle = document.getElementById('btnThemeToggle');
+      btnThemeToggle.addEventListener('click', () => {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
 
       // --- STATE & OPTIONS ---
       const state = {
@@ -632,26 +684,20 @@
       const toastContainer = document.getElementById('toast-container');
 
       // --- CRYPTOGRAPHIC ENGINE ---
-      /**
-       * Generates a single RFC 4122 v4 UUID with fallback if crypto.randomUUID isn't available
-       */
       function generateRawUuidV4() {
         if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
           return crypto.randomUUID();
         }
 
-        // Robust fallback using crypto.getRandomValues
         if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
           const bytes = new Uint8Array(16);
           crypto.getRandomValues(bytes);
-          // RFC 4122: set version to 0100 (4) and variant to 10xx
           bytes[6] = (bytes[6] & 0x0f) | 0x40;
           bytes[8] = (bytes[8] & 0x3f) | 0x80;
           const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
           return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
         }
 
-        // Math.random fallback (extreme last resort)
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
           const r = Math.random() * 16 | 0;
           const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -659,26 +705,19 @@
         });
       }
 
-      /**
-       * Formats a raw UUID according to current user options
-       */
       function formatUuid(rawUuid) {
         let clean = rawUuid.toLowerCase();
 
-        // 1. Hyphens
         if (!state.hyphens) {
           clean = clean.replace(/-/g, '');
         }
 
-        // 2. Casing
         if (state.casing === 'upper') {
           clean = clean.toUpperCase();
         }
 
-        // 3. Prefix & Suffix
         let result = `${state.prefix}${clean}${state.suffix}`;
 
-        // 4. Wrapping (for display in raw or items)
         if (state.wrapStyle === 'double-quotes') {
           result = `"${result}"`;
         } else if (state.wrapStyle === 'single-quotes') {
@@ -690,7 +729,6 @@
 
       // --- RENDERING ENGINE ---
       function generateAndRender() {
-        // Trigger subtle spin on refresh icon
         refreshIcon.classList.add('rotate-180');
         setTimeout(() => refreshIcon.classList.remove('rotate-180'), 300);
 
@@ -699,7 +737,6 @@
         quantityInput.value = count;
         quantityDisplay.textContent = count === 1 ? '1 UUID' : `${count} UUIDs`;
 
-        // Generate batch
         const list = [];
         for (let i = 0; i < count; i++) {
           const raw = generateRawUuidV4();
@@ -708,11 +745,9 @@
         }
         state.currentUuids = list;
 
-        // Update Meta texts
         outputMetaText.textContent = `${count} ${count === 1 ? 'item' : 'items'} ready · 128-bit cryptographic entropy`;
         renderedCountBadge.textContent = `Showing ${count} of ${count}`;
 
-        // If Single Item: Update Hero Card
         if (count === 1) {
           singleHeroContainer.classList.remove('hidden');
           const first = list[0].formatted;
@@ -722,24 +757,23 @@
           singleHeroContainer.classList.add('hidden');
         }
 
-        // Render List via DocumentFragment for zero lag
         uuidListContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
         list.forEach((item, index) => {
           const row = document.createElement('div');
-          row.className = 'group flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 transition-colors gap-3 shadow-sm';
+          row.className = 'group flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors gap-3 shadow-sm';
           
           const indexNum = String(index + 1).padStart(2, '0');
 
           row.innerHTML = `
             <div class="flex items-center gap-3 overflow-hidden">
               <span class="text-xs font-mono text-gray-400 shrink-0 select-none">#${indexNum}</span>
-              <span class="uuid-val font-mono text-xs sm:text-sm text-gray-800 group-hover:text-gray-900 truncate select-all">${escapeHtml(item.formatted)}</span>
+              <span class="uuid-val font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white truncate select-all">${escapeHtml(item.formatted)}</span>
             </div>
             <button 
               type="button" 
-              class="item-copy-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-colors shrink-0 focus:outline-none focus:ring-1 focus:ring-indigo-500" 
+              class="item-copy-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors shrink-0 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer" 
               title="Copy this UUID"
               aria-label="Copy UUID #${indexNum}"
               data-uuid="${escapeHtml(item.formatted)}"
@@ -750,7 +784,6 @@
             </button>
           `;
 
-          // Add individual copy click handler
           const copyBtn = row.querySelector('.item-copy-btn');
           copyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -767,10 +800,8 @@
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
       }
 
-      // --- CLIPBOARD & DOWNLOAD ---
       function copyToClipboard(text, triggerEl) {
         if (!navigator.clipboard) {
-          // Fallback
           const ta = document.createElement('textarea');
           ta.value = text;
           document.body.appendChild(ta);
@@ -786,7 +817,7 @@
           if (triggerEl) {
             const originalSvg = triggerEl.innerHTML;
             triggerEl.innerHTML = `
-              <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
             `;
@@ -835,12 +866,12 @@
         const toast = document.createElement('div');
         toast.className = `px-4 py-2.5 rounded-xl text-xs font-medium shadow-xl border flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${
           isError 
-            ? 'bg-red-50 text-red-800 border-red-200' 
-            : 'bg-white text-gray-900 border-gray-200 shadow-indigo-500/10'
+            ? 'bg-red-50 dark:bg-red-950/90 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800' 
+            : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-800 shadow-indigo-500/10'
         }`;
         
         toast.innerHTML = `
-          <svg class="w-4 h-4 ${isError ? 'text-red-600' : 'text-emerald-600'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="w-4 h-4 ${isError ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             ${isError 
               ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' 
               : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />'}
@@ -849,7 +880,6 @@
         `;
 
         toastContainer.appendChild(toast);
-        // Force reflow
         void toast.offsetWidth;
         toast.classList.remove('translate-y-2', 'opacity-0');
 
@@ -862,8 +892,6 @@
       }
 
       // --- EVENT HANDLERS ---
-
-      // Quantity change handlers
       quantityInput.addEventListener('change', () => {
         let val = parseInt(quantityInput.value, 10);
         if (isNaN(val) || val < 1) val = 1;
@@ -894,7 +922,6 @@
         });
       });
 
-      // Toggles & Format Options
       toggleHyphens.addEventListener('change', (e) => {
         state.hyphens = e.target.checked;
         generateAndRender();
@@ -924,19 +951,16 @@
         generateAndRender();
       });
 
-      // Regenerate Button
       regenerateBtn.addEventListener('click', () => {
         generateAndRender();
       });
 
-      // Hero single item copy
       heroCopyBtn.addEventListener('click', () => {
         if (state.currentUuids.length > 0) {
           copyToClipboard(state.currentUuids[0].formatted, heroCopyBtn);
         }
       });
 
-      // Batch copy all
       copyAllBtn.addEventListener('click', () => {
         const text = getBatchFormattedString();
         if (!text) {
@@ -951,10 +975,8 @@
         }, 1800);
       });
 
-      // Download
       downloadTxtBtn.addEventListener('click', downloadAsTxt);
 
-      // Clear
       clearBtn.addEventListener('click', () => {
         state.currentUuids = [];
         uuidListContainer.innerHTML = `
@@ -968,7 +990,6 @@
         showToast('List cleared');
       });
 
-      // Reset options
       resetOptionsBtn.addEventListener('click', () => {
         state.quantity = 1;
         state.hyphens = true;
@@ -987,7 +1008,6 @@
         showToast('Options reset to default');
       });
 
-      // Keyboard accessibility: Press Space or Enter when not focused on an input/select
       window.addEventListener('keydown', (e) => {
         const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
         const isEditing = tag === 'input' || tag === 'select' || tag === 'textarea';
