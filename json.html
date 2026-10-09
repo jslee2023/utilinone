@@ -86,6 +86,11 @@
     .animate-fade-in {
       animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    /* 긴 에러 메시지 및 코드 출력 영역 줄바꿈 처리 */
+    pre, code, .font-mono-code {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/30 selection:text-indigo-900">
