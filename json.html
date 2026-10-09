@@ -94,7 +94,7 @@
     }
 
     /* Line Numbers Styling */
-    #lineNumbers {
+    #lineNumbers, #outputLineNumbers {
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       line-height: 1.625;
@@ -473,9 +473,16 @@
         <!-- Output View Body -->
         <div class="relative flex-1 min-h-[460px] flex flex-col bg-white overflow-hidden">
           
-          <!-- SYNTAX HIGHLIGHTED CODE CONTAINER -->
-          <div id="codeViewContainer" class="w-full h-full flex-1 overflow-auto p-4 font-mono-code text-[13px] leading-relaxed text-gray-800 select-text">
-            <pre id="jsonOutputFormatted" class="m-0 font-mono-code whitespace-pre"><span class="text-gray-500">// Formatted output will appear here in real-time...</span></pre>
+          <!-- SYNTAX HIGHLIGHTED CODE CONTAINER WITH LINE NUMBERS -->
+          <div id="codeViewWrapper" class="w-full h-full flex-1 flex flex-row overflow-hidden bg-white">
+            <!-- Output Line Numbers Sidebar -->
+            <div id="outputLineNumbers" class="select-none py-4 px-3 text-right font-mono-code text-[13px] leading-relaxed text-gray-400 bg-gray-50 border-r border-gray-200 shrink-0 overflow-hidden">
+              1
+            </div>
+            <!-- Code Scroll Container -->
+            <div id="codeViewContainer" class="w-full h-full flex-1 overflow-auto p-4 font-mono-code text-[13px] leading-relaxed text-gray-800 select-text">
+              <pre id="jsonOutputFormatted" class="m-0 font-mono-code whitespace-pre"><span class="text-gray-500">// Formatted output will appear here in real-time...</span></pre>
+            </div>
           </div>
 
           <!-- INTERACTIVE COLLAPSIBLE TREE VIEW CONTAINER -->
@@ -816,6 +823,7 @@
       // --- DOM ELEMENT REFERENCES ---
       const jsonInput = document.getElementById('jsonInput');
       const lineNumbers = document.getElementById('lineNumbers');
+      const outputLineNumbers = document.getElementById('outputLineNumbers');
       const jsonOutputFormatted = document.getElementById('jsonOutputFormatted');
       const codeViewContainer = document.getElementById('codeViewContainer');
       const treeViewContainer = document.getElementById('treeViewContainer');
@@ -1049,8 +1057,23 @@
         lineNumbers.innerHTML = html;
       }
 
+      function updateOutputLineNumbers() {
+        const text = currentFormattedText || '';
+        const lines = text ? text.split('\n') : [''];
+        const count = Math.max(1, lines.length);
+        let html = '';
+        for (let i = 1; i <= count; i++) {
+          html += i + (i < count ? '<br>' : '');
+        }
+        outputLineNumbers.innerHTML = html;
+      }
+
       jsonInput.addEventListener('scroll', () => {
         lineNumbers.scrollTop = jsonInput.scrollTop;
+      });
+
+      codeViewContainer.addEventListener('scroll', () => {
+        outputLineNumbers.scrollTop = codeViewContainer.scrollTop;
       });
 
       // --- SYNTAX HIGHLIGHTING ENGINE ---
@@ -1266,7 +1289,6 @@
         const raw = jsonInput.value.trim();
         const startTime = performance.now();
 
-        // Update line numbers & input metrics
         updateLineNumbers();
         const chars = jsonInput.value.length;
         const lines = jsonInput.value ? jsonInput.value.split('\n').length : 0;
@@ -1280,10 +1302,11 @@
           statusText.textContent = 'Ready';
           metricTime.textContent = '0 ms';
           errorBanner.classList.add('hidden');
+          currentFormattedText = '';
           jsonOutputFormatted.innerHTML = '<span class="text-gray-500">// Formatted output will appear here in real-time...</span>';
+          updateOutputLineNumbers();
           treeRoot.innerHTML = '';
           currentParsedData = null;
-          currentFormattedText = '';
           outputKeyCount.textContent = '0 keys';
           outputDepthCount.textContent = 'Depth: 0';
           outputTypeCount.textContent = 'Type: None';
@@ -1323,6 +1346,7 @@
           errorBanner.classList.add('hidden');
 
           jsonOutputFormatted.innerHTML = syntaxHighlight(currentFormattedText);
+          updateOutputLineNumbers();
 
           treeRoot.innerHTML = '';
           treeRoot.appendChild(buildTreeDOM(currentParsedData, null, '$'));
@@ -1354,6 +1378,7 @@
           errorSnippetPre.innerHTML = currentErrorDetails.snippet;
 
           jsonOutputFormatted.innerHTML = `<span class="text-rose-400 font-bold">// JSON Syntax Error at Line ${currentErrorDetails.line}, Col ${currentErrorDetails.col}&#10;// ${escapeHtml(currentErrorDetails.message)}</span>`;
+          updateOutputLineNumbers();
           treeRoot.innerHTML = `<div class="p-4 text-rose-400 text-xs">Cannot render tree view: resolve syntax error first.</div>`;
         }
       }
@@ -1470,6 +1495,7 @@
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('JSON beautified & formatted');
         }
       });
@@ -1479,6 +1505,7 @@
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
           updateLineNumbers();
+          updateOutputLineNumbers();
         }
       });
 
@@ -1488,6 +1515,7 @@
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('JSON minified (compact single-line)');
         }
       });
@@ -1498,6 +1526,7 @@
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('Keys recursively sorted (A to Z)');
         }
       });
@@ -1509,6 +1538,7 @@
         jsonInput.value = repaired;
         processJSON();
         updateLineNumbers();
+        updateOutputLineNumbers();
         if (currentParsedData) {
           showToast('Syntax issues repaired successfully!');
         } else {
@@ -1542,6 +1572,7 @@
         searchInput.value = '';
         processJSON();
         updateLineNumbers();
+        updateOutputLineNumbers();
         showToast('Workspace cleared');
       });
 
@@ -1591,6 +1622,7 @@
             jsonInput.value = text;
             processJSON();
             updateLineNumbers();
+            updateOutputLineNumbers();
             showToast('Pasted from clipboard');
           }
         } catch {
@@ -1603,7 +1635,7 @@
         currentViewMode = 'code';
         viewModeCode.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
         viewModeTree.className = 'px-3 py-1.5 rounded-lg text-gray-500 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer';
-        codeViewContainer.classList.remove('hidden');
+        codeViewContainer.parentElement.classList.remove('hidden');
         treeViewContainer.classList.add('hidden');
         treeControls.classList.add('hidden');
         treeControls.classList.remove('flex');
@@ -1615,7 +1647,7 @@
         viewModeTree.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
         viewModeCode.className = 'px-3 py-1.5 rounded-lg text-gray-500 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer';
         treeViewContainer.classList.remove('hidden');
-        codeViewContainer.classList.add('hidden');
+        codeViewContainer.parentElement.classList.add('hidden');
         treeControls.classList.remove('hidden');
         treeControls.classList.add('flex');
         if (searchInput.value.trim()) executeSearch(searchInput.value.trim());
@@ -1662,6 +1694,7 @@
           sampleMenu.classList.add('hidden');
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast(`Loaded ${btn.querySelector('span').textContent}`);
         });
       });
@@ -1674,6 +1707,7 @@
           jsonInput.value = event.target.result;
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast(`Loaded file: ${file.name}`);
         };
         reader.readAsText(file);
@@ -1708,6 +1742,7 @@
             jsonInput.value = event.target.result;
             processJSON();
             updateLineNumbers();
+            updateOutputLineNumbers();
             showToast(`Loaded file: ${file.name}`);
           };
           reader.readAsText(file);
@@ -1721,6 +1756,7 @@
           jsonInput.value = escaped;
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('Escaped as JSON string');
         } catch (err) {
           showToast('Escape failed', false);
@@ -1735,6 +1771,7 @@
           jsonInput.value = typeof unescaped === 'string' ? unescaped : JSON.stringify(unescaped, null, 2);
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('Unescaped string');
         } catch {
           showToast('Unable to unescape string', false);
@@ -1748,6 +1785,7 @@
           jsonInput.value = b64;
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('Encoded payload to Base64');
         } catch {
           showToast('Base64 encoding error', false);
@@ -1761,6 +1799,7 @@
           jsonInput.value = decoded;
           processJSON();
           updateLineNumbers();
+          updateOutputLineNumbers();
           showToast('Decoded Base64 payload');
         } catch {
           showToast('Invalid Base64 string', false);
@@ -1785,6 +1824,7 @@
       jsonInput.value = JSON.stringify(SAMPLES.ecommerce, null, 2);
       processJSON();
       updateLineNumbers();
+      updateOutputLineNumbers();
 
     })();
   </script>
