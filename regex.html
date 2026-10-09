@@ -1,157 +1,170 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Regex Tester & Debugger — UtilinOne Developer Suite</title>
-  <meta name="description" content="Commercial-grade, client-side regular expression tester, real-time debugger, syntax validator, and find-and-replace tool. 100% offline and secure.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regex Tester & Debugger | UtilinOne - 100% Client-Side Developer Suite</title>
+  <meta name="description" content="Commercial-grade, real-time client-side Regular Expression Tester, Match Highlighter, Capture Group Inspector, Web Worker acceleration, CSV export, and Dark Mode." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ec4899' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='4 17 10 11 4 5'></polyline><line x1='12' y1='19' x2='20' y2='19'></line></svg>" type="image/svg+xml" />
+
+  <!-- Tailwind CSS v4 Browser Build -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- Tailwind v4 Custom Dark Mode Variant Configuration -->
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+  </style>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
+    :root { color-scheme: light; }
+    .dark { color-scheme: dark; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .font-mono-code { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #e5e7eb; }
+    ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    .dark ::-webkit-scrollbar-track { background: #1f2937; }
+    .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+
+    /* Match highlight token colors (Light & Dark) */
+    .match-highlight-0 { background-color: rgba(99, 102, 241, 0.25); border-bottom: 2px solid #6366f1; color: #312e81; border-radius: 2px; padding: 0 1px; }
+    .match-highlight-1 { background-color: rgba(168, 85, 247, 0.25); border-bottom: 2px solid #a855f7; color: #581c87; border-radius: 2px; padding: 0 1px; }
+    .match-highlight-2 { background-color: rgba(14, 165, 233, 0.25); border-bottom: 2px solid #0ea5e9; color: #0369a1; border-radius: 2px; padding: 0 1px; }
+    .match-highlight-3 { background-color: rgba(16, 185, 129, 0.25); border-bottom: 2px solid #10b981; color: #065f46; border-radius: 2px; padding: 0 1px; }
+    .match-highlight-4 { background-color: rgba(245, 158, 11, 0.25); border-bottom: 2px solid #f59e0b; color: #78350f; border-radius: 2px; padding: 0 1px; }
+
+    .dark .match-highlight-0 { background-color: rgba(99, 102, 241, 0.4); color: #e0e7ff; }
+    .dark .match-highlight-1 { background-color: rgba(168, 85, 247, 0.4); color: #f3e8ff; }
+    .dark .match-highlight-2 { background-color: rgba(14, 165, 233, 0.4); color: #e0f2fe; }
+    .dark .match-highlight-3 { background-color: rgba(16, 185, 129, 0.4); color: #d1fae5; }
+    .dark .match-highlight-4 { background-color: rgba(245, 158, 11, 0.4); color: #fef3c7; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    /* Custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-    /* Match highlight badge styling */
-    .match-highlight-0 {
-      background-color: rgba(99, 102, 241, 0.2);
-      border-bottom: 2px solid #6366f1;
-      color: #312e81;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
-    .match-highlight-1 {
-      background-color: rgba(168, 85, 247, 0.2);
-      border-bottom: 2px solid #a855f7;
-      color: #581c87;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
-    .match-highlight-2 {
-      background-color: rgba(14, 165, 233, 0.2);
-      border-bottom: 2px solid #0ea5e9;
-      color: #0369a1;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
-    .match-highlight-3 {
-      background-color: rgba(16, 185, 129, 0.2);
-      border-bottom: 2px solid #10b981;
-      color: #065f46;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
-    .match-highlight-4 {
-      background-color: rgba(245, 158, 11, 0.2);
-      border-bottom: 2px solid #f59e0b;
-      color: #78350f;
-      border-radius: 2px;
-      padding: 0 1px;
-    }
+    .animate-fade-in { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-900">
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500/30 selection:text-indigo-900 dark:selection:text-indigo-200 transition-colors duration-200">
 
-  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-indigo-500/10 via-violet-500/5 to-transparent blur-3xl rounded-full"></div>
-    <div class="absolute top-1/3 -left-48 w-[450px] h-[450px] bg-indigo-500/5 blur-3xl rounded-full"></div>
-    <div class="absolute top-2/3 -right-48 w-[450px] h-[450px] bg-violet-500/5 blur-3xl rounded-full"></div>
+  <!-- TOP GLOW BACKGROUND -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-indigo-950/25 dark:from-indigo-900/15 via-violet-950/10 to-transparent pointer-events-none -z-10 blur-3xl"></div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-700 dark:border-gray-200 shadow-2xl text-xs font-medium">
+    <div id="toastIcon" class="w-2 h-2 rounded-full bg-emerald-400"></div>
+    <span id="toastMsg">Action completed</span>
   </div>
 
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-xl shadow-indigo-100 text-sm">
-    <div id="toastIcon" class="w-2 h-2 rounded-full bg-emerald-500"></div>
-    <span id="toastMsg" class="font-medium text-gray-800">Action completed</span>
-  </div>
-
-  <header class="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="index.html" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5 group transition-transform active:scale-95" title="Return to UtilinOne Hub">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
             </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">UtilinOne</span>
-              <span class="px-2 py-0.5 text-[11px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-md">PRO SUITE</span>
-            </div>
-            <p class="text-xs text-gray-500 hidden sm:block">Regex Tester & Debugger</p>
+          <div class="flex flex-col">
+            <span class="text-base font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-1.5">
+              UtilinOne
+              <span class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/20">Suite</span>
+            </span>
+            <span class="text-[11px] text-gray-500 dark:text-gray-400 -mt-0.5">Developer Utilities</span>
           </div>
         </a>
+
+        <div class="hidden sm:flex items-center text-gray-400 font-mono text-sm px-1">/</div>
+
+        <div class="hidden sm:flex items-center gap-2">
+          <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">Regex Tester &amp; Debugger</span>
+          <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/20">v2.5.0</span>
+        </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span>🔒 100% Client-Side & Secure</span>
+        <!-- Dark Mode Toggle -->
+        <button id="btnThemeToggle" class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all cursor-pointer border border-gray-200 dark:border-gray-700 shadow-sm" title="Toggle Dark / Light Mode">
+          <svg id="themeIconSun" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Privacy Badge -->
+        <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-medium shadow-sm">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>🔒 100% Client-Side</span>
         </div>
 
-        <a href="index.html" class="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-gray-100 border border-transparent hover:border-gray-200">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 transition-all flex items-center gap-1.5 shadow-sm">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          <span class="hidden md:inline">Back to Tools</span>
+          <span>All Tools</span>
         </a>
       </div>
     </div>
   </header>
 
-  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-5">
+    
+    <!-- HERO TITLE & ACTIONS -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1 border-b border-gray-200 dark:border-gray-800">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 flex items-center gap-3">
-          Regex Tester & Debugger
-          <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200">
-            ECMAScript RegExp
-          </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+          Regex Tester &amp; Debugger
+          <span class="hidden sm:inline-flex text-xs font-normal text-indigo-500 dark:text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg font-mono">ECMAScript RegExp</span>
         </h1>
-        <p class="text-sm text-gray-600 mt-1">
-          Instant client-side regular expression execution, capture group extraction, syntax validation, and pattern replacement.
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl">
+          Real-time regex pattern evaluation, capture group extraction, Web Worker acceleration, and find-and-replace debugging.
         </p>
       </div>
 
       <div class="flex items-center flex-wrap gap-2">
-        <button id="btnLoadSample" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:text-gray-900 transition-all shadow-sm">
-          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="btnLoadSample" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-all shadow-sm cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
           </svg>
           Load Sample
         </button>
 
-        <button id="btnShareUrl" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:text-gray-900 transition-all shadow-sm">
-          <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="btnShareUrl" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-all shadow-sm cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
           </svg>
           Share URL
         </button>
 
-        <button id="btnClearAll" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white hover:bg-red-50 border border-gray-200 hover:border-red-300 text-gray-600 hover:text-red-700 transition-all shadow-sm">
-          <svg class="w-3.5 h-3.5 text-gray-500 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="btnClearAll" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-white dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 transition-all shadow-sm cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
           </svg>
           Clear
@@ -159,41 +172,48 @@
       </div>
     </div>
 
-    <div class="rounded-2xl bg-white border border-gray-200 p-5 shadow-xl shadow-gray-200/50 backdrop-blur-xl relative space-y-4">
+    <!-- REGEX PATTERN CARD -->
+    <div class="rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 p-5 shadow-xl backdrop-blur-xl relative space-y-4">
       
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <label for="regexInput" class="text-xs font-semibold tracking-wider text-gray-700 uppercase flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+        <label for="regexInput" class="text-xs font-semibold tracking-wider text-gray-700 dark:text-gray-300 uppercase flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
           Regular Expression Pattern
         </label>
 
-        <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="text-xs font-medium text-gray-500 mr-1 hidden sm:inline">Flags:</span>
+        <!-- Flags Selection -->
+        <div class="flex items-center gap-1.5 flex-wrap font-mono text-xs">
+          <span class="text-gray-400 mr-1 hidden sm:inline">Flags:</span>
           
-          <button type="button" data-flag="g" class="flag-btn active px-2.5 py-1 text-xs font-mono font-semibold rounded-lg border transition-all duration-150 bg-indigo-50 text-indigo-700 border-indigo-300 hover:bg-indigo-100 shadow-xs" title="Global: Find all matches rather than stopping at the first">
+          <button type="button" data-flag="g" class="flag-btn active px-2.5 py-1 rounded-lg border transition-all bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-300 dark:border-indigo-800 shadow-xs cursor-pointer" title="Global: Find all matches">
             g <span class="text-[10px] opacity-75 hidden md:inline">global</span>
           </button>
 
-          <button type="button" data-flag="i" class="flag-btn active px-2.5 py-1 text-xs font-mono font-semibold rounded-lg border transition-all duration-150 bg-indigo-50 text-indigo-700 border-indigo-300 hover:bg-indigo-100 shadow-xs" title="Ignore Case: Case-insensitive search">
+          <button type="button" data-flag="i" class="flag-btn active px-2.5 py-1 rounded-lg border transition-all bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-300 dark:border-indigo-800 shadow-xs cursor-pointer" title="Ignore Case: Case-insensitive">
             i <span class="text-[10px] opacity-75 hidden md:inline">ignore-case</span>
           </button>
 
-          <button type="button" data-flag="m" class="flag-btn active px-2.5 py-1 text-xs font-mono font-semibold rounded-lg border transition-all duration-150 bg-indigo-50 text-indigo-700 border-indigo-300 hover:bg-indigo-100 shadow-xs" title="Multiline: ^ and $ match start/end of each line">
+          <button type="button" data-flag="m" class="flag-btn active px-2.5 py-1 rounded-lg border transition-all bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-300 dark:border-indigo-800 shadow-xs cursor-pointer" title="Multiline: ^ and $ match start/end of lines">
             m <span class="text-[10px] opacity-75 hidden md:inline">multiline</span>
           </button>
 
-          <button type="button" data-flag="s" class="flag-btn px-2.5 py-1 text-xs font-mono font-semibold rounded-lg border transition-all duration-150 bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 hover:text-gray-900" title="DotAll: dot (.) matches any character including newline">
+          <button type="button" data-flag="s" class="flag-btn px-2.5 py-1 rounded-lg border transition-all bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 cursor-pointer" title="DotAll: dot (.) matches newline">
             s <span class="text-[10px] opacity-75 hidden md:inline">dotAll</span>
           </button>
 
-          <button type="button" data-flag="u" class="flag-btn px-2.5 py-1 text-xs font-mono font-semibold rounded-lg border transition-all duration-150 bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 hover:text-gray-900" title="Unicode: Treats pattern as sequence of Unicode code points">
+          <button type="button" data-flag="u" class="flag-btn px-2.5 py-1 rounded-lg border transition-all bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 cursor-pointer" title="Unicode: Unicode code points">
             u <span class="text-[10px] opacity-75 hidden md:inline">unicode</span>
+          </button>
+
+          <button type="button" data-flag="d" class="flag-btn px-2.5 py-1 rounded-lg border transition-all bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 cursor-pointer" title="Indices: Generate substring match indices">
+            d <span class="text-[10px] opacity-75 hidden md:inline">indices</span>
           </button>
         </div>
       </div>
 
-      <div class="relative flex items-center rounded-xl bg-gray-50 border border-gray-200 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all shadow-inner">
-        <span class="pl-4 pr-1 text-indigo-600 font-mono text-xl font-bold select-none">/</span>
+      <!-- Pattern Input Box -->
+      <div class="relative flex items-center rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 focus-within:border-indigo-500 transition-all shadow-inner">
+        <span class="pl-4 pr-1 text-indigo-500 font-mono text-xl font-bold select-none">/</span>
         
         <input 
           id="regexInput" 
@@ -202,30 +222,32 @@
           autocomplete="off"
           value="([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})"
           placeholder="Enter regular expression pattern..." 
-          class="w-full py-3.5 px-2 bg-transparent text-gray-900 font-mono text-base focus:outline-none placeholder:text-gray-400 tracking-wide"
+          class="w-full py-3.5 px-2 bg-transparent text-gray-900 dark:text-gray-100 font-mono text-base focus:outline-none placeholder:text-gray-400 tracking-wide"
         />
 
-        <div class="pr-4 pl-1 flex items-center select-none">
-          <span class="text-indigo-600 font-mono text-xl font-bold">/</span>
-          <span id="activeFlagsDisplay" class="font-mono text-indigo-600 text-sm font-semibold ml-1">gim</span>
+        <div class="pr-4 pl-1 flex items-center select-none font-mono">
+          <span class="text-indigo-500 text-xl font-bold">/</span>
+          <span id="activeFlagsDisplay" class="text-indigo-500 dark:text-indigo-400 text-sm font-semibold ml-1">gim</span>
         </div>
       </div>
 
-      <div id="errorBanner" class="hidden rounded-xl bg-red-50 border border-red-200 p-3.5 text-xs text-red-700 flex items-start gap-3 animate-fadeIn">
-        <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Error Banner -->
+      <div id="errorBanner" class="hidden rounded-xl bg-rose-50 dark:bg-rose-950/90 border border-rose-500/40 p-3.5 text-xs text-rose-700 dark:text-rose-200 flex items-start gap-3 animate-fade-in">
+        <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
         </svg>
         <div class="space-y-0.5">
-          <div class="font-semibold text-red-800">Regex Syntax Error</div>
-          <div id="errorMessage" class="font-mono text-red-700 break-all">Invalid regular expression</div>
+          <div class="font-semibold text-rose-800 dark:text-rose-100">Regex Syntax Error</div>
+          <div id="errorMessage" class="font-mono text-rose-700 dark:text-rose-300 break-all">Invalid regular expression</div>
         </div>
       </div>
 
+      <!-- Presets & Extra Controls -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <div class="flex items-center gap-2">
-          <label for="presetSelect" class="text-xs text-gray-600 shrink-0">Common Presets:</label>
+          <label for="presetSelect" class="text-xs text-gray-500 dark:text-gray-400 shrink-0">Common Presets:</label>
           <div class="relative w-full sm:w-64">
-            <select id="presetSelect" class="w-full text-xs bg-gray-50 text-gray-800 border border-gray-200 rounded-lg px-3 py-2 appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer">
+            <select id="presetSelect" class="w-full text-xs bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2 appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer">
               <option value="" disabled selected>⚡ Select a preset pattern...</option>
               <option value="email">Email Address</option>
               <option value="url">Web URL (HTTP / HTTPS)</option>
@@ -235,12 +257,12 @@
               <option value="hexColor">Hex Color Code (#FFF / #FFFFFF)</option>
               <option value="uuid">UUID v4</option>
               <option value="htmlTag">HTML / XML Tags</option>
-              <option value="strongPassword">Strong Password (8+ chars, upper, lower, num, spec)</option>
+              <option value="strongPassword">Strong Password (8+ chars)</option>
               <option value="kebabCase">Slug / kebab-case</option>
               <option value="semver">Semantic Version (SemVer)</option>
               <option value="currency">Currency ($1,234.56)</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
@@ -249,15 +271,15 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="btnToggleReplace" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 transition-colors">
-            <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button id="btnToggleReplace" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
             </svg>
             <span id="replaceToggleText">Find & Replace</span>
           </button>
 
-          <button id="btnToggleCheatSheet" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 transition-colors">
-            <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button id="btnToggleCheatSheet" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
             </svg>
             <span>Cheat Sheet</span>
@@ -265,103 +287,99 @@
         </div>
       </div>
 
-      <div id="replacePanel" class="hidden pt-3 border-t border-gray-200 space-y-3">
+      <!-- Find & Replace Panel (Hidden by default) -->
+      <div id="replacePanel" class="hidden pt-3 border-t border-gray-200 dark:border-gray-800 space-y-3 animate-fade-in">
         <div class="flex items-center justify-between">
-          <label for="replaceInput" class="text-xs font-semibold tracking-wider text-indigo-600 uppercase flex items-center gap-2">
-            <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <label for="replaceInput" class="text-xs font-semibold tracking-wider text-indigo-500 uppercase flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10v10"/>
             </svg>
             Substitute & Replace
           </label>
-          <span class="text-[11px] text-gray-500">Supports $1, $2, $& tokens</span>
+          <span class="text-[11px] text-gray-400 font-mono">Supports $1, $2, $& tokens</span>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="relative">
-            <input 
-              id="replaceInput" 
-              type="text" 
-              placeholder="Replacement string (e.g. [user: $1 at $2])..." 
-              value="user: $1 on $2"
-              class="w-full py-2.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-            />
-          </div>
+          <input 
+            id="replaceInput" 
+            type="text" 
+            placeholder="Replacement string (e.g. [user: $1 at $2])..." 
+            value="user: $1 on $2"
+            class="w-full py-2.5 px-3 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-mono text-gray-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500"
+          />
 
-          <div class="flex items-center gap-2">
-            <button id="btnCopyReplaced" type="button" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all shadow-md shadow-indigo-600/20">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-              </svg>
-              Copy Replaced Result
-            </button>
-          </div>
+          <button id="btnCopyReplaced" type="button" class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all shadow-md shadow-indigo-600/20 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            Copy Replaced Result
+          </button>
         </div>
 
-        <div class="rounded-xl bg-gray-50 border border-gray-200 p-3">
-          <div class="text-[11px] font-medium text-gray-600 mb-1.5 flex items-center justify-between">
+        <div class="rounded-xl bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-3">
+          <div class="text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-1.5 flex items-center justify-between">
             <span>Replacement Output Preview:</span>
-            <span id="replaceCountLabel" class="text-indigo-600 font-mono">0 replacements</span>
+            <span id="replaceCountLabel" class="text-indigo-500 font-mono">0 replacements</span>
           </div>
-          <div id="replacePreview" class="text-xs font-mono text-gray-700 whitespace-pre-wrap break-all max-h-36 overflow-y-auto leading-relaxed select-text"></div>
+          <div id="replacePreview" class="text-xs font-mono text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all max-h-36 overflow-y-auto leading-relaxed select-text"></div>
         </div>
       </div>
-
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <!-- DUAL PANE: TEST STRING & LIVE VISUALIZER -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
       
-      <div class="rounded-2xl bg-white border border-gray-200 p-5 shadow-xl shadow-gray-200/50 backdrop-blur-xl space-y-4">
-        
+      <!-- Test String Pane -->
+      <div class="rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 p-5 shadow-xl backdrop-blur-xl flex flex-col gap-4">
         <div class="flex items-center justify-between">
-          <label for="testStringInput" class="text-xs font-semibold tracking-wider text-gray-700 uppercase flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-violet-600"></span>
+          <label for="testStringInput" class="text-xs font-semibold tracking-wider text-gray-700 dark:text-gray-300 uppercase flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-violet-500"></span>
             Test String
           </label>
           
           <div class="flex items-center gap-3">
-            <span id="charCountLabel" class="text-[11px] font-mono text-gray-500">0 chars</span>
-            <button id="btnClearTestString" type="button" class="text-[11px] text-gray-500 hover:text-gray-950 transition-colors">
+            <span id="charCountLabel" class="text-[11px] font-mono text-gray-400">0 chars</span>
+            <button id="btnClearTestString" type="button" class="text-[11px] text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer">
               Clear
             </button>
           </div>
         </div>
 
-        <div class="relative">
+        <div class="relative flex-1 flex flex-col">
           <textarea 
             id="testStringInput" 
             rows="12" 
             spellcheck="false"
             placeholder="Insert or paste text here to test against regular expression..." 
-            class="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-mono text-gray-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 leading-relaxed resize-y placeholder:text-gray-400"
+            class="w-full flex-1 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-xs font-mono text-gray-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500 leading-relaxed resize-none placeholder:text-gray-400"
           >Hello world! Contact support at support@utilinone.com or reach out to sales-inquiry@enterprise.org.
 You can also ping john.doe+dev@techcorp.io or admin123@sub.domain.co.uk.
 Invalid formats like @missinguser.com or invalid@ should be excluded from capture groups.</textarea>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-gray-500">
-          <span>Type or paste sample payload above.</span>
-          <span>Instant real-time match evaluation</span>
+        <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono">
+          <span>Web Worker background execution</span>
+          <span>Zero latency streaming</span>
         </div>
-
       </div>
 
-      <div class="rounded-2xl bg-white border border-gray-200 p-5 shadow-xl shadow-gray-200/50 backdrop-blur-xl space-y-4">
-        
+      <!-- Live Match Visualizer Pane -->
+      <div class="rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 p-5 shadow-xl backdrop-blur-xl flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <h2 class="text-xs font-semibold tracking-wider text-gray-700 uppercase">Live Match Visualizer</h2>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h2 class="text-xs font-semibold tracking-wider text-gray-700 dark:text-gray-300 uppercase">Live Match Visualizer</h2>
           </div>
 
           <div class="flex items-center gap-2">
-            <div id="statsBadge" class="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-mono font-medium">
+            <div id="statsBadge" class="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-mono font-medium">
               <span id="matchCount">0 matches</span>
-              <span class="text-gray-300">•</span>
+              <span class="text-gray-300 dark:text-gray-700">•</span>
               <span id="benchTime">0.0 ms</span>
             </div>
 
-            <button id="btnCopyMatches" type="button" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 transition-colors shadow-sm" title="Copy all matched values">
-              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="btnCopyMatches" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 transition-colors shadow-sm cursor-pointer" title="Copy all matched values">
+              <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
               <span>Copy Matches</span>
@@ -369,333 +387,259 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
           </div>
         </div>
 
-        <div class="relative bg-gray-50 border border-gray-200 rounded-xl p-4 min-h-[300px] max-h-[300px] overflow-y-auto">
-          <div id="highlightContainer" class="text-xs font-mono text-gray-800 whitespace-pre-wrap break-all leading-relaxed select-text"></div>
+        <div class="relative bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex-1 min-h-[280px] max-h-[310px] overflow-y-auto">
+          <div id="highlightContainer" class="text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-all leading-relaxed select-text"></div>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-gray-500">
-          <div class="flex items-center gap-2">
-            <span class="inline-block w-2.5 h-2.5 rounded-sm bg-indigo-100 border border-indigo-300"></span>
-            <span>Matched sequence token</span>
-          </div>
-          <span>Hover match for position details</span>
+        <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono">
+          <span>Highlighted match tokens</span>
+          <span>Hover match for offsets</span>
         </div>
-
       </div>
-
     </div>
 
-    <div class="rounded-2xl bg-white border border-gray-200 p-5 shadow-xl shadow-gray-200/50 backdrop-blur-xl space-y-4">
+    <!-- MATCH INSPECTOR TABLE & EXPORT -->
+    <div class="rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 p-5 shadow-xl backdrop-blur-xl space-y-4">
       
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
-            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            Captured Groups & Match Inspector
+            Captured Groups &amp; Match Inspector
           </h2>
-          <p class="text-xs text-gray-500">Breakdown of each matched substring, character offsets, and numbered/named capturing groups.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Breakdown of matched substrings, character indices, and numbered capturing groups.</p>
         </div>
 
-        <div class="flex items-center gap-2">
-          <button id="btnCopyJson" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 transition-colors">
-            <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-            </svg>
-            Copy as JSON
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="btnCopyJson" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer">
+            Export JSON
+          </button>
+          <button id="btnExportCsv" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer">
+            Export CSV
+          </button>
+          <button id="btnExportTsv" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer">
+            Export TSV
           </button>
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-xl border border-gray-200 bg-gray-50">
+      <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
-            <tr class="border-b border-gray-200 bg-gray-100/80 text-gray-600 font-semibold uppercase tracking-wider">
+            <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">
               <th class="py-3 px-4 w-16">#</th>
               <th class="py-3 px-4">Full Match</th>
-              <th class="py-3 px-4 w-32">Range</th>
+              <th class="py-3 px-4 w-36">Range (Indices)</th>
               <th class="py-3 px-4 w-24">Length</th>
               <th class="py-3 px-4">Captured Groups</th>
               <th class="py-3 px-4 w-20 text-right">Action</th>
             </tr>
           </thead>
-          <tbody id="matchTableBody" class="divide-y divide-gray-200 font-mono">
-            </tbody>
+          <tbody id="matchTableBody" class="divide-y divide-gray-200 dark:divide-gray-800 font-mono text-gray-800 dark:text-gray-200"></tbody>
         </table>
-        <div id="noMatchesNotice" class="hidden py-8 text-center text-xs text-gray-500 font-sans">
+        <div id="noMatchesNotice" class="hidden py-8 text-center text-xs text-gray-500 dark:text-gray-400 font-sans">
           No matches found for the current pattern and flags.
         </div>
       </div>
-
     </div>
 
-    <div id="cheatSheetSection" class="rounded-2xl bg-white border border-gray-200 p-5 shadow-xl shadow-gray-200/50 backdrop-blur-xl space-y-4">
-      
+    <!-- INTERACTIVE CHEAT SHEET -->
+    <div id="cheatSheetSection" class="rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 p-5 shadow-xl backdrop-blur-xl space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Interactive Regex Cheat Sheet</h2>
+          <h2 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">Interactive Regex Cheat Sheet</h2>
         </div>
-        <span class="text-xs text-gray-500">Click any token to insert into pattern</span>
+        <span class="text-xs text-gray-400 font-mono">Click any token to insert</span>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
-          <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Character Classes</h3>
+        <div class="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-3.5 space-y-2">
+          <h3 class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Character Classes</h3>
           <div class="space-y-1.5 text-xs font-mono">
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\d">
-              <span class="text-indigo-600 font-semibold">\d</span>
-              <span class="text-[11px] text-gray-600 font-sans">Any digit (0-9)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\d">
+              <span class="text-indigo-500 font-semibold">\d</span>
+              <span class="text-[11px] text-gray-500 font-sans">Any digit (0-9)</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\D">
-              <span class="text-indigo-600 font-semibold">\D</span>
-              <span class="text-[11px] text-gray-600 font-sans">Not a digit</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\D">
+              <span class="text-indigo-500 font-semibold">\D</span>
+              <span class="text-[11px] text-gray-500 font-sans">Not a digit</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\w">
-              <span class="text-indigo-600 font-semibold">\w</span>
-              <span class="text-[11px] text-gray-600 font-sans">Word char (a-z, A-Z, 0-9, _)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\w">
+              <span class="text-indigo-500 font-semibold">\w</span>
+              <span class="text-[11px] text-gray-500 font-sans">Word char</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\W">
-              <span class="text-indigo-600 font-semibold">\W</span>
-              <span class="text-[11px] text-gray-600 font-sans">Not a word char</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\s">
+              <span class="text-indigo-500 font-semibold">\s</span>
+              <span class="text-[11px] text-gray-500 font-sans">Whitespace</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\s">
-              <span class="text-indigo-600 font-semibold">\s</span>
-              <span class="text-[11px] text-gray-600 font-sans">Whitespace (space, tab, newline)</span>
-            </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token=".">
-              <span class="text-indigo-600 font-semibold">.</span>
-              <span class="text-[11px] text-gray-600 font-sans">Any character except newline</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token=".">
+              <span class="text-indigo-500 font-semibold">.</span>
+              <span class="text-[11px] text-gray-500 font-sans">Any char (except newline)</span>
             </div>
           </div>
         </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
-          <h3 class="text-xs font-bold text-violet-600 uppercase tracking-wider">Quantifiers</h3>
+        <div class="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-3.5 space-y-2">
+          <h3 class="text-xs font-bold text-violet-500 uppercase tracking-wider">Quantifiers</h3>
           <div class="space-y-1.5 text-xs font-mono">
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="+">
-              <span class="text-violet-600 font-semibold">+</span>
-              <span class="text-[11px] text-gray-600 font-sans">1 or more (greedy)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="+">
+              <span class="text-violet-500 font-semibold">+</span>
+              <span class="text-[11px] text-gray-500 font-sans">1 or more</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="*">
-              <span class="text-violet-600 font-semibold">*</span>
-              <span class="text-[11px] text-gray-600 font-sans">0 or more (greedy)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="*">
+              <span class="text-violet-500 font-semibold">*</span>
+              <span class="text-[11px] text-gray-500 font-sans">0 or more</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="?">
-              <span class="text-violet-600 font-semibold">?</span>
-              <span class="text-[11px] text-gray-600 font-sans">0 or 1 (optional)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="?">
+              <span class="text-violet-500 font-semibold">?</span>
+              <span class="text-[11px] text-gray-500 font-sans">Optional (0 or 1)</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="{2,5}">
-              <span class="text-violet-600 font-semibold">{2,5}</span>
-              <span class="text-[11px] text-gray-600 font-sans">Between 2 and 5</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="{2,5}">
+              <span class="text-violet-500 font-semibold">{2,5}</span>
+              <span class="text-[11px] text-gray-500 font-sans">Between 2 and 5</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="+?">
-              <span class="text-violet-600 font-semibold">+?</span>
-              <span class="text-[11px] text-gray-600 font-sans">Lazy / non-greedy</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="+?">
+              <span class="text-violet-500 font-semibold">+?</span>
+              <span class="text-[11px] text-gray-500 font-sans">Lazy / non-greedy</span>
             </div>
           </div>
         </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
-          <h3 class="text-xs font-bold text-cyan-600 uppercase tracking-wider">Anchors & Boundaries</h3>
+        <div class="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-3.5 space-y-2">
+          <h3 class="text-xs font-bold text-cyan-500 uppercase tracking-wider">Anchors &amp; Boundaries</h3>
           <div class="space-y-1.5 text-xs font-mono">
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="^">
-              <span class="text-cyan-600 font-semibold">^</span>
-              <span class="text-[11px] text-gray-600 font-sans">Start of line / string</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="^">
+              <span class="text-cyan-500 font-semibold">^</span>
+              <span class="text-[11px] text-gray-500 font-sans">Start of string/line</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="$">
-              <span class="text-cyan-600 font-semibold">$</span>
-              <span class="text-[11px] text-gray-600 font-sans">End of line / string</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="$">
+              <span class="text-cyan-500 font-semibold">$</span>
+              <span class="text-[11px] text-gray-500 font-sans">End of string/line</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\b">
-              <span class="text-cyan-600 font-semibold">\b</span>
-              <span class="text-[11px] text-gray-600 font-sans">Word boundary</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\b">
+              <span class="text-cyan-500 font-semibold">\b</span>
+              <span class="text-[11px] text-gray-500 font-sans">Word boundary</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="\B">
-              <span class="text-cyan-600 font-semibold">\B</span>
-              <span class="text-[11px] text-gray-600 font-sans">Non-word boundary</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="\B">
+              <span class="text-cyan-500 font-semibold">\B</span>
+              <span class="text-[11px] text-gray-500 font-sans">Non-word boundary</span>
             </div>
           </div>
         </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
-          <h3 class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Groups & Logic</h3>
+        <div class="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-3.5 space-y-2">
+          <h3 class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Groups &amp; Logic</h3>
           <div class="space-y-1.5 text-xs font-mono">
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="(...)">
-              <span class="text-emerald-600 font-semibold">(...)</span>
-              <span class="text-[11px] text-gray-600 font-sans">Capturing group</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="(...)">
+              <span class="text-emerald-500 font-semibold">(...)</span>
+              <span class="text-[11px] text-gray-500 font-sans">Capturing group</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="(?:...)">
-              <span class="text-emerald-600 font-semibold">(?:...)</span>
-              <span class="text-[11px] text-gray-600 font-sans">Non-capturing group</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="(?:...)">
+              <span class="text-emerald-500 font-semibold">(?:...)</span>
+              <span class="text-[11px] text-gray-500 font-sans">Non-capturing group</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="(?=...)">
-              <span class="text-emerald-600 font-semibold">(?=...)</span>
-              <span class="text-[11px] text-gray-600 font-sans">Positive lookahead</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="(?=...)">
+              <span class="text-emerald-500 font-semibold">(?=...)</span>
+              <span class="text-[11px] text-gray-500 font-sans">Positive lookahead</span>
             </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="(?!...)">
-              <span class="text-emerald-600 font-semibold">(?!...)</span>
-              <span class="text-[11px] text-gray-600 font-sans">Negative lookahead</span>
-            </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="[a-z]">
-              <span class="text-emerald-600 font-semibold">[...]</span>
-              <span class="text-[11px] text-gray-600 font-sans">Character set</span>
-            </div>
-            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors" data-token="a|b">
-              <span class="text-emerald-600 font-semibold">a|b</span>
-              <span class="text-[11px] text-gray-600 font-sans">Alternation (OR)</span>
+            <div class="cheat-item flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors" data-token="a|b">
+              <span class="text-emerald-500 font-semibold">a|b</span>
+              <span class="text-[11px] text-gray-500 font-sans">Alternation (OR)</span>
             </div>
           </div>
         </div>
 
       </div>
-
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
-      <div class="rounded-2xl bg-white border border-gray-200 p-5 space-y-3">
-        <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
-          How to Use Regex Tester
-        </h3>
-        <ol class="text-xs text-gray-600 space-y-2 list-decimal list-inside leading-relaxed">
-          <li><strong class="text-gray-800">Enter your pattern:</strong> Type or paste your regular expression inside the slash wrappers.</li>
-          <li><strong class="text-gray-800">Toggle regex flags:</strong> Select flags like <code class="text-indigo-600 font-mono">g</code> (global), <code class="text-indigo-600 font-mono">i</code> (ignore case), or <code class="text-indigo-600 font-mono">m</code> (multiline).</li>
-          <li><strong class="text-gray-800">Paste test payload:</strong> Paste log lines, emails, code snippets, or formatted strings.</li>
-          <li><strong class="text-gray-800">Inspect captured groups:</strong> Review detailed start/end offsets and group values in the table.</li>
-          <li><strong class="text-gray-800">Export or substitute:</strong> Copy matches as JSON or use the Find & Replace feature.</li>
-        </ol>
-      </div>
-
-      <div class="rounded-2xl bg-white border border-gray-200 p-5 space-y-3">
-        <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-          <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Frequently Asked Questions
-        </h3>
-        <div class="space-y-2.5 text-xs">
-          <details class="group bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <summary class="font-semibold text-gray-800 cursor-pointer flex items-center justify-between">
-              <span>What regex engine is used?</span>
-              <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <p class="mt-2 text-gray-600 leading-relaxed">
-              UtilinOne Regex Tester uses the native <strong>JavaScript ECMAScript RegExp engine</strong> running directly in your browser. All modern flags (g, i, m, s, u, d, y) are supported depending on your browser version.
-            </p>
-          </details>
-
-          <details class="group bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <summary class="font-semibold text-gray-800 cursor-pointer flex items-center justify-between">
-              <span>Are my test strings or patterns sent to a server?</span>
-              <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <p class="mt-2 text-gray-600 leading-relaxed">
-              No! Everything is executed <strong>100% client-side</strong> in your browser's JavaScript sandbox. No data, logs, or secrets ever leave your machine.
-            </p>
-          </details>
-
-          <details class="group bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <summary class="font-semibold text-gray-800 cursor-pointer flex items-center justify-between">
-              <span>Can I share my regex with teammates?</span>
-              <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <p class="mt-2 text-gray-600 leading-relaxed">
-              Yes! Click the <strong>Share URL</strong> button at the top. It encodes your pattern, flags, and test string directly into the URL fragment without sending anything over the network.
-            </p>
-          </details>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="rounded-2xl bg-white border border-gray-200 p-5 space-y-3">
-      <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-        </svg>
-        Privacy & Security Guarantee
-      </h3>
-      <p class="text-xs text-gray-600 leading-relaxed">
-        UtilinOne is engineered with strict <strong class="text-emerald-700">zero-server data transfer principles</strong>.
-      </p>
-      <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside leading-relaxed">
-        <li>All regular expressions and test strings are compiled and evaluated strictly in local browser RAM.</li>
-        <li>No telemetry, no tracking cookies, and no logging endpoints.</li>
-        <li>Safe for confidential API tokens, customer PII, secret keys, and proprietary log data.</li>
-      </ul>
-      <div class="pt-2">
-        <div class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-          <span>Client sandbox: isolated window memory</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="pt-8 border-t border-gray-200 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Related UtilinOne Developer Tools</h2>
-        <a href="index.html" class="text-xs text-indigo-600 hover:text-indigo-700 transition-colors">View all developer utilities →</a>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-        <a href="json-formatter.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">JSON Formatter</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">Validate & minify</div>
-        </a>
-
-        <a href="jwt-debugger.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">JWT Debugger</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">Decode tokens</div>
-        </a>
-
-        <a href="base64.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Base64 / URL</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">Encode & decode</div>
-        </a>
-
-        <a href="hash-generator.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Hash Generator</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">MD5, SHA-256</div>
-        </a>
-
-        <a href="timestamp.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Timestamp Tool</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">Epoch converter</div>
-        </a>
-
-        <a href="diff-checker.html" class="group p-3 rounded-xl bg-white border border-gray-200 hover:border-indigo-400 hover:bg-gray-50 transition-all text-center">
-          <div class="text-xs font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Diff Checker</div>
-          <div class="text-[10px] text-gray-500 mt-0.5">Side-by-side text</div>
-        </a>
-      </div>
-    </div>
-
   </main>
 
-  <footer class="relative z-10 border-t border-gray-200 bg-white py-6 mt-12 text-center text-xs text-gray-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 py-8 text-center text-xs text-gray-500 dark:text-gray-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-gray-800">UtilinOne</span>
-        <span>— Professional Developer Toolkit</span>
+        <span class="font-bold text-gray-700 dark:text-gray-300">UtilinOne</span>
+        <span>•</span>
+        <span>Commercial-grade client-side developer toolbox</span>
       </div>
-      <div>
-        <span>Built with client-side privacy by design. No tracking or external API calls.</span>
+      <div class="flex items-center gap-4">
+        <span>🔒 Zero Server Transmission</span>
+        <span>•</span>
+        <a href="index.html" class="hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Tools Directory</a>
       </div>
     </div>
   </footer>
 
+  <!-- VANILLA JAVASCRIPT APPLICATION CORE WITH WEB WORKER -->
   <script>
     (function () {
       'use strict';
 
-      // --- STATE & PRESETS ---
+      // --- WEB WORKER INLINE BLOB FOR HEAVY REGEX PROCESSING ---
+      const workerCode = `
+        self.onmessage = function(e) {
+          const { pattern, flags, testStr } = e.data;
+          const start = performance.now();
+          
+          if (!pattern || !testStr) {
+            self.postMessage({ success: true, matches: [], latency: '0.0' });
+            return;
+          }
+
+          try {
+            const regex = new RegExp(pattern, flags);
+            const matches = [];
+            const isGlobal = flags.includes('g');
+            const hasIndices = flags.includes('d');
+
+            if (isGlobal) {
+              let m;
+              let loopCounter = 0;
+              const maxLoops = 5000;
+              while ((m = regex.exec(testStr)) !== null && loopCounter < maxLoops) {
+                loopCounter++;
+                matches.push({
+                  index: m.index,
+                  value: m[0],
+                  length: m[0].length,
+                  groups: m.slice(1),
+                  indices: hasIndices && m.indices ? m.indices : null,
+                  namedGroups: m.groups ? { ...m.groups } : null
+                });
+                if (m.index === regex.lastIndex) {
+                  regex.lastIndex++;
+                }
+              }
+            } else {
+              const m = regex.exec(testStr);
+              if (m) {
+                matches.push({
+                  index: m.index,
+                  value: m[0],
+                  length: m[0].length,
+                  groups: m.slice(1),
+                  indices: hasIndices && m.indices ? m.indices : null,
+                  namedGroups: m.groups ? { ...m.groups } : null
+                });
+              }
+            }
+
+            const latency = (performance.now() - start).toFixed(1);
+            self.postMessage({ success: true, matches, latency });
+          } catch (err) {
+            self.postMessage({ success: false, error: err.message, latency: (performance.now() - start).toFixed(1) });
+          }
+        };
+      `;
+      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      const regexWorker = new Worker(URL.createObjectURL(blob));
+
+      // --- PRESETS ---
       const PRESETS = {
         email: {
           pattern: '([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})',
@@ -705,57 +649,57 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         url: {
           pattern: 'https?:\\/\\/(?:www\\.)?([a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,}))(?::\\d+)?([\\/\\w\\.-]*)*(\\?[\\w%&=.-]*)?',
           flags: 'gi',
-          sample: 'API Endpoints:\nhttps://api.utilinone.com/v1/health?ref=dashboard\nhttp://staging-cluster.internal:8080/metrics\nhttps://github.com/developer/project\nftp://invalid-protocol.com'
+          sample: 'API Endpoints:\nhttps://api.utilinone.com/v1/health?ref=dashboard\nhttp://staging-cluster.internal:8080/metrics\nhttps://github.com/developer/project'
         },
         ipv4: {
           pattern: '\\b(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b',
           flags: 'g',
-          sample: 'Gateway: 192.168.1.1\nDNS: 8.8.8.8 and 1.1.1.1\nLocalhost: 127.0.0.1\nInvalid IP: 999.100.200.300 or 192.168.1'
+          sample: 'Gateway: 192.168.1.1\nDNS: 8.8.8.8 and 1.1.1.1\nLocalhost: 127.0.0.1'
         },
         phone: {
           pattern: '(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})',
           flags: 'g',
-          sample: 'Contact office at (555) 123-4567 or direct line 555.987.6543.\nInternational: +1-800-555-0199.\nInvalid: 12345 or 555-12.'
+          sample: 'Contact office at (555) 123-4567 or direct line 555.987.6543.\nInternational: +1-800-555-0199.'
         },
         date: {
           pattern: '\\b(20\\d{2})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])\\b',
           flags: 'g',
-          sample: 'Milestones:\nProject Kickoff: 2026-01-15\nCode Freeze: 2026-06-30\nLaunch Date: 2026-10-02\nInvalid Dates: 2026-13-45 or 2025-02-31'
+          sample: 'Milestones:\nProject Kickoff: 2026-01-15\nCode Freeze: 2026-06-30\nLaunch Date: 2026-10-02'
         },
         hexColor: {
           pattern: '#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b',
           flags: 'gi',
-          sample: 'Theme Palette:\nPrimary: #6366f1 or #4F46E5\nBackground: #090d16\nAccent: #10B981\nInvalid Hex: #12345G or #12'
+          sample: 'Theme Palette:\nPrimary: #6366f1 or #4F46E5\nBackground: #090d16\nAccent: #10B981'
         },
         uuid: {
           pattern: '\\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\\b',
           flags: 'gi',
-          sample: 'Request IDs:\nValid UUID v4: f47ac10b-58cc-4372-a567-0e02b2c3d479\nAnother: 123e4567-e89b-42d3-a456-426614174000\nInvalid: f47ac10b-58cc-5372-a567-0e02b2c3d479 (not v4)'
+          sample: 'Request IDs:\nValid UUID v4: f47ac10b-58cc-4372-a567-0e02b2c3d479\nAnother: 123e4567-e89b-42d3-a456-426614174000'
         },
         htmlTag: {
           pattern: '<([a-z0-9]+)(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/\\1>',
           flags: 'gi',
-          sample: '<div>\n  <h1>Welcome to UtilinOne</h1>\n  <p class="intro">Client-side security tools for developers.</p>\n</div>\n<span>Unclosed tag test'
+          sample: '<div>\n  <h1>Welcome to UtilinOne</h1>\n  <p class="intro">Client-side security tools for developers.</p>\n</div>'
         },
         strongPassword: {
-          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$',
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!\%*?&]{8,}$',
           flags: 'gm',
           sample: 'Test Passwords:\nStr0ng@Pass1\nweakpass\nNoSpecial123\nAbcdef1!'
         },
         kebabCase: {
           pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$',
           flags: 'gm',
-          sample: 'Slugs:\nregex-tester-debugger\nclient-side-utility\nInvalid_Slug\n-leading-dash'
+          sample: 'Slugs:\nregex-tester-debugger\nclient-side-utility'
         },
         semver: {
           pattern: '^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$',
           flags: 'gm',
-          sample: 'Versions:\n1.0.0\n2.4.1-alpha.1+build.123\n0.5.0\ninvalid.version'
+          sample: 'Versions:\n1.0.0\n2.4.1-alpha.1+build.123\n0.5.0'
         },
         currency: {
           pattern: '\\$([1-9][0-9]{0,2}(?:,[0-9]{3})*|0)(?:\\.[0-9]{2})?',
           flags: 'g',
-          sample: 'Prices:\nItem A: $1,234.56\nItem B: $99.00\nItem C: $0.50\nInvalid: $01.23 or USD 50'
+          sample: 'Prices:\nItem A: $1,234.56\nItem B: $99.00\nItem C: $0.50'
         }
       };
 
@@ -775,15 +719,15 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
       const flagButtons = document.querySelectorAll('.flag-btn');
       const cheatItems = document.querySelectorAll('.cheat-item');
 
-      // Buttons
       const btnLoadSample = document.getElementById('btnLoadSample');
       const btnShareUrl = document.getElementById('btnShareUrl');
       const btnClearAll = document.getElementById('btnClearAll');
       const btnClearTestString = document.getElementById('btnClearTestString');
       const btnCopyMatches = document.getElementById('btnCopyMatches');
       const btnCopyJson = document.getElementById('btnCopyJson');
+      const btnExportCsv = document.getElementById('btnExportCsv');
+      const btnExportTsv = document.getElementById('btnExportTsv');
 
-      // Find & Replace DOM
       const btnToggleReplace = document.getElementById('btnToggleReplace');
       const replacePanel = document.getElementById('replacePanel');
       const replaceToggleText = document.getElementById('replaceToggleText');
@@ -791,25 +735,41 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
       const replacePreview = document.getElementById('replacePreview');
       const replaceCountLabel = document.getElementById('replaceCountLabel');
       const btnCopyReplaced = document.getElementById('btnCopyReplaced');
-
-      // Cheat Sheet DOM
       const btnToggleCheatSheet = document.getElementById('btnToggleCheatSheet');
-      const cheatSheetSection = document.getElementById('cheatSheetSection');
 
-      // Toast DOM
+      const btnThemeToggle = document.getElementById('btnThemeToggle');
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toastMsg');
       const toastIcon = document.getElementById('toastIcon');
 
-      // Keep current parsed matches in memory
       let currentMatches = [];
-
-      // --- TOAST HELPER ---
       let toastTimer = null;
+
+      // --- THEME INIT (Default to Light Mode) ---
+      function initTheme() {
+        // 사용자가 명시적으로 다크 모드를 저장한 경우에만 다크 모드 활성화, 그 외에는 항상 밝은 모드 기본
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      initTheme();
+
+      btnThemeToggle.addEventListener('click', () => {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+
       function showToast(message, isError = false) {
         if (toastTimer) clearTimeout(toastTimer);
         toastMsg.textContent = message;
-        toastIcon.className = `w-2 h-2 rounded-full ${isError ? 'bg-red-500' : 'bg-emerald-500'}`;
+        toastIcon.className = `w-2 h-2 rounded-full ${isError ? 'bg-rose-500' : 'bg-emerald-400'}`;
         toast.classList.remove('opacity-0', 'translate-y-12', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0');
         toastTimer = setTimeout(() => {
@@ -818,13 +778,10 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         }, 2400);
       }
 
-      // --- FLAG MANAGEMENT ---
       function getActiveFlags() {
         let flags = '';
         flagButtons.forEach(btn => {
-          if (btn.classList.contains('active')) {
-            flags += btn.dataset.flag;
-          }
+          if (btn.classList.contains('active')) flags += btn.dataset.flag;
         });
         return flags;
       }
@@ -833,11 +790,11 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         flagButtons.forEach(btn => {
           const f = btn.dataset.flag;
           if (flagStr.includes(f)) {
-            btn.classList.add('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-            btn.classList.remove('bg-gray-100', 'text-gray-600', 'border-gray-200');
+            btn.classList.add('active', 'bg-indigo-50', 'dark:bg-indigo-950/60', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-300', 'dark:border-indigo-800');
+            btn.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-400', 'border-gray-200', 'dark:border-gray-700');
           } else {
-            btn.classList.remove('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-            btn.classList.add('bg-gray-100', 'text-gray-600', 'border-gray-200');
+            btn.classList.remove('active', 'bg-indigo-50', 'dark:bg-indigo-950/60', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-300', 'dark:border-indigo-800');
+            btn.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-400', 'border-gray-200', 'dark:border-gray-700');
           }
         });
         activeFlagsDisplay.textContent = getActiveFlags();
@@ -846,39 +803,23 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
       flagButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           btn.classList.toggle('active');
-          if (btn.classList.contains('active')) {
-            btn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-            btn.classList.remove('bg-gray-100', 'text-gray-600', 'border-gray-200');
-          } else {
-            btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-            btn.classList.add('bg-gray-100', 'text-gray-600', 'border-gray-200');
-          }
-          activeFlagsDisplay.textContent = getActiveFlags();
-          runRegexEvaluation();
+          setActiveFlags(getActiveFlags());
+          triggerEvaluation();
         });
       });
 
-      // --- ESCAPE HTML HELPER ---
       function escapeHtml(str) {
-        return str
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
       }
 
-      // --- CORE REGEX EVALUATION ENGINE ---
-      function runRegexEvaluation() {
-        errorBanner.classList.add('hidden');
+      // --- DISPATCH TO WORKER ---
+      function triggerEvaluation() {
         const pattern = regexInput.value;
         const flags = getActiveFlags();
         const testStr = testStringInput.value;
 
-        // Update character count
         charCountLabel.textContent = `${testStr.length} chars`;
 
-        // If pattern is empty
         if (!pattern) {
           highlightContainer.innerHTML = escapeHtml(testStr);
           matchTableBody.innerHTML = '';
@@ -890,81 +831,40 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
           return;
         }
 
-        // Try compiling RegExp
-        let regex;
-        try {
-          regex = new RegExp(pattern, flags);
-        } catch (err) {
+        regexWorker.postMessage({ pattern, flags, testStr });
+      }
+
+      regexWorker.onmessage = function(e) {
+        const { success, matches, error, latency } = e.data;
+        benchTimeEl.textContent = `${latency} ms`;
+
+        if (!success) {
           errorBanner.classList.remove('hidden');
-          errorMessage.textContent = err.message;
-          highlightContainer.innerHTML = escapeHtml(testStr);
+          errorMessage.textContent = error;
+          highlightContainer.innerHTML = escapeHtml(testStringInput.value);
           matchTableBody.innerHTML = '';
           noMatchesNotice.classList.remove('hidden');
           matchCountEl.textContent = '0 matches';
-          benchTimeEl.textContent = '0.0 ms';
           currentMatches = [];
           updateReplacePreview(null);
           return;
         }
 
-        // Measure execution time
-        const startTime = performance.now();
-        const matches = [];
-        const isGlobal = flags.includes('g');
+        errorBanner.classList.add('hidden');
+        currentMatches = matches || [];
+        matchCountEl.textContent = `${currentMatches.length} ${currentMatches.length === 1 ? 'match' : 'matches'}`;
+
+        renderHighlightedView(testStringInput.value, currentMatches);
+        renderInspectorTable(currentMatches);
 
         try {
-          if (isGlobal) {
-            let m;
-            let loopCounter = 0;
-            const maxLoops = 2500;
-            while ((m = regex.exec(testStr)) !== null && loopCounter < maxLoops) {
-              loopCounter++;
-              matches.push({
-                index: m.index,
-                value: m[0],
-                length: m[0].length,
-                groups: m.slice(1),
-                namedGroups: m.groups ? { ...m.groups } : null
-              });
-              if (m.index === regex.lastIndex) {
-                regex.lastIndex++; // Advance past zero-width match
-              }
-            }
-          } else {
-            const m = regex.exec(testStr);
-            if (m) {
-              matches.push({
-                index: m.index,
-                value: m[0],
-                length: m[0].length,
-                groups: m.slice(1),
-                namedGroups: m.groups ? { ...m.groups } : null
-              });
-            }
-          }
-        } catch (execErr) {
-          errorBanner.classList.remove('hidden');
-          errorMessage.textContent = 'Execution Error: ' + execErr.message;
-          return;
+          const regex = new RegExp(regexInput.value, getActiveFlags());
+          updateReplacePreview(regex);
+        } catch (err) {
+          updateReplacePreview(null);
         }
+      };
 
-        const endTime = performance.now();
-        const duration = (endTime - startTime).toFixed(2);
-        benchTimeEl.textContent = `${duration} ms`;
-        matchCountEl.textContent = `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}`;
-        currentMatches = matches;
-
-        // Render Highlighted HTML
-        renderHighlightedView(testStr, matches);
-
-        // Render Inspector Table
-        renderInspectorTable(matches);
-
-        // Update Replace Preview
-        updateReplacePreview(regex);
-      }
-
-      // --- RENDER VISUAL HIGHLIGHT CONTAINER ---
       function renderHighlightedView(testStr, matches) {
         if (!matches || matches.length === 0) {
           highlightContainer.innerHTML = escapeHtml(testStr) || '<span class="text-gray-400">No test text provided.</span>';
@@ -976,70 +876,57 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
 
         matches.forEach((m, idx) => {
           if (m.index < lastIndex) return;
-
           if (m.index > lastIndex) {
             resultHtml += escapeHtml(testStr.substring(lastIndex, m.index));
           }
-
           const colorClass = `match-highlight-${idx % 5}`;
-          const escapedVal = escapeHtml(m.value);
-          resultHtml += `<span class="${colorClass}" title="Match #${idx + 1} [${m.index}..${m.index + m.length}]">${escapedVal}</span>`;
-
+          resultHtml += `<span class="${colorClass}" title="Match #${idx + 1} [${m.index}..${m.index + m.length}]">${escapeHtml(m.value)}</span>`;
           lastIndex = m.index + m.length;
         });
 
         if (lastIndex < testStr.length) {
           resultHtml += escapeHtml(testStr.substring(lastIndex));
         }
-
         highlightContainer.innerHTML = resultHtml;
       }
 
-      // --- RENDER INSPECTOR TABLE ---
       function renderInspectorTable(matches) {
         matchTableBody.innerHTML = '';
-
         if (!matches || matches.length === 0) {
           noMatchesNotice.classList.remove('hidden');
           return;
         }
-
         noMatchesNotice.classList.add('hidden');
 
         matches.forEach((m, idx) => {
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-100/60 transition-colors';
+          tr.className = 'hover:bg-gray-100/60 dark:hover:bg-gray-900/60 transition-colors';
 
-          // # Index
           const tdIdx = document.createElement('td');
           tdIdx.className = 'py-2.5 px-4 text-gray-500 font-semibold';
           tdIdx.textContent = `#${idx + 1}`;
 
-          // Match Full Text
           const tdValue = document.createElement('td');
-          tdValue.className = 'py-2.5 px-4 text-gray-900 font-medium max-w-xs break-all';
-          tdValue.innerHTML = `<span class="bg-indigo-50 px-2 py-0.5 rounded text-indigo-700 border border-indigo-200">${escapeHtml(m.value)}</span>`;
+          tdValue.className = 'py-2.5 px-4 text-gray-900 dark:text-gray-100 font-medium max-w-xs break-all';
+          tdValue.innerHTML = `<span class="bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">${escapeHtml(m.value)}</span>`;
 
-          // Range [start..end]
           const tdRange = document.createElement('td');
-          tdRange.className = 'py-2.5 px-4 text-gray-500 text-[11px] whitespace-nowrap';
+          tdRange.className = 'py-2.5 px-4 text-gray-400 text-[11px] whitespace-nowrap';
           tdRange.textContent = `[${m.index} ... ${m.index + m.length}]`;
 
-          // Length
           const tdLen = document.createElement('td');
-          tdLen.className = 'py-2.5 px-4 text-gray-500 text-[11px]';
+          tdLen.className = 'py-2.5 px-4 text-gray-400 text-[11px]';
           tdLen.textContent = `${m.length} chars`;
 
-          // Captured Groups
           const tdGroups = document.createElement('td');
           tdGroups.className = 'py-2.5 px-4 space-y-1';
           if (m.groups && m.groups.length > 0) {
             let groupsHtml = '<div class="flex flex-wrap gap-1.5">';
             m.groups.forEach((g, gIdx) => {
               if (g !== undefined) {
-                groupsHtml += `<span class="inline-flex items-center gap-1 text-[11px] bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 rounded" title="Capture Group $${gIdx + 1}"><span class="text-violet-600 font-bold">$${gIdx + 1}:</span> ${escapeHtml(g)}</span>`;
+                groupsHtml += `<span class="inline-flex items-center gap-1 text-[11px] bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded"><span class="font-bold">$${gIdx + 1}:</span> ${escapeHtml(g)}</span>`;
               } else {
-                groupsHtml += `<span class="inline-flex items-center text-[11px] text-gray-400 italic bg-gray-100 px-1.5 py-0.5 rounded">$${gIdx + 1}: undefined</span>`;
+                groupsHtml += `<span class="inline-flex items-center text-[11px] text-gray-400 italic bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">$${gIdx + 1}: undefined</span>`;
               }
             });
             groupsHtml += '</div>';
@@ -1048,12 +935,11 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
             tdGroups.innerHTML = '<span class="text-[11px] text-gray-400 italic">None</span>';
           }
 
-          // Action column
           const tdAction = document.createElement('td');
           tdAction.className = 'py-2.5 px-4 text-right';
           const copyBtn = document.createElement('button');
           copyBtn.type = 'button';
-          copyBtn.className = 'text-[11px] text-indigo-600 hover:text-indigo-800 font-medium bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded border border-indigo-200 transition-colors';
+          copyBtn.className = 'text-[11px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-medium bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 px-2.5 py-1 rounded border border-indigo-200 dark:border-indigo-800 transition-colors cursor-pointer';
           copyBtn.textContent = 'Copy';
           copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(m.value);
@@ -1072,7 +958,6 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         });
       }
 
-      // --- FIND & REPLACE PREVIEW ---
       function updateReplacePreview(regex) {
         const testStr = testStringInput.value;
         const replacementStr = replaceInput.value;
@@ -1085,11 +970,7 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
 
         try {
           let count = 0;
-          const substituted = testStr.replace(regex, (match) => {
-            count++;
-            return match; // Temp count
-          });
-
+          testStr.replace(regex, () => { count++; return ''; });
           const finalResult = testStr.replaceAll(regex, replacementStr);
           replacePreview.textContent = finalResult;
           replaceCountLabel.textContent = `${count} ${count === 1 ? 'replacement' : 'replacements'}`;
@@ -1100,60 +981,52 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
       }
 
       // --- EVENT LISTENERS ---
-      regexInput.addEventListener('input', runRegexEvaluation);
-      testStringInput.addEventListener('input', runRegexEvaluation);
+      regexInput.addEventListener('input', triggerEvaluation);
+      testStringInput.addEventListener('input', triggerEvaluation);
       replaceInput.addEventListener('input', () => {
-        const pattern = regexInput.value;
-        const flags = getActiveFlags();
         try {
-          const regex = new RegExp(pattern, flags);
+          const regex = new RegExp(regexInput.value, getActiveFlags());
           updateReplacePreview(regex);
         } catch (e) {
           replacePreview.textContent = testStringInput.value;
         }
       });
 
-      // --- PRESET SELECTOR ---
       presetSelect.addEventListener('change', (e) => {
         const key = e.target.value;
         const preset = PRESETS[key];
         if (!preset) return;
-
         regexInput.value = preset.pattern;
         setActiveFlags(preset.flags);
         testStringInput.value = preset.sample;
-        runRegexEvaluation();
+        triggerEvaluation();
         showToast(`Loaded "${key}" preset pattern`);
       });
 
-      // --- LOAD SAMPLE BUTTON ---
       btnLoadSample.addEventListener('click', () => {
         presetSelect.value = 'email';
         const preset = PRESETS['email'];
         regexInput.value = preset.pattern;
         setActiveFlags(preset.flags);
         testStringInput.value = preset.sample;
-        runRegexEvaluation();
+        triggerEvaluation();
         showToast('Sample regular expression loaded');
       });
 
-      // --- CLEAR ALL BUTTON ---
       btnClearAll.addEventListener('click', () => {
         regexInput.value = '';
         testStringInput.value = '';
         presetSelect.value = '';
-        runRegexEvaluation();
+        triggerEvaluation();
         showToast('Cleared pattern and test string');
       });
 
-      // --- CLEAR TEST STRING ONLY ---
       btnClearTestString.addEventListener('click', () => {
         testStringInput.value = '';
-        runRegexEvaluation();
+        triggerEvaluation();
         showToast('Test string cleared');
       });
 
-      // --- COPY MATCHES (Plain Text) ---
       btnCopyMatches.addEventListener('click', () => {
         if (!currentMatches || currentMatches.length === 0) {
           showToast('No matches to copy', true);
@@ -1164,18 +1037,38 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         showToast(`Copied ${currentMatches.length} matches to clipboard`);
       });
 
-      // --- COPY MATCHES (JSON) ---
       btnCopyJson.addEventListener('click', () => {
         if (!currentMatches || currentMatches.length === 0) {
           showToast('No matches to export', true);
           return;
         }
-        const payload = JSON.stringify(currentMatches, null, 2);
-        navigator.clipboard.writeText(payload);
+        navigator.clipboard.writeText(JSON.stringify(currentMatches, null, 2));
         showToast('Exported matches as formatted JSON');
       });
 
-      // --- COPY REPLACED TEXT ---
+      // CSV & TSV Export
+      function exportData(format) {
+        if (!currentMatches || currentMatches.length === 0) {
+          showToast('No matches to export', true);
+          return;
+        }
+        const delimiter = format === 'tsv' ? '\t' : ',';
+        let rows = [`MatchIndex${delimiter}Value${delimiter}StartIndex${delimiter}EndIndex${delimiter}Length`];
+        currentMatches.forEach((m, idx) => {
+          const val = `"${m.value.replace(/"/g, '""')}"`;
+          rows.push(`${idx + 1}${delimiter}${val}${delimiter}${m.index}${delimiter}${m.index + m.length}${delimiter}${m.length}`);
+        });
+        const blob = new Blob([rows.join('\n')], { type: format === 'tsv' ? 'text/tab-separated-values' : 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `regex-matches.${format}`;
+        a.click();
+        showToast(`Exported matches as ${format.toUpperCase()}`);
+      }
+
+      btnExportCsv.addEventListener('click', () => exportData('csv'));
+      btnExportTsv.addEventListener('click', () => exportData('tsv'));
+
       btnCopyReplaced.addEventListener('click', () => {
         const text = replacePreview.textContent;
         if (!text) {
@@ -1186,25 +1079,32 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         showToast('Copied replaced text to clipboard');
       });
 
-      // --- TOGGLE REPLACE PANEL ---
       btnToggleReplace.addEventListener('click', () => {
         replacePanel.classList.toggle('hidden');
         const isHidden = replacePanel.classList.contains('hidden');
-        if (!isHidden) {
-          replaceToggleText.textContent = 'Hide Replace';
-          btnToggleReplace.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-        } else {
-          replaceToggleText.textContent = 'Find & Replace';
-          btnToggleReplace.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-300');
-        }
+        replaceToggleText.textContent = isHidden ? 'Find & Replace' : 'Hide Replace';
       });
 
-      // --- TOGGLE CHEAT SHEET JUMP ---
       btnToggleCheatSheet.addEventListener('click', () => {
         cheatSheetSection.scrollIntoView({ behavior: 'smooth' });
       });
 
-      // --- LOAD FROM URL HASH IF PRESENT ---
+      cheatItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const token = item.dataset.token;
+          if (!token) return;
+          const start = regexInput.selectionStart;
+          const end = regexInput.selectionEnd;
+          const val = regexInput.value;
+          regexInput.value = val.substring(0, start) + token + val.substring(end);
+          const newCursorPos = start + token.length;
+          regexInput.setSelectionRange(newCursorPos, newCursorPos);
+          regexInput.focus();
+          triggerEvaluation();
+          showToast(`Inserted token: ${token}`);
+        });
+      });
+
       function loadFromUrlHash() {
         if (!window.location.hash) return false;
         try {
@@ -1223,50 +1123,20 @@ Invalid formats like @missinguser.com or invalid@ should be excluded from captur
         return false;
       }
 
-      // --- SHARE URL BUTTON ---
       btnShareUrl.addEventListener('click', () => {
-        const payload = {
-          p: regexInput.value,
-          f: getActiveFlags(),
-          t: testStringInput.value
-        };
-        const jsonStr = JSON.stringify(payload);
-        const encoded = encodeURIComponent(jsonStr);
+        const payload = { p: regexInput.value, f: getActiveFlags(), t: testStringInput.value };
+        const encoded = encodeURIComponent(JSON.stringify(payload));
         const newUrl = `${window.location.origin}${window.location.pathname}#data=${encoded}`;
         navigator.clipboard.writeText(newUrl);
         window.location.hash = `data=${encoded}`;
         showToast('Shareable URL copied to clipboard');
       });
 
-      // --- INTERACTIVE CHEAT SHEET TOKEN INSERTION ---
-      cheatItems.forEach(item => {
-        item.addEventListener('click', () => {
-          const token = item.dataset.token;
-          if (!token) return;
-          
-          const start = regexInput.selectionStart;
-          const end = regexInput.selectionEnd;
-          const val = regexInput.value;
-          
-          regexInput.value = val.substring(0, start) + token + val.substring(end);
-          const newCursorPos = start + token.length;
-          regexInput.setSelectionRange(newCursorPos, newCursorPos);
-          regexInput.focus();
-          
-          runRegexEvaluation();
-          showToast(`Inserted token: ${token}`);
-        });
-      });
-
-      // --- INITIALIZATION ---
       document.addEventListener('DOMContentLoaded', () => {
         const loadedFromHash = loadFromUrlHash();
-        if (!loadedFromHash) {
-          setActiveFlags('gim');
-        } else {
-          setActiveFlags(getActiveFlags());
-        }
-        runRegexEvaluation();
+        if (!loadedFromHash) setActiveFlags('gim');
+        else setActiveFlags(getActiveFlags());
+        triggerEvaluation();
       });
 
     })();
