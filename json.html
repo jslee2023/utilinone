@@ -86,10 +86,21 @@
     .animate-fade-in {
       animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
     /* 긴 에러 메시지 및 코드 출력 영역 줄바꿈 처리 */
     pre, code, .font-mono-code {
       white-space: pre-wrap;
       word-break: break-all;
+    }
+
+    /* Line Numbers Styling */
+    #lineNumbers {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.625;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      min-width: 48px;
     }
   </style>
 </head>
@@ -337,27 +348,35 @@
           </div>
         </div>
 
-        <!-- Textarea Workspace with Drag & Drop Overlay -->
-        <div class="relative flex-1 min-h-[460px] flex flex-col">
-          <textarea
-            id="jsonInput"
-            class="w-full h-full flex-1 p-4 bg-transparent text-gray-900 font-mono-code text-[13px] leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500/40 placeholder-gray-500 selection:bg-indigo-500/40"
-            placeholder="// Paste, type, or drop your JSON payload here...&#10;{&#10;  &quot;title&quot;: &quot;UtilinOne JSON Engine&quot;,&#10;  &quot;secure&quot;: true,&#10;  &quot;status&quot;: &quot;ready&quot;&#10;}"
-            spellcheck="false"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-          ></textarea>
+        <!-- Textarea Workspace with Line Numbers & Drag & Drop Overlay -->
+        <div class="relative flex-1 min-h-[460px] flex flex-row overflow-hidden bg-white">
+          <!-- Line Numbers Sidebar -->
+          <div id="lineNumbers" class="select-none py-4 px-3 text-right font-mono-code text-[13px] leading-relaxed text-gray-400 bg-gray-50 border-r border-gray-200 shrink-0 overflow-hidden">
+            1
+          </div>
 
-          <!-- Drag and Drop Overlay Indicator -->
-          <div id="dropOverlay" class="absolute inset-0 bg-indigo-50 border-2 border-dashed border-indigo-400 rounded-xl hidden flex-col items-center justify-center pointer-events-none z-20 backdrop-blur-sm">
-            <svg class="w-12 h-12 text-indigo-400 mb-2 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            <p class="text-white font-semibold text-base">Drop JSON file here to load</p>
-            <p class="text-indigo-300 text-xs mt-1">Accepts .json and .txt files</p>
+          <!-- Textarea container -->
+          <div class="relative flex-1 flex flex-col h-full">
+            <textarea
+              id="jsonInput"
+              class="w-full h-full flex-1 p-4 bg-transparent text-gray-900 font-mono-code text-[13px] leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500/40 placeholder-gray-500 selection:bg-indigo-500/40"
+              placeholder="// Paste, type, or drop your JSON payload here...&#10;{&#10;  &quot;title&quot;: &quot;UtilinOne JSON Engine&quot;,&#10;  &quot;secure&quot;: true,&#10;  &quot;status&quot;: &quot;ready&quot;&#10;}"
+              spellcheck="false"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+            ></textarea>
+
+            <!-- Drag and Drop Overlay Indicator -->
+            <div id="dropOverlay" class="absolute inset-0 bg-indigo-50 border-2 border-dashed border-indigo-400 rounded-xl hidden flex-col items-center justify-center pointer-events-none z-20 backdrop-blur-sm">
+              <svg class="w-12 h-12 text-indigo-400 mb-2 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p class="text-white font-semibold text-base">Drop JSON file here to load</p>
+              <p class="text-indigo-300 text-xs mt-1">Accepts .json and .txt files</p>
+            </div>
           </div>
         </div>
 
@@ -796,6 +815,7 @@
 
       // --- DOM ELEMENT REFERENCES ---
       const jsonInput = document.getElementById('jsonInput');
+      const lineNumbers = document.getElementById('lineNumbers');
       const jsonOutputFormatted = document.getElementById('jsonOutputFormatted');
       const codeViewContainer = document.getElementById('codeViewContainer');
       const treeViewContainer = document.getElementById('treeViewContainer');
@@ -1018,24 +1038,30 @@
           .replace(/>/g, '&gt;');
       }
 
+      // --- LINE NUMBERS UPDATER & SCROLL SYNC ---
+      function updateLineNumbers() {
+        const lines = jsonInput.value.split('\n');
+        const count = Math.max(1, lines.length);
+        let html = '';
+        for (let i = 1; i <= count; i++) {
+          html += i + (i < count ? '<br>' : '');
+        }
+        lineNumbers.innerHTML = html;
+      }
+
+      jsonInput.addEventListener('scroll', () => {
+        lineNumbers.scrollTop = jsonInput.scrollTop;
+      });
+
       // --- SYNTAX HIGHLIGHTING ENGINE ---
       function syntaxHighlight(jsonString) {
-        // Escapes HTML tags safely
         let html = escapeHtml(jsonString);
-
-        // Regex tokenizes JSON entities:
-        // 1: Keys e.g. "key":
-        // 2: String values e.g. "value"
-        // 3: Numbers
-        // 4: Booleans (true, false)
-        // 5: null
         return html.replace(
           /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
           function (match) {
             let cls = 'json-number';
             if (/^"/.test(match)) {
               if (/:$/.test(match)) {
-                // Key with trailing colon
                 const keyName = match.slice(0, -1);
                 return `<span class="json-key">${keyName}</span><span class="json-colon">:</span>`;
               } else {
@@ -1058,11 +1084,6 @@
         let pos = null;
 
         const msg = error.message || '';
-
-        // Patterns common across engines:
-        // "at position 45 (line 3 column 5)"
-        // "at line 3 column 5"
-        // "at position 45"
         const lineColMatch = msg.match(/line\s+(\d+)\s+column\s+(\d+)/i);
         const posMatch = msg.match(/position\s+(\d+)/i);
 
@@ -1076,7 +1097,6 @@
           col = lines[lines.length - 1].length + 1;
         }
 
-        // Generate contextual code snippet with pointer
         const allLines = rawText.split('\n');
         const snippetLines = [];
         const start = Math.max(0, line - 3);
@@ -1089,7 +1109,6 @@
 
           if (isErrorLine) {
             snippetLines.push(`<span class="text-rose-400 font-bold">${lineNum} | ${escapeHtml(lineContent)}</span>`);
-            // Pointer arrow
             const padding = ' '.repeat(col + 6);
             snippetLines.push(`<span class="text-rose-400 font-bold">${padding}^--- Syntax error here</span>`);
           } else {
@@ -1147,18 +1166,14 @@
         const header = document.createElement('div');
         header.className = 'tree-node-content flex items-center gap-1.5 py-0.5 px-1.5 rounded hover:bg-gray-200 cursor-pointer font-mono group';
         header.setAttribute('data-path', currentPath);
-
-        // Click to copy path
         header.title = `Path: ${currentPath} (Click arrow to toggle, click row to copy path)`;
 
         if (isComplex) {
-          // Toggle caret
           const caret = document.createElement('span');
           caret.className = 'tree-caret text-gray-500 group-hover:text-gray-600 w-4 h-4 flex items-center justify-center shrink-0';
           caret.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
           header.appendChild(caret);
 
-          // Key name if exists
           if (keyName !== null) {
             const keyEl = document.createElement('span');
             keyEl.className = 'json-key';
@@ -1166,7 +1181,6 @@
             header.appendChild(keyEl);
           }
 
-          // Bracket and summary badge
           const summary = document.createElement('span');
           summary.className = 'text-gray-500 text-xs flex items-center gap-1.5';
           const count = isArr ? val.length : Object.keys(val).length;
@@ -1176,7 +1190,6 @@
 
           wrapper.appendChild(header);
 
-          // Children container
           const childrenContainer = document.createElement('div');
           childrenContainer.className = 'tree-children pl-5 border-l border-gray-200 ml-2 mt-0.5 flex flex-col';
 
@@ -1194,14 +1207,12 @@
 
           wrapper.appendChild(childrenContainer);
 
-          // Toggle expand/collapse handler
           caret.addEventListener('click', (e) => {
             e.stopPropagation();
             const isHidden = childrenContainer.classList.toggle('hidden');
             caret.classList.toggle('collapsed', isHidden);
           });
 
-          // Click header row copies property path
           header.addEventListener('click', (e) => {
             if (e.target.closest('.tree-caret')) return;
             navigator.clipboard.writeText(currentPath).then(() => {
@@ -1210,7 +1221,6 @@
           });
 
         } else {
-          // Primitive Leaf Node
           const spacer = document.createElement('span');
           spacer.className = 'w-4 h-4 shrink-0';
           header.appendChild(spacer);
@@ -1238,7 +1248,6 @@
           }
           header.appendChild(valEl);
 
-          // Click to copy primitive value
           header.addEventListener('click', () => {
             const copyVal = typeof val === 'string' ? val : JSON.stringify(val);
             navigator.clipboard.writeText(copyVal).then(() => {
@@ -1257,7 +1266,8 @@
         const raw = jsonInput.value.trim();
         const startTime = performance.now();
 
-        // Update raw input metrics
+        // Update line numbers & input metrics
+        updateLineNumbers();
         const chars = jsonInput.value.length;
         const lines = jsonInput.value ? jsonInput.value.split('\n').length : 0;
         inputCharCount.textContent = `${chars.toLocaleString()} chars`;
@@ -1265,7 +1275,6 @@
         metricSize.textContent = formatBytes(chars);
 
         if (!raw) {
-          // Empty State
           statusPill.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-gray-500';
           statusDot.className = 'w-2 h-2 rounded-full bg-gray-500';
           statusText.textContent = 'Ready';
@@ -1282,7 +1291,6 @@
         }
 
         try {
-          // Parse JSON strictly
           const parsed = JSON.parse(raw);
           const endTime = performance.now();
           const latency = (endTime - startTime).toFixed(1);
@@ -1290,14 +1298,12 @@
           currentParsedData = parsed;
           currentErrorDetails = null;
 
-          // Determine Indentation
           let indentSpace = 2;
           const selectVal = indentSelect.value;
           if (selectVal === '4') indentSpace = 4;
           else if (selectVal === 'tab') indentSpace = '\t';
           else if (selectVal === 'minify') indentSpace = 0;
 
-          // Check if Sort Keys option active
           let dataToFormat = parsed;
           if (options.sortKeys) {
             dataToFormat = sortJsonKeys(parsed);
@@ -1310,27 +1316,22 @@
             currentFormattedText = JSON.stringify(dataToFormat, null, indentSpace);
           }
 
-          // Update Valid UI State
           statusPill.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-500/40 text-emerald-400';
           statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
           statusText.textContent = 'Valid JSON';
           metricTime.textContent = `${latency} ms`;
           errorBanner.classList.add('hidden');
 
-          // Render Syntax Highlighting
           jsonOutputFormatted.innerHTML = syntaxHighlight(currentFormattedText);
 
-          // Render Tree DOM
           treeRoot.innerHTML = '';
           treeRoot.appendChild(buildTreeDOM(currentParsedData, null, '$'));
 
-          // Calculate deep metrics
           const metrics = calculateJsonMetrics(currentParsedData);
           outputKeyCount.textContent = `${metrics.keys.toLocaleString()} keys`;
           outputDepthCount.textContent = `Depth: ${metrics.maxDepth}`;
           outputTypeCount.textContent = `Type: ${Array.isArray(currentParsedData) ? 'Array' : 'Object'}`;
 
-          // Re-apply active search query if exists
           if (searchInput.value.trim()) {
             executeSearch(searchInput.value.trim());
           }
@@ -1341,22 +1342,17 @@
 
           currentParsedData = null;
           currentFormattedText = '';
-
-          // Calculate error coordinates
           currentErrorDetails = calculateErrorDetails(raw, err);
 
-          // Update Invalid UI State
           statusPill.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-500/40 text-rose-300';
           statusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
           statusText.textContent = 'Invalid Syntax';
 
-          // Show Error Banner
           errorBanner.classList.remove('hidden');
           errorLocationBadge.textContent = `Line ${currentErrorDetails.line}, Col ${currentErrorDetails.col}`;
           errorMessageText.textContent = currentErrorDetails.message;
           errorSnippetPre.innerHTML = currentErrorDetails.snippet;
 
-          // In code pane show error notice
           jsonOutputFormatted.innerHTML = `<span class="text-rose-400 font-bold">// JSON Syntax Error at Line ${currentErrorDetails.line}, Col ${currentErrorDetails.col}&#10;// ${escapeHtml(currentErrorDetails.message)}</span>`;
           treeRoot.innerHTML = `<div class="p-4 text-rose-400 text-xs">Cannot render tree view: resolve syntax error first.</div>`;
         }
@@ -1382,22 +1378,12 @@
         if (!raw || !raw.trim()) return raw;
         let cleaned = raw;
 
-        // 1. Convert JavaScript comments (// ... and /* ... */)
         cleaned = cleaned.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '$1');
-
-        // 2. Convert Python/JS keywords: None -> null, True -> true, False -> false
         cleaned = cleaned.replace(/\bNone\b/g, 'null');
         cleaned = cleaned.replace(/\bTrue\b/g, 'true');
         cleaned = cleaned.replace(/\bFalse\b/g, 'false');
-
-        // 3. Replace single quotes around keys or string values with double quotes
-        // Handles 'key': 'value' -> "key": "value"
         cleaned = cleaned.replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '"$1"');
-
-        // 4. Quote unquoted object keys: { name: "value" } -> { "name": "value" }
         cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_$-]+)\s*:/g, '$1"$2":');
-
-        // 5. Remove trailing commas before } or ]
         cleaned = cleaned.replace(/,\s*([}\]])/g, '$1');
 
         return cleaned;
@@ -1408,7 +1394,6 @@
         if (!query) {
           searchMatchCount.classList.add('hidden');
           btnClearSearch.classList.add('hidden');
-          // Re-render plain highlighted code
           if (currentFormattedText) {
             jsonOutputFormatted.innerHTML = syntaxHighlight(currentFormattedText);
           }
@@ -1418,23 +1403,18 @@
         btnClearSearch.classList.remove('hidden');
         searchMatchCount.classList.remove('hidden');
 
-        // Search within code pre text
         const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`(${safeQuery})`, 'gi');
 
-        // Count matches in pure text
         const textMatches = currentFormattedText.match(regex);
         const matchCount = textMatches ? textMatches.length : 0;
         searchMatchCount.textContent = `${matchCount} found`;
 
         if (currentViewMode === 'code') {
-          // Highlight inside code view
           const baseHtml = syntaxHighlight(currentFormattedText);
-          // Highlight occurrences outside tags
           const highlightedHtml = baseHtml.replace(regex, '<mark class="search-highlight">$1</mark>');
           jsonOutputFormatted.innerHTML = highlightedHtml;
         } else {
-          // Tree mode: filter nodes
           const treeHeaders = treeRoot.querySelectorAll('.tree-node-content');
           treeHeaders.forEach((el) => {
             const text = el.textContent || '';
@@ -1459,7 +1439,6 @@
 
       // --- EVENT LISTENERS ---
 
-      // Input changes (debounced for zero typing latency)
       jsonInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
@@ -1471,7 +1450,6 @@
       jsonInput.addEventListener('keyup', updateCursorPosition);
       jsonInput.addEventListener('click', updateCursorPosition);
 
-      // Tab indentation support & Ctrl+Enter to format
       jsonInput.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
           e.preventDefault();
@@ -1487,50 +1465,50 @@
         }
       });
 
-      // Format / Beautify Click
       btnFormat.addEventListener('click', () => {
         processJSON();
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
+          updateLineNumbers();
           showToast('JSON beautified & formatted');
         }
       });
 
-      // Indent Select Change
       indentSelect.addEventListener('change', () => {
         processJSON();
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
+          updateLineNumbers();
         }
       });
 
-      // Minify Click
       btnMinify.addEventListener('click', () => {
         if (!jsonInput.value.trim()) return;
         processJSON({ minify: true });
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
+          updateLineNumbers();
           showToast('JSON minified (compact single-line)');
         }
       });
 
-      // Sort Keys Click
       btnSortKeys.addEventListener('click', () => {
         if (!jsonInput.value.trim()) return;
         processJSON({ sortKeys: true });
         if (currentParsedData) {
           jsonInput.value = currentFormattedText;
+          updateLineNumbers();
           showToast('Keys recursively sorted (A to Z)');
         }
       });
 
-      // Auto-Repair Click
       btnRepair.addEventListener('click', () => {
         const raw = jsonInput.value;
         if (!raw.trim()) return;
         const repaired = attemptRepairJSON(raw);
         jsonInput.value = repaired;
         processJSON();
+        updateLineNumbers();
         if (currentParsedData) {
           showToast('Syntax issues repaired successfully!');
         } else {
@@ -1538,12 +1516,10 @@
         }
       });
 
-      // Error Banner Quick Fix Button
       btnErrorAutoFix.addEventListener('click', () => {
         btnRepair.click();
       });
 
-      // Jump to error line
       btnJumpToError.addEventListener('click', () => {
         if (!currentErrorDetails) return;
         const lines = jsonInput.value.split('\n');
@@ -1556,21 +1532,19 @@
         jsonInput.focus();
         jsonInput.setSelectionRange(charIndex, charIndex + 1);
         
-        // Scroll textarea to line
         const lineHeight = 20;
         jsonInput.scrollTop = (currentErrorDetails.line - 3) * lineHeight;
         updateCursorPosition();
       });
 
-      // Clear Button
       btnClear.addEventListener('click', () => {
         jsonInput.value = '';
         searchInput.value = '';
         processJSON();
+        updateLineNumbers();
         showToast('Workspace cleared');
       });
 
-      // Copy Formatted Output
       btnCopy.addEventListener('click', () => {
         if (!currentFormattedText) {
           showToast('No formatted JSON to copy', false);
@@ -1581,7 +1555,6 @@
         });
       });
 
-      // Copy Minified
       btnCopyMinified.addEventListener('click', () => {
         if (!currentParsedData) {
           showToast('No valid JSON to copy', false);
@@ -1593,7 +1566,6 @@
         });
       });
 
-      // Download .json File
       btnDownload.addEventListener('click', () => {
         if (!currentFormattedText) {
           showToast('No JSON data to download', false);
@@ -1612,13 +1584,13 @@
         showToast('JSON file downloaded');
       });
 
-      // Paste from Clipboard
       btnPaste.addEventListener('click', async () => {
         try {
           const text = await navigator.clipboard.readText();
           if (text) {
             jsonInput.value = text;
             processJSON();
+            updateLineNumbers();
             showToast('Pasted from clipboard');
           }
         } catch {
@@ -1627,7 +1599,6 @@
         }
       });
 
-      // View Mode Toggle (Code vs Tree)
       viewModeCode.addEventListener('click', () => {
         currentViewMode = 'code';
         viewModeCode.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
@@ -1650,7 +1621,6 @@
         if (searchInput.value.trim()) executeSearch(searchInput.value.trim());
       });
 
-      // Tree View Expand / Collapse All
       btnExpandAll.addEventListener('click', () => {
         treeRoot.querySelectorAll('.tree-children').forEach((el) => el.classList.remove('hidden'));
         treeRoot.querySelectorAll('.tree-caret').forEach((el) => el.classList.remove('collapsed'));
@@ -1661,7 +1631,6 @@
         treeRoot.querySelectorAll('.tree-caret').forEach((el) => el.classList.add('collapsed'));
       });
 
-      // Search Events
       searchInput.addEventListener('input', (e) => {
         executeSearch(e.target.value.trim());
       });
@@ -1671,7 +1640,6 @@
         executeSearch('');
       });
 
-      // Sample Data Dropdown Toggle
       btnSampleDropdown.addEventListener('click', (e) => {
         e.stopPropagation();
         sampleMenu.classList.toggle('hidden');
@@ -1693,11 +1661,11 @@
           }
           sampleMenu.classList.add('hidden');
           processJSON();
+          updateLineNumbers();
           showToast(`Loaded ${btn.querySelector('span').textContent}`);
         });
       });
 
-      // Load File Input
       fileUploadInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1705,13 +1673,13 @@
         reader.onload = (event) => {
           jsonInput.value = event.target.result;
           processJSON();
+          updateLineNumbers();
           showToast(`Loaded file: ${file.name}`);
         };
         reader.readAsText(file);
         fileUploadInput.value = '';
       });
 
-      // Drag and Drop onto Textarea
       const inputContainer = paneInputContainer;
       ['dragenter', 'dragover'].forEach((eventName) => {
         inputContainer.addEventListener(eventName, (e) => {
@@ -1739,19 +1707,20 @@
           reader.onload = (event) => {
             jsonInput.value = event.target.result;
             processJSON();
+            updateLineNumbers();
             showToast(`Loaded file: ${file.name}`);
           };
           reader.readAsText(file);
         }
       });
 
-      // Escape / Unescape String
       btnEscapeString.addEventListener('click', () => {
         if (!jsonInput.value) return;
         try {
           const escaped = JSON.stringify(jsonInput.value);
           jsonInput.value = escaped;
           processJSON();
+          updateLineNumbers();
           showToast('Escaped as JSON string');
         } catch (err) {
           showToast('Escape failed', false);
@@ -1765,39 +1734,39 @@
           const unescaped = JSON.parse(trimmed.startsWith('"') ? trimmed : `"${trimmed}"`);
           jsonInput.value = typeof unescaped === 'string' ? unescaped : JSON.stringify(unescaped, null, 2);
           processJSON();
+          updateLineNumbers();
           showToast('Unescaped string');
         } catch {
           showToast('Unable to unescape string', false);
         }
       });
 
-      // Base64 Encode
       btnBase64Encode.addEventListener('click', () => {
         if (!jsonInput.value) return;
         try {
           const b64 = btoa(unescape(encodeURIComponent(jsonInput.value)));
           jsonInput.value = b64;
           processJSON();
+          updateLineNumbers();
           showToast('Encoded payload to Base64');
         } catch {
           showToast('Base64 encoding error', false);
         }
       });
 
-      // Base64 Decode
       btnBase64Decode.addEventListener('click', () => {
         if (!jsonInput.value) return;
         try {
           const decoded = decodeURIComponent(escape(atob(jsonInput.value.trim())));
           jsonInput.value = decoded;
           processJSON();
+          updateLineNumbers();
           showToast('Decoded Base64 payload');
         } catch {
           showToast('Invalid Base64 string', false);
         }
       });
 
-      // Mobile Pane Toggle
       tabInputMobile.addEventListener('click', () => {
         tabInputMobile.className = 'flex-1 py-2 rounded-lg bg-indigo-600 text-white font-semibold transition-all';
         tabOutputMobile.className = 'flex-1 py-2 rounded-lg text-gray-500 hover:text-white transition-all';
@@ -1812,9 +1781,10 @@
         paneInputContainer.classList.add('hidden');
       });
 
-      // Preload Default Sample on First Load for Instant Interactive Showcase
+      // Preload Default Sample on First Load
       jsonInput.value = JSON.stringify(SAMPLES.ecommerce, null, 2);
       processJSON();
+      updateLineNumbers();
 
     })();
   </script>
